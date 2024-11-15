@@ -1,0 +1,51 @@
+[
+  { "question_id": 2, "text": "Municipal" },
+  { "question_id": 2, "text": "Estadual" },
+  { "question_id": 2, "text": "Federal" },
+  { "question_id": 2, "text": "Privada" },
+  
+  { "question_id": 3, "text": "Fundamental A" },
+  { "question_id": 3, "text": "Fundamental B" },
+  { "question_id": 3, "text": "Médio" },
+  { "question_id": 3, "text": "Técnico" },
+  { "question_id": 3, "text": "Superior ou Tecnológico" },
+  { "question_id": 3, "text": "Pós-graduação" },
+  
+  { "question_id": 4, "text": "Fundamental" },
+  { "question_id": 4, "text": "Médio" },
+  { "question_id": 4, "text": "Magistério" },
+  { "question_id": 4, "text": "Técnico" },
+  { "question_id": 4, "text": "Tecnólogo" },
+  { "question_id": 4, "text": "Bacharel" },
+  { "question_id": 4, "text": "Licenciatura" },
+  { "question_id": 4, "text": "Mestre" },
+  { "question_id": 4, "text": "Doutor" },
+  { "question_id": 4, "text": "Pós-doutor" },
+  
+  { "question_id": 5, "text": "Ciências agrárias" },
+  { "question_id": 5, "text": "Ciências biológicas" },
+  { "question_id": 5, "text": "Ciências da saúde" },
+  { "question_id": 5, "text": "Ciências exatas e da terra" },
+  { "question_id": 5, "text": "Ciências humanas" },
+  { "question_id": 5, "text": "Ciências sociais aplicadas" },
+  { "question_id": 5, "text": "Engenharias" },
+  { "question_id": 5, "text": "Linguística, letras e artes" },
+  
+  { "question_id": 38, "text": "Sim" },
+  { "question_id": 38, "text": "Não" },
+  { "question_id": 38, "text": "Nenhuma das minhas práticas foi alterada na pandemia" },
+  
+  { "question_id": 39, "text": "Mídias sociais particulares (Facebook, Instagram, WhatsApp, etc.)" },
+  { "question_id": 39, "text": "Mídias sociais institucionais (Facebook, Instagram, WhatsApp, etc.)" },
+  { "question_id": 39, "text": "Ferramentas de comunicação (Blog, e-mail, SMS, etc.)" },
+  { "question_id": 39, "text": "Ambientes Virtuais de Aprendizagem (Moodle, Google Classroom, etc.)" },
+  { "question_id": 39, "text": "Salas de Vídeo conferência (Zoom, Microsoft Teams, GoogleMeeting, etc.)" },
+  { "question_id": 39, "text": "Vídeos (YouTube, Vimeo, Vevo, etc.)" },
+  { "question_id": 39, "text": "Conteúdo em nuvem (Dropbox, Google Drive, Prezi, etc.)" },
+  { "question_id": 39, "text": "Nenhuma" },
+  
+  { "question_id": 40, "text": "Masculino" },
+  { "question_id": 40, "text": "Feminino" },
+  { "question_id": 40, "text": "Outros" },
+  { "question_id": 40, "text": "Prefiro não informar" }
+]
