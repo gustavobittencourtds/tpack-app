@@ -1,22 +1,22 @@
 // src/models/Question.ts
-
 import mongoose, { Schema, Document } from 'mongoose';
 
 export interface IQuestion extends Document {
+  session_id: mongoose.Types.ObjectId;
   text: string;
-  type: string;
+  type: 'multiple_choice' | 'scale' | 'number' | 'text' | 'intro';
   note?: string;
   order: number;
-  session_id: mongoose.Types.ObjectId;
+  choices?: mongoose.Types.ObjectId[]; // Relacionamento com as Choices
 }
 
-const questionSchema = new Schema<IQuestion>({
+const QuestionSchema = new Schema<IQuestion>({
+  session_id: { type: Schema.Types.ObjectId, ref: 'Session', required: true },
   text: { type: String, required: true },
-  type: { type: String, required: true },
+  type: { type: String, enum: ['multiple_choice', 'scale', 'number', 'text', 'intro'], required: true },
   note: { type: String },
   order: { type: Number, required: true },
-  session_id: { type: mongoose.Schema.Types.ObjectId, ref: 'Session', required: true },
+  choices: [{ type: Schema.Types.ObjectId, ref: 'Choice' }], // Referência às Choices
 });
 
-// Verifica se o modelo já foi definido antes de criá-lo
-export default mongoose.models.Question || mongoose.model<IQuestion>('Question', questionSchema);
+export default mongoose.models.Question || mongoose.model<IQuestion>('Question', QuestionSchema);

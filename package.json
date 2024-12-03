@@ -14,7 +14,8 @@
     "verify-db": "npx tsx src/tasks/verifyDataConsistency.ts",
     "start": "node dist/server.js",
     "dev": "tsx src/server.ts",
-    "next": "next dev"
+    "next": "next dev",
+    "validate": "npx tsx src/tasks/validate.ts"
   },
   "dependencies": {
     "@types/react": "^18.3.12",

@@ -4,15 +4,50 @@ import styled from 'styled-components';
 export const SurveyContainer = styled.div`
   font-family: 'Open Sans', sans-serif;
   max-width: 600px;
-  margin: 0 auto;
+  margin: 20px auto;
   padding: 20px;
-  background-color: #fefefe;
+  background-color: #ffffff;
   border-radius: 10px;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 `;
 
+export const IntroContainer = styled.div`
+  background-color: #f9f9f9;
+  padding: 20px;
+  border-radius: 10px;
+  margin-bottom: 20px;
+  text-align: left;
+
+  h2 {
+    font-size: 1.5rem;
+    margin-bottom: 15px;
+  }
+
+  p {
+    font-size: 1rem;
+    color: #555;
+    line-height: 1.5;
+  }
+
+  a {
+    color: #0070f3;
+    text-decoration: underline;
+
+    &:hover {
+      color: #005bb5;
+    }
+  }
+`;
+
 export const ProgressContainer = styled.div`
   margin-bottom: 20px;
+
+  p {
+    text-align: center;
+    margin-top: 5px;
+    font-size: 0.9rem;
+    color: #555;
+  }
 `;
 
 export const ProgressBar = styled.div<{ progress: number }>`
@@ -37,6 +72,7 @@ export const QuestionContainer = styled.div`
 `;
 
 export const QuestionText = styled.h3`
+  font-size: 1.25rem;
   margin-bottom: 10px;
 `;
 
@@ -44,6 +80,7 @@ export const ChoiceLabel = styled.label`
   display: flex;
   align-items: center;
   margin-bottom: 10px;
+  font-size: 1rem;
 
   input {
     margin-right: 10px;
@@ -54,8 +91,8 @@ export const NavigationButton = styled.button`
   padding: 10px 20px;
   margin: 5px;
   font-size: 16px;
+  color: #ffffff;
   background-color: #0070f3;
-  color: #fff;
   border: none;
   border-radius: 5px;
   cursor: pointer;
@@ -76,4 +113,12 @@ export const SubmitButton = styled(NavigationButton)`
   &:hover {
     background-color: #218838;
   }
+`;
+
+export const Note = styled.p`
+  font-size: 0.9rem;
+  color: #777;
+  margin-top: -10px;
+  margin-bottom: 20px;
+  font-style: italic;
 `;

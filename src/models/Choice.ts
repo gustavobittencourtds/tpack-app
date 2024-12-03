@@ -7,11 +7,11 @@ export interface IChoice extends Document {
   nextLevel?: number;
 }
 
-const ChoiceSchema: Schema = new Schema({
-  question_id: { type: mongoose.Types.ObjectId, required: true, ref: 'Question' },
+const ChoiceSchema = new Schema<IChoice>({
+  question_id: { type: Schema.Types.ObjectId, ref: 'Question', required: true },
   text: { type: String, required: true },
-  level: { type: Number, required: false },
-  nextLevel: { type: Number, required: false },
+  level: { type: Number, default: null },
+  nextLevel: { type: Number, default: null },
 });
 
 export default mongoose.models.Choice || mongoose.model<IChoice>('Choice', ChoiceSchema);
