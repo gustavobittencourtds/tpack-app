@@ -3,14 +3,14 @@ import dbConnect from '../../utils/dbConnect';
 import mongoose from 'mongoose';
 import Question from '../../models/Question';
 import Choice from '../../models/Choice';
-import jwt from 'jsonwebtoken';
+import jwt, { TokenExpiredError } from 'jsonwebtoken';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   console.log('Iniciando requisição /api/questions...');
   await dbConnect();
 
   // Listar modelos registrados
-  console.log('Modelos registrados no Mongoose:', Object.keys(mongoose.models));
+  // console.log('Modelos registrados no Mongoose:', Object.keys(mongoose.models));
 
   const token = req.query.token as string | undefined;
 
@@ -28,7 +28,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     res.status(200).json(questions);
   } catch (error) {
+    if (error instanceof TokenExpiredError) {
+      console.error('=================');
+      console.error('Token expirado!');
+      console.error('=================');
+      // console.error('Token expirado:', error);
+      return res.status(401).json({ message: 'O link deste questionário expirou. Por favor, solicite um novo.' });
+    }
     console.error('Erro ao buscar as questões:', error);
-    res.status(500).json({ message: 'Erro ao buscar as questões' });
+    res.status(500).json({ message: 'Erro ao buscar as questões.' });
   }
 }

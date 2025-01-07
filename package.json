@@ -17,6 +17,12 @@
     "next": "next dev",
     "validate": "npx tsx src/tasks/validate.ts"
   },
+  "_comments": {
+    "next": "Este comando inicia o frontend",
+    "dev": "Este comando inicia o backend",
+    "verify-db": "Este comando verifica a consistência dos dados entre as questões e suas escolhas",
+    "validate-db": "Este comando valida os dados inseridos no banco de dados"
+  },
   "dependencies": {
     "@types/react": "^18.3.12",
     "axios": "^1.7.7",
