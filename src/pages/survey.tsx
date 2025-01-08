@@ -72,18 +72,29 @@ const Survey: React.FC = () => {
     try {
       const response = await fetch('/api/answers', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
         body: JSON.stringify({ answers }),
       });
 
-      if (response.ok) {
-        alert('Respostas enviadas com sucesso!');
-        router.push('/thanks');
-      } else {
-        console.error('Erro ao enviar respostas:', await response.text());
+      if (response.status === 401) {
+        throw new Error('Seu token expirou ou é inválido. Tente novamente.');
       }
-    } catch (err) {
-      console.error('Erro ao enviar respostas:', err);
+
+      if (!response.ok) {
+        throw new Error('Ocorreu um erro ao enviar suas respostas.');
+      }
+
+      const data = await response.json();
+      console.log('Respostas enviadas com sucesso:', data);
+      alert('Questionário finalizado com sucesso!');
+    } catch (error) {
+      console.error('Erro ao enviar respostas:', error);
+      if (error instanceof Error) {
+        console.error('Error message:', error.message);
+      }
     }
   };
 
