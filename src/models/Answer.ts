@@ -2,6 +2,7 @@
 import mongoose, { Schema, Document, Types } from 'mongoose';
 
 interface IAnswer extends Document {
+  questionnaireId: Types.ObjectId;
   userId: string;
   questionId: Types.ObjectId;
   answer: string | number | string[];

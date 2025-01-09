@@ -23,7 +23,8 @@
     "dev": "Este comando inicia o backend",
     "verify-db": "Este comando verifica a consistência dos dados entre as questões e suas escolhas",
     "validate-db": "Este comando valida os dados inseridos no banco de dados",
-    "validate-answers": "Este comando valida as respostas dos usuários"
+    "validate-answers": "Este comando valida as respostas dos usuários",
+    "send-emails": "Este comando envia emails para os usuários"
   },
   "dependencies": {
     "@types/react": "^18.3.12",

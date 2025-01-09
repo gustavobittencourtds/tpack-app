@@ -8,7 +8,6 @@ async function fetchUserAnswers(userId: string) {
 
   try {
     console.log(`Buscando respostas do usuário: ${userId}`);
-    console.log(`DB_URI atual: ${process.env.DB_URI}`);
 
     const userAnswers = await Answer.find({ userId }).populate('questionId').lean();
 

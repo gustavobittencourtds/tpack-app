@@ -2,8 +2,8 @@ import { NextApiRequest, NextApiResponse } from 'next';
 import dbConnect from '../../utils/dbConnect';
 import jwt from 'jsonwebtoken';
 import Answer from '../../models/Answer';
+import Questionnaire from '../../models/Questionnaire';
 import mongoose from 'mongoose';
-
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   await dbConnect();
@@ -16,8 +16,24 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
 
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET as string) as { email: string };
+    const decoded = jwt.verify(token, process.env.JWT_SECRET as string) as { email: string; questionnaireId: string };
     console.log('Token decodificado com sucesso:', decoded);
+
+    const { email, questionnaireId } = decoded;
+
+    if (!mongoose.Types.ObjectId.isValid(questionnaireId)) {
+      return res.status(400).json({ message: 'ID de questionário inválido.' });
+    }
+
+    // Verificar se o questionário existe no banco de dados
+    const questionnaire = await Questionnaire.findById(questionnaireId);
+    if (!questionnaire) {
+      return res.status(404).json({ message: 'Questionário não encontrado.' });
+    }
+
+    if (questionnaire.completed) {
+      return res.status(400).json({ message: 'Questionário já foi respondido.' });
+    }
 
     if (req.method === 'POST') {
       const { answers } = req.body;
@@ -28,14 +44,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
       // Transformar respostas para o formato esperado
       const formattedAnswers = Object.entries(answers).map(([questionId, answer]) => ({
-        userId: decoded.email, // Utilize o e-mail do token como `userId`
-        questionId, // Certifique-se de que `questionId` seja um ObjectId válido
+        userId: email,
+        questionId,
         answer,
+        questionnaireId,
       }));
 
-      console.log('Respostas formatadas:', formattedAnswers);
-
-      // Validação para garantir que `questionId` seja do tipo ObjectId
       formattedAnswers.forEach((answer) => {
         if (!mongoose.Types.ObjectId.isValid(answer.questionId)) {
           throw new Error(`O ID da pergunta ${answer.questionId} não é válido.`);
@@ -44,13 +58,17 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
       // Salvar respostas no banco de dados
       await Answer.insertMany(formattedAnswers);
+
+      // Atualizar o campo `completed` do questionário para `true`
+      await Questionnaire.findByIdAndUpdate(questionnaireId, { completed: true });
+
       return res.status(201).json({ message: 'Respostas salvas com sucesso!' });
     }
 
     res.setHeader('Allow', ['POST']);
     res.status(405).json({ message: `Método ${req.method} não permitido` });
   } catch (error) {
-    console.error('Erro ao salvar respostas:', error); // Log completo do erro
+    console.error('Erro ao salvar respostas:', error);
     if (error instanceof Error) {
       if (error.name === 'TokenExpiredError') {
         return res.status(401).json({ message: 'Token expirado' });
