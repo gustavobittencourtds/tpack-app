@@ -63,14 +63,15 @@ const Survey: React.FC = () => {
     }
   };
 
-  // Verifica se a questão atual foi respondida
-  const isCurrentQuestionAnswered = () => {
-    const questionId = questions[currentQuestionIndex]?._id;
+  // Verifica se a questão foi respondida
+  const isQuestionAnswered = (index: number) => {
+    const questionId = questions[index]?._id;
     return questionId && answers[questionId] && answers[questionId].length > 0;
   };
 
+  // O botão "Próximo" só avança se a questão atual tiver resposta
   const handleNext = () => {
-    if (isCurrentQuestionAnswered()) {
+    if (isQuestionAnswered(currentQuestionIndex)) {
       setCurrentQuestionIndex((prev) => prev + 1);
     }
   };
@@ -110,7 +111,12 @@ const Survey: React.FC = () => {
   const progress = currentQuestionIndex >= 0 ? ((currentQuestionIndex + 1) / questions.length) * 100 : 0;
 
   const handleQuestionSelect = (index: number) => {
-    if (answers[questions[index]._id] || index === currentQuestionIndex + 1) {
+    // O usuário só pode clicar na próxima questão se todas as anteriores forem respondidas
+    const allPreviousAnswered = questions
+      .slice(0, index)
+      .every((_, i) => isQuestionAnswered(i));
+
+    if (allPreviousAnswered) {
       setCurrentQuestionIndex(index);
     }
   };
@@ -126,7 +132,7 @@ const Survey: React.FC = () => {
               <li key={q._id} style={{ marginBottom: '5px' }}>
                 <button
                   onClick={() => handleQuestionSelect(index)}
-                  disabled={!answers[q._id] && index !== currentQuestionIndex + 1}
+                  disabled={!questions.slice(0, index).every((_, i) => isQuestionAnswered(i))}
                   style={{
                     width: '100%',
                     padding: '8px',
@@ -134,7 +140,9 @@ const Survey: React.FC = () => {
                     color: index === currentQuestionIndex ? '#fff' : '#000',
                     border: 'none',
                     borderRadius: '5px',
-                    cursor: answers[q._id] || index === currentQuestionIndex + 1 ? 'pointer' : 'not-allowed',
+                    cursor: questions.slice(0, index).every((_, i) => isQuestionAnswered(i))
+                      ? 'pointer'
+                      : 'not-allowed',
                   }}
                 >
                   Pergunta {index + 1}
@@ -217,7 +225,7 @@ const Survey: React.FC = () => {
               {currentQuestionIndex === 0 ? 'Voltar à Introdução' : 'Voltar'}
             </NavigationButton>
 
-            <NavigationButton onClick={handleNext} disabled={!isCurrentQuestionAnswered()}>
+            <NavigationButton onClick={handleNext} disabled={!isQuestionAnswered(currentQuestionIndex)}>
               Próximo
             </NavigationButton>
 
