@@ -12,7 +12,6 @@
     "send-emails": "npx tsx src/tasks/sendEmails.ts",
     "validate-db": "npx tsx src/tasks/validateDatabase.ts",
     "verify-db": "npx tsx src/tasks/verifyDataConsistency.ts",
-    "start": "node dist/server.js",
     "dev": "tsx src/server.ts",
     "next": "next dev",
     "validate": "npx tsx src/tasks/validate.ts",
@@ -24,7 +23,8 @@
     "verify-db": "Este comando verifica a consistência dos dados entre as questões e suas escolhas",
     "validate-db": "Este comando valida os dados inseridos no banco de dados",
     "validate-answers": "Este comando valida as respostas dos usuários",
-    "send-emails": "Este comando envia emails para os usuários"
+    "send-emails": "Este comando envia emails para os usuários",
+    "clear-db": "Este comando limpa o banco de dados"
   },
   "dependencies": {
     "@types/react": "^18.3.12",

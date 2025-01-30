@@ -9,7 +9,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   await dbConnect();
 
   const authHeader = req.headers.authorization;
-  const token = authHeader?.split(' ')[1]; // Extrai o token do header "Authorization"
+  const token = authHeader?.split(' ')[1];
 
   if (!token) {
     return res.status(401).json({ message: 'Token ausente' });
@@ -25,14 +25,16 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       return res.status(400).json({ message: 'ID de questionário inválido.' });
     }
 
-    // Verificar se o questionário existe no banco de dados
+    // Verifica se o questionário existe no banco
     const questionnaire = await Questionnaire.findById(questionnaireId);
     if (!questionnaire) {
       return res.status(404).json({ message: 'Questionário não encontrado.' });
     }
 
-    if (questionnaire.completed) {
-      return res.status(400).json({ message: 'Questionário já foi respondido.' });
+    // 🔹 Verifica se o usuário já respondeu ao questionário
+    const existingAnswers = await Answer.findOne({ userId: email, questionnaireId });
+    if (existingAnswers) {
+      return res.status(400).json({ message: 'Você já respondeu a este questionário.' });
     }
 
     if (req.method === 'POST') {
@@ -42,24 +44,19 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         return res.status(400).json({ message: 'Respostas inválidas. O formato esperado é um objeto com questionId e resposta.' });
       }
 
-      // Transformar respostas para o formato esperado
+      // 🔹 Formata as respostas corretamente antes de salvar
       const formattedAnswers = Object.entries(answers).map(([questionId, answer]) => ({
         userId: email,
-        questionId,
+        questionId: new mongoose.Types.ObjectId(questionId),
         answer,
-        questionnaireId,
+        questionnaireId: new mongoose.Types.ObjectId(questionnaireId), // Garante que o questionnaireId está salvo
+        createdAt: new Date(),
       }));
 
-      formattedAnswers.forEach((answer) => {
-        if (!mongoose.Types.ObjectId.isValid(answer.questionId)) {
-          throw new Error(`O ID da pergunta ${answer.questionId} não é válido.`);
-        }
-      });
-
-      // Salvar respostas no banco de dados
+      // 🔹 Salva as respostas no banco de dados
       await Answer.insertMany(formattedAnswers);
 
-      // Atualizar o campo `completed` do questionário para `true`
+      // 🔹 Marca o questionário como "completed"
       await Questionnaire.findByIdAndUpdate(questionnaireId, { completed: true });
 
       return res.status(201).json({ message: 'Respostas salvas com sucesso!' });
@@ -69,10 +66,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     res.status(405).json({ message: `Método ${req.method} não permitido` });
   } catch (error) {
     console.error('Erro ao salvar respostas:', error);
-    if (error instanceof Error) {
-      if (error.name === 'TokenExpiredError') {
-        return res.status(401).json({ message: 'Token expirado' });
-      }
+    if (error instanceof Error && error.name === 'TokenExpiredError') {
+      return res.status(401).json({ message: 'Token expirado' });
     }
     res.status(500).json({ message: 'Erro ao salvar respostas', details: error instanceof Error ? error.message : 'Erro desconhecido' });
   }
