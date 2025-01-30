@@ -122,3 +122,35 @@ export const Note = styled.p`
   margin-bottom: 20px;
   font-style: italic;
 `;
+
+export const ContentWrapper = styled.div`
+  display: flex;
+  height: 100vh;
+`;
+
+export const SidebarContainer = styled.div`
+  width: 80px;
+  background: #f0f0f0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px 0;
+`;
+
+export const SidebarItem = styled.button<{ isActive: boolean; isAnswered: boolean }>`
+  width: 50px;
+  height: 50px;
+  margin: 5px;
+  border-radius: 50%;
+  border: 2px solid ${({ isActive }) => (isActive ? '#0070f3' : '#ccc')};
+  background-color: ${({ isAnswered }) => (isAnswered ? '#0070f3' : '#fff')};
+  color: ${({ isAnswered }) => (isAnswered ? '#fff' : '#000')};
+  font-size: 18px;
+  font-weight: bold;
+  cursor: ${({ isAnswered }) => (isAnswered ? 'pointer' : 'default')};
+  transition: background 0.3s, border 0.3s;
+
+  &:hover {
+    background-color: ${({ isAnswered }) => (isAnswered ? '#005bb5' : '#fff')};
+  }
+`;

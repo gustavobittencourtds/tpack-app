@@ -17,7 +17,7 @@ import { Question } from '../types';
 const Survey: React.FC = () => {
   const [questions, setQuestions] = useState<Question[]>([]);
   const [intro, setIntro] = useState<Question | null>(null);
-  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(-1); // -1 para exibir a introdução primeiro
+  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(-1);
   const [answers, setAnswers] = useState<{ [questionId: string]: string | string[] }>({});
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
@@ -45,10 +45,6 @@ const Survey: React.FC = () => {
 
         setIntro(introQuestion);
         setQuestions(validQuestions);
-
-        if (validQuestions.length !== data.length) {
-          console.warn('Algumas perguntas foram ignoradas por estarem incompletas.');
-        }
       } catch (err) {
         console.error('Erro ao buscar questões:', err);
         setError('Erro ao buscar o questionário. Tente novamente mais tarde.');
@@ -58,16 +54,31 @@ const Survey: React.FC = () => {
     if (token) fetchQuestions();
   }, [token]);
 
-
   if (error) return <SurveyContainer>{error}</SurveyContainer>;
 
   const handleAnswerChange = (value: string | string[]) => {
-    const questionId = questions[currentQuestionIndex]._id;
-    setAnswers((prev) => ({ ...prev, [questionId]: value }));
+    const questionId = questions[currentQuestionIndex]?._id;
+    if (questionId) {
+      setAnswers((prev) => ({ ...prev, [questionId]: value }));
+    }
   };
 
-  const handleNext = () => setCurrentQuestionIndex((prev) => prev + 1);
-  const handleBack = () => setCurrentQuestionIndex((prev) => (prev === 0 ? -1 : prev - 1));
+  // Verifica se a questão atual foi respondida
+  const isCurrentQuestionAnswered = () => {
+    const questionId = questions[currentQuestionIndex]?._id;
+    return questionId && answers[questionId] && answers[questionId].length > 0;
+  };
+
+  const handleNext = () => {
+    if (isCurrentQuestionAnswered()) {
+      setCurrentQuestionIndex((prev) => prev + 1);
+    }
+  };
+
+  const handleBack = () => {
+    setCurrentQuestionIndex((prev) => (prev === 0 ? -1 : prev - 1));
+  };
+
   const handleSubmit = async () => {
     try {
       const response = await fetch('/api/answers', {
@@ -92,92 +103,129 @@ const Survey: React.FC = () => {
       alert('Questionário finalizado com sucesso!');
     } catch (error) {
       console.error('Erro ao enviar respostas:', error);
-      if (error instanceof Error) {
-        console.error('Error message:', error.message);
-      }
     }
   };
 
-  const currentQuestion = questions[currentQuestionIndex];
+  const currentQuestion = questions[currentQuestionIndex] || null;
   const progress = currentQuestionIndex >= 0 ? ((currentQuestionIndex + 1) / questions.length) * 100 : 0;
 
-  // Tela de introdução
-  if (currentQuestionIndex === -1 && intro) {
-    return (
-      <SurveyContainer>
-        <IntroContainer>
-          <h2>Bem-vindo ao Questionário</h2>
-          <p dangerouslySetInnerHTML={{ __html: intro.text }} />
-          {intro.note && <Note>{intro.note}</Note>}
-        </IntroContainer>
-        <NavigationButton onClick={() => setCurrentQuestionIndex(0)}>Começar</NavigationButton>
-      </SurveyContainer>
-    );
-  }
+  const handleQuestionSelect = (index: number) => {
+    if (answers[questions[index]._id] || index === currentQuestionIndex + 1) {
+      setCurrentQuestionIndex(index);
+    }
+  };
 
   return (
     <SurveyContainer>
-      <ProgressContainer>
-        <ProgressBar progress={progress} />
-        <p>{`Progresso: ${currentQuestionIndex + 1}/${questions.length}`}</p>
-      </ProgressContainer>
-      {currentQuestion && (
-        <QuestionContainer>
-          <QuestionText>{currentQuestion.text}</QuestionText>
-          {currentQuestion.note && <Note>{currentQuestion.note}</Note>}
-          {currentQuestion.type === 'multiple_choice' && currentQuestion.choices && currentQuestion.choices.length > 0 && (
-            <div>
-              {currentQuestion.choices.map((choice) => (
-                <ChoiceLabel key={choice._id}>
-                  <input
-                    type="checkbox"
-                    value={choice._id}
-                    checked={(answers[currentQuestion._id] as string[])?.includes(choice._id)}
-                    onChange={(e) => {
-                      const value = e.target.checked
-                        ? [...((answers[currentQuestion._id] as string[]) || []), choice._id]
-                        : (answers[currentQuestion._id] as string[]).filter((id) => id !== choice._id);
-                      handleAnswerChange(value);
-                    }}
-                  />
-                  {choice.text}
-                </ChoiceLabel>
-              ))}
-            </div>
+      <div style={{ display: 'flex' }}>
+        {/* Barra lateral de navegação */}
+        <div style={{ width: '250px', padding: '10px', borderRight: '1px solid #ddd' }}>
+          <h4>Navegação</h4>
+          <ul style={{ listStyle: 'none', padding: 0 }}>
+            {questions.map((q, index) => (
+              <li key={q._id} style={{ marginBottom: '5px' }}>
+                <button
+                  onClick={() => handleQuestionSelect(index)}
+                  disabled={!answers[q._id] && index !== currentQuestionIndex + 1}
+                  style={{
+                    width: '100%',
+                    padding: '8px',
+                    background: index === currentQuestionIndex ? '#0070f3' : '#f0f0f0',
+                    color: index === currentQuestionIndex ? '#fff' : '#000',
+                    border: 'none',
+                    borderRadius: '5px',
+                    cursor: answers[q._id] || index === currentQuestionIndex + 1 ? 'pointer' : 'not-allowed',
+                  }}
+                >
+                  Pergunta {index + 1}
+                </button>
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        {/* Área do questionário */}
+        <div style={{ flex: 1, padding: '20px' }}>
+          <ProgressContainer>
+            <ProgressBar progress={progress} />
+            <p>{`Progresso: ${currentQuestionIndex + 1}/${questions.length}`}</p>
+          </ProgressContainer>
+
+          {/* Exibir introdução antes do questionário começar */}
+          {currentQuestionIndex === -1 && intro && (
+            <IntroContainer>
+              <h2>Bem-vindo ao Questionário</h2>
+              <p dangerouslySetInnerHTML={{ __html: intro.text }} />
+              {intro.note && <Note>{intro.note}</Note>}
+              <NavigationButton onClick={() => setCurrentQuestionIndex(0)}>Começar</NavigationButton>
+            </IntroContainer>
           )}
-          {['text', 'number'].includes(currentQuestion.type) && (
-            <input
-              type={currentQuestion.type}
-              value={answers[currentQuestion._id] || ''}
-              onChange={(e) => handleAnswerChange(e.target.value)}
-            />
+
+          {/* Exibir a pergunta atual e as opções de resposta */}
+          {currentQuestion && (
+            <QuestionContainer>
+              <QuestionText>{currentQuestion.text}</QuestionText>
+              {currentQuestion.note && <Note>{currentQuestion.note}</Note>}
+
+              {/* Perguntas de múltipla escolha */}
+              {currentQuestion.type === 'multiple_choice' && currentQuestion.choices && (
+                <div>
+                  {currentQuestion.choices.map((choice) => (
+                    <ChoiceLabel key={choice._id}>
+                      <input
+                        type="checkbox"
+                        value={choice._id}
+                        checked={(answers[currentQuestion._id] as string[])?.includes(choice._id)}
+                        onChange={(e) => {
+                          const value = e.target.checked
+                            ? [...((answers[currentQuestion._id] as string[]) || []), choice._id]
+                            : (answers[currentQuestion._id] as string[]).filter((id) => id !== choice._id);
+                          handleAnswerChange(value);
+                        }}
+                      />
+                      {choice.text}
+                    </ChoiceLabel>
+                  ))}
+                </div>
+              )}
+
+              {/* Perguntas de texto e número */}
+              {['text', 'number'].includes(currentQuestion.type) && (
+                <input
+                  type={currentQuestion.type}
+                  value={answers[currentQuestion._id] || ''}
+                  onChange={(e) => handleAnswerChange(e.target.value)}
+                />
+              )}
+
+              {/* Perguntas de escala */}
+              {currentQuestion.type === 'scale' && (
+                <input
+                  type="range"
+                  min="1"
+                  max="5"
+                  value={answers[currentQuestion._id] || '3'}
+                  onChange={(e) => handleAnswerChange(e.target.value)}
+                />
+              )}
+            </QuestionContainer>
           )}
-          {currentQuestion.type === 'scale' && (
-            <input
-              type="range"
-              min="1"
-              max="5"
-              value={answers[currentQuestion._id] || '3'}
-              onChange={(e) => handleAnswerChange(e.target.value)}
-            />
-          )}
-        </QuestionContainer>
-      )}
-      <div>
-        <NavigationButton onClick={handleBack}>
-          {currentQuestionIndex === 0 ? 'Voltar à Introdução' : 'Voltar'}
-        </NavigationButton>
-        {currentQuestionIndex < questions.length - 1 && (
-          <NavigationButton
-            onClick={handleNext}
-            disabled={!answers[currentQuestion._id] || answers[currentQuestion._id].length === 0}
-          >
-            Próximo
-          </NavigationButton>
-        )}
-        {currentQuestionIndex === questions.length - 1 && (
-          <SubmitButton onClick={handleSubmit}>Enviar Respostas</SubmitButton>
-        )}
+
+          {/* Botões de navegação */}
+          <div>
+            <NavigationButton onClick={handleBack} disabled={currentQuestionIndex === -1}>
+              {currentQuestionIndex === 0 ? 'Voltar à Introdução' : 'Voltar'}
+            </NavigationButton>
+
+            <NavigationButton onClick={handleNext} disabled={!isCurrentQuestionAnswered()}>
+              Próximo
+            </NavigationButton>
+
+            {currentQuestionIndex === questions.length - 1 && (
+              <SubmitButton onClick={handleSubmit}>Enviar Respostas</SubmitButton>
+            )}
+          </div>
+        </div>
       </div>
     </SurveyContainer>
   );
