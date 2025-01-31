@@ -6,25 +6,24 @@
   "license": "MIT",
   "scripts": {
     "build": "tsc",
+    "front": "next dev",
+    "back": "tsx src/server.ts",
     "clear-db": "npx tsx src/tasks/clearDatabase.ts",
+    "send-emails": "npx tsx src/tasks/sendEmails.ts",
     "populate-questions": "npx tsx src/tasks/populateQuestions.ts",
     "populate-users": "npx tsx src/tasks/populateUsers.ts",
-    "send-emails": "npx tsx src/tasks/sendEmails.ts",
-    "validate-db": "npx tsx src/tasks/validateDatabase.ts",
-    "verify-db": "npx tsx src/tasks/verifyDataConsistency.ts",
-    "dev": "tsx src/server.ts",
-    "next": "next dev",
-    "validate": "npx tsx src/tasks/validate.ts",
+    "validate-questions": "npx tsx src/tasks/validateQuestions.ts",
     "validate-answers": "npx tsx src/tasks/fetchUserAnswers.ts"
   },
   "_comments": {
-    "next": "Este comando inicia o frontend",
-    "dev": "Este comando inicia o backend",
-    "verify-db": "Este comando verifica a consistência dos dados entre as questões e suas escolhas",
-    "validate-db": "Este comando valida os dados inseridos no banco de dados",
-    "validate-answers": "Este comando valida as respostas dos usuários",
+    "front": "Este comando inicia o frontend",
+    "back": "Este comando inicia o backend",
+    "clear-db": "Este comando limpa o banco de dados",
     "send-emails": "Este comando envia emails para os usuários",
-    "clear-db": "Este comando limpa o banco de dados"
+    "populate-questions": "Este comando popula o banco de dados com questões",
+    "populate-users": "Este comando popula o banco de dados com usuários",
+    "validate-questions": "Este comando valida o questionário, com suas sessões, questões e alternativas",
+    "validate-answers": "Este comando valida as respostas dos usuários"
   },
   "dependencies": {
     "@types/react": "^18.3.12",

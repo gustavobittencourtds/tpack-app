@@ -2,7 +2,6 @@ import express from 'express';
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 import emailRoutes from './routes/emailRoutes.js';
-import testEmailRoute from './routes/testEmailRoute.js';
 
 dotenv.config();
 
@@ -25,8 +24,5 @@ async function connectDB() {
 connectDB(); // Estabelece a conexão ao iniciar o servidor
 
 app.use('/api/emails', emailRoutes);
-
-
-app.use('/api/test', testEmailRoute);
 
 export default app;

@@ -17,7 +17,15 @@ const cleanDatabase = async () => {
   console.log('Connected to MongoDB');
 
   try {
-    const collections = ['sessions', 'questions', 'choices', 'professors'];
+    const collections = [
+      'sessions',
+      'questions',
+      'choices',
+      'professors',
+      'questionnaires',
+      'answers'
+    ];
+
     for (const collection of collections) {
       const result = await mongoose.connection.db.collection(collection).deleteMany({});
       console.log(`${result.deletedCount} registros removidos de ${collection}.`);
