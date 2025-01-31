@@ -7,6 +7,8 @@ import { sendEmail } from '../utils/emailUtils';
 import dbConnect from '../utils/dbConnect';
 import Questionnaire from '../models/Questionnaire';
 import Question from '../models/Question';
+import Professor from '../models/Professor'; // 🔹 Importa o modelo Professor
+import mongoose from 'mongoose';
 
 dotenv.config();
 
@@ -21,6 +23,16 @@ async function processEmailsFromCSV(filePath: string) {
     .on('end', async () => {
       for (const email of results) {
         try {
+          // 🔹 Buscar o _id do professor pelo e-mail
+          const professor = await Professor.findOne({ email }).lean();
+          if (!professor) {
+            console.warn(`⚠ Professor com e-mail ${email} não encontrado. Pulando...`);
+            continue;
+          }
+
+          // 🔹 Converte userId para ObjectId corretamente
+          const userId = new mongoose.Types.ObjectId(professor._id);
+
           // Criar um novo questionário
           const questions = await Question.find().select('_id'); // Seleciona os IDs das perguntas
           const questionIds = questions.map((q) => q._id);
@@ -28,7 +40,7 @@ async function processEmailsFromCSV(filePath: string) {
           const newQuestionnaire = await Questionnaire.create({
             title: 'Avaliação TPACK',
             description: 'Questionário para avaliar o uso de tecnologia em práticas pedagógicas.',
-            userId: email,
+            userId, // ✅ Agora userId está correto
             questions: questionIds,
             completed: false,
           });
@@ -38,8 +50,8 @@ async function processEmailsFromCSV(filePath: string) {
           // Gerar o token com `questionnaireId`
           const token = jwt.sign(
             {
-              email,
-              questionnaireId, // Inclui o questionnaireId no token
+              userId: userId.toString(), // ✅ Passa o ObjectId como string no token
+              questionnaireId,
             },
             process.env.JWT_SECRET as string,
             { expiresIn: '48h' }
@@ -49,16 +61,16 @@ async function processEmailsFromCSV(filePath: string) {
 
           // Envia o e-mail com o link
           await sendEmail(email, link);
-          console.log(`E-mail enviado para ${email} com link: ${link}`);
+          console.log(`✅ E-mail enviado para ${email} com link: ${link}`);
         } catch (error) {
-          console.error(`Erro ao criar questionário ou enviar e-mail para ${email}:`, error);
+          console.error(`❌ Erro ao criar questionário ou enviar e-mail para ${email}:`, error);
         }
       }
     })
-    .on('error', (error) => console.error('Erro ao processar o arquivo CSV:', error));
+    .on('error', (error) => console.error('❌ Erro ao processar o arquivo CSV:', error));
 }
 
-// Executa o processamento
+// 🔹 Executa o processamento
 (async () => {
   const filePath = 'data/emails.csv';
   await processEmailsFromCSV(filePath);

@@ -3,6 +3,7 @@ import dbConnect from '../../utils/dbConnect';
 import jwt from 'jsonwebtoken';
 import Answer from '../../models/Answer';
 import Questionnaire from '../../models/Questionnaire';
+import Professor from '../../models/Professor'; // 🔹 Importa o modelo de Professor
 import mongoose from 'mongoose';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
@@ -16,23 +17,30 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
 
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET as string) as { email: string; questionnaireId: string };
+    // 🔹 Agora o token contém userId como ObjectId
+    const decoded = jwt.verify(token, process.env.JWT_SECRET as string) as { userId: string; questionnaireId: string };
     console.log('Token decodificado com sucesso:', decoded);
 
-    const { email, questionnaireId } = decoded;
+    const { userId, questionnaireId } = decoded;
 
-    if (!mongoose.Types.ObjectId.isValid(questionnaireId)) {
-      return res.status(400).json({ message: 'ID de questionário inválido.' });
+    if (!mongoose.Types.ObjectId.isValid(userId) || !mongoose.Types.ObjectId.isValid(questionnaireId)) {
+      return res.status(400).json({ message: 'ID inválido para userId ou questionnaireId.' });
     }
 
-    // Verifica se o questionário existe no banco
+    // 🔹 Buscar professor no banco para garantir que userId é válido
+    const professor = await Professor.findById(userId);
+    if (!professor) {
+      return res.status(404).json({ message: 'Professor não encontrado.' });
+    }
+
+    // 🔹 Verifica se o questionário existe
     const questionnaire = await Questionnaire.findById(questionnaireId);
     if (!questionnaire) {
       return res.status(404).json({ message: 'Questionário não encontrado.' });
     }
 
     // 🔹 Verifica se o usuário já respondeu ao questionário
-    const existingAnswers = await Answer.findOne({ userId: email, questionnaireId });
+    const existingAnswers = await Answer.findOne({ userId, questionnaireId });
     if (existingAnswers) {
       return res.status(400).json({ message: 'Você já respondeu a este questionário.' });
     }
@@ -46,7 +54,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
       // 🔹 Formata as respostas corretamente antes de salvar
       const formattedAnswers = Object.entries(answers).map(([questionId, answer]) => ({
-        userId: email,
+        userId: new mongoose.Types.ObjectId(userId), // ✅ Agora salva corretamente o ObjectId do professor
         questionId: new mongoose.Types.ObjectId(questionId),
         answer,
         questionnaireId: new mongoose.Types.ObjectId(questionnaireId), // Garante que o questionnaireId está salvo
