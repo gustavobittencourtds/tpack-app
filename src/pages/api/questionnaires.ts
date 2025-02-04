@@ -1,29 +1,31 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import dbConnect from '../../utils/dbConnect';
-import jwt from 'jsonwebtoken';
+import mongoose from 'mongoose';
 import Questionnaire from '../../models/Questionnaire';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   await dbConnect();
 
-  const authHeader = req.headers.authorization;
-  const token = authHeader?.split(' ')[1];
+  if (req.method === 'GET') {
+    try {
+      const { userId } = req.query;
 
-  if (!token) {
-    return res.status(401).json({ message: 'Token ausente' });
-  }
+      if (!userId || !mongoose.Types.ObjectId.isValid(userId as string)) {
+        return res.status(400).json({ message: 'userId inválido' });
+      }
 
-  try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET as string);
+      // 🔹 Buscar questionários do professor SEM autenticação por token
+      const questionnaires = await Questionnaire.find({ userId: new mongoose.Types.ObjectId(userId as string) })
+        .populate('questions')
+        .lean();
 
-    if (req.method === 'GET') {
-      const questionnaires = await Questionnaire.find({ userId: (decoded as jwt.JwtPayload).email }).populate('questions').lean();
       return res.status(200).json({ message: 'Questionários encontrados', data: questionnaires });
+    } catch (error) {
+      console.error('Erro ao buscar questionários:', error);
+      return res.status(500).json({ message: 'Erro ao buscar questionários', error });
     }
-
-    res.setHeader('Allow', ['GET']);
-    res.status(405).json({ message: `Método ${req.method} não permitido` });
-  } catch (error) {
-    res.status(500).json({ message: 'Erro ao buscar questionários', error });
   }
+
+  res.setHeader('Allow', ['GET']);
+  res.status(405).json({ message: `Método ${req.method} não permitido` });
 }
