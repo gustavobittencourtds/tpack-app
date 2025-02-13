@@ -3,7 +3,7 @@ import dbConnect from '../../utils/dbConnect';
 import jwt from 'jsonwebtoken';
 import Answer from '../../models/Answer';
 import Questionnaire from '../../models/Questionnaire';
-import Professor from '../../models/Professor'; // 🔹 Importa o modelo de Professor
+import Professor from '../../models/Professor';
 import mongoose from 'mongoose';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {

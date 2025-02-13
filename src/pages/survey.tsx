@@ -212,6 +212,7 @@ const Survey: React.FC = () => {
                   type="range"
                   min="1"
                   max="5"
+                  step={0.1}
                   value={answers[currentQuestion._id] || '3'}
                   onChange={(e) => handleAnswerChange(e.target.value)}
                 />
