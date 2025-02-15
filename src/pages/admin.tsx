@@ -1,5 +1,15 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
+import {
+  AdminContainer,
+  AdminHeader,
+  AdminSection,
+  AdminSectionTitle,
+  AdminList,
+  AdminListItem,
+  AdminButton,
+  LoadingText,
+} from '../styles/adminStyles';
 
 interface Professor {
   _id: string;
@@ -89,62 +99,64 @@ export default function AdminDashboard() {
   };
 
   return (
-    <div style={{ padding: '20px' }}>
-      <h1>Administração de Questionários</h1>
+    <AdminContainer>
+      <AdminHeader>Administração de Questionários</AdminHeader>
 
       {/* Lista de Professores */}
-      <h2>Professores</h2>
-      <ul>
-        {professors.map(professor => (
-          <li key={professor._id}>
-            <button onClick={() => fetchQuestionnaires(professor._id)}>
-              {professor.email}
-            </button>
-          </li>
-        ))}
-      </ul>
+      <AdminSection>
+        <AdminSectionTitle>Professores</AdminSectionTitle>
+        <AdminList>
+          {professors.map(professor => (
+            <AdminListItem key={professor._id}>
+              <AdminButton onClick={() => fetchQuestionnaires(professor._id)}>
+                {professor.email}
+              </AdminButton>
+            </AdminListItem>
+          ))}
+        </AdminList>
+      </AdminSection>
 
       {/* Lista de Questionários */}
       {selectedProfessor && (
-        <>
-          <h2>Questionários</h2>
-          {loading ? <p>Carregando...</p> : (
-            <ul>
+        <AdminSection>
+          <AdminSectionTitle>Questionários</AdminSectionTitle>
+          {loading ? <LoadingText>Carregando...</LoadingText> : (
+            <AdminList>
               {questionnaires.length > 0 ? (
                 questionnaires.map(q => (
-                  <li key={q._id}>
-                    <button onClick={() => fetchAnswers(q._id)}>
+                  <AdminListItem key={q._id}>
+                    <AdminButton onClick={() => fetchAnswers(q._id)}>
                       {q.title} {q.completed ? '(Respondido)' : '(Não Respondido)'}
-                    </button>
-                  </li>
+                    </AdminButton>
+                  </AdminListItem>
                 ))
               ) : (
-                <p>Nenhum questionário encontrado para este professor.</p>
+                <LoadingText>Nenhum questionário encontrado para este professor.</LoadingText>
               )}
-            </ul>
+            </AdminList>
           )}
-        </>
+        </AdminSection>
       )}
 
       {/* Lista de Respostas */}
       {selectedQuestionnaire && (
-        <>
-          <h2>Respostas</h2>
-          {loading ? <p>Carregando...</p> : (
-            <ul>
+        <AdminSection>
+          <AdminSectionTitle>Respostas</AdminSectionTitle>
+          {loading ? <LoadingText>Carregando...</LoadingText> : (
+            <AdminList>
               {Array.isArray(answers) && answers.length > 0 ? (
                 answers.map((answer, index) => (
-                  <li key={index}>
+                  <AdminListItem key={index}>
                     <strong>{answer.questionText}</strong>: {Array.isArray(answer.answer) ? answer.answer.join(', ') : answer.answer}
-                  </li>
+                  </AdminListItem>
                 ))
               ) : (
-                <p>Nenhuma resposta encontrada para este questionário.</p>
+                <LoadingText>Nenhuma resposta encontrada para este questionário.</LoadingText>
               )}
-            </ul>
+            </AdminList>
           )}
-        </>
+        </AdminSection>
       )}
-    </div>
+    </AdminContainer>
   );
 }
