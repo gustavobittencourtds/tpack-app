@@ -12,7 +12,7 @@ export interface Question {
   _id: string;
   session_id: string;
   text: string;
-  type: 'multiple_choice' | 'scale' | 'number' | 'text' | 'intro';
+  type: 'multiple_choice' | 'single_choice' | 'scale' | 'number' | 'text' | 'intro';
   note?: string;
   order: number;
   choices?: Choice[];

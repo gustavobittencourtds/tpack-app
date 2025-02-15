@@ -1,16 +1,15 @@
-// src/models/Session.ts
 import mongoose, { Document } from 'mongoose';
 
 interface ISession extends Document {
   title: string;
-  description?: string;
   order: number;
+  description?: string;
 }
 
 const sessionSchema = new mongoose.Schema<ISession>({
   title: { type: String, required: true },
+  order: { type: Number, required: true },
   description: { type: String },
-  order: { type: Number, required: true }
 });
 
-export default mongoose.model<ISession>('Session', sessionSchema);
+export default mongoose.models.Session || mongoose.model<ISession>('Session', sessionSchema);

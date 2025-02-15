@@ -24,6 +24,8 @@ export const SurveyContainer = styled.div`
   animation: ${fadeIn} 0.6s ease-out;
   display: flex;
   gap: 2rem;
+  max-height: 100vh;
+  overflow: hidden;
 
   @media (prefers-color-scheme: dark) {
     background: rgba(30, 30, 30, 0.95);
@@ -71,6 +73,22 @@ export const SidebarContainer = styled.div`
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
   border: 1px solid rgba(0, 0, 0, 0.05);
   animation: ${fadeIn} 0.6s ease-out;
+  max-height: calc(100vh - 4rem); // Limitar altura
+  overflow-y: auto; // Adicionar scrollbar
+
+  /* Estilo da scrollbar */
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: #6c5ce7;
+    border-radius: 3px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.1);
+  }
 
   h4 {
     font-size: 1.25rem;
@@ -125,9 +143,9 @@ export const SidebarButton = styled.button<{ isActive: boolean; isAnswered: bool
 `;
 
 export const ProgressContainer = styled.div`
-  position: sticky;
+  /* position: sticky;
   top: 1rem;
-  z-index: 10;
+  z-index: 10; */
   margin-bottom: 2rem;
 
   p {
@@ -217,7 +235,7 @@ export const ChoiceLabel = styled.label<{ isSelected: boolean }>`
 `;
 
 export const InputField = styled.input`
-  width: 100%;
+  width: calc(100% - 1.7rem);
   padding: 0.75rem;
   border: 2px solid rgba(0, 0, 0, 0.1);
   border-radius: 12px;
@@ -255,6 +273,24 @@ export const NavigationButton = styled.button`
   align-items: center;
   gap: 0.5rem;
   box-shadow: 0 4px 6px rgba(108, 92, 231, 0.2);
+
+  &.back-button {
+    background: linear-gradient(135deg, #ff568f, #ff8484);
+  }
+
+  &.start-button {
+    margin-top: 2rem;
+    background: linear-gradient(135deg, #00b894, #00cec9);
+    box-shadow: 0 4px 6px rgba(0, 184, 148, 0.2);
+
+    &:hover {
+      box-shadow: 0 6px 12px rgba(0, 184, 148, 0.3);
+    }
+  }
+
+  &:not(:last-of-type) {
+    margin-right: 1rem;
+  }
 
   &:hover {
     transform: translateY(-2px);
@@ -298,7 +334,7 @@ export const StyledRangeInput = styled.input.attrs({ type: 'range' })`
   border-radius: 4px;
   outline: none;
   -webkit-appearance: none;
-  margin: 1.5rem 0;
+  margin: 2rem 0 1.5rem;
 
   &::-webkit-slider-thumb {
     -webkit-appearance: none;

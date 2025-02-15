@@ -20,42 +20,77 @@ import { Question } from '../types';
 
 const Survey: React.FC = () => {
   const [questions, setQuestions] = useState<Question[]>([]);
+  const [sessions, setSessions] = useState<{ [key: string]: Question[] }>({});
+  const [sessionTitles, setSessionTitles] = useState<{ [key: string]: string }>({});
   const [intro, setIntro] = useState<Question | null>(null);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(-1);
   const [answers, setAnswers] = useState<{ [questionId: string]: string | string[] }>({});
   const [error, setError] = useState<string | null>(null);
+  const [isCompleted, setIsCompleted] = useState(false);
   const router = useRouter();
   const { token } = router.query;
 
   useEffect(() => {
-    const fetchQuestions = async () => {
+    const fetchQuestionsAndSessions = async () => {
       try {
-        const response = await fetch(`/api/questions?token=${token}`);
-        const data = await response.json();
-
-        if (!response.ok) {
-          console.error('Erro na resposta da API:', data);
-          setError(data.message || 'Erro ao buscar o questionário.');
+        // Buscar perguntas
+        const questionsResponse = await fetch(`/api/questions?token=${token}`);
+        if (!questionsResponse.ok) {
+          const errorData = await questionsResponse.json();
+          console.error('Erro na resposta da API:', errorData);
+          setError(errorData.message || 'Erro ao buscar o questionário.');
           return;
         }
+        const questionsData = await questionsResponse.json();
 
-        console.log('Dados recebidos do backend:', data);
-        const introQuestion = data.find((q: any) => q.type === 'intro') || null;
-        const validQuestions = data.filter(
+        // Buscar sessões
+        const sessionsResponse = await fetch('/api/sessions');
+        if (!sessionsResponse.ok) {
+          console.error('Erro ao buscar sessões:', sessionsResponse.statusText);
+          setError('Erro ao buscar as sessões.');
+          return;
+        }
+        const sessionsData = await sessionsResponse.json();
+
+        // Mapear IDs das sessões para seus títulos
+        const titlesMap = sessionsData.reduce((acc: { [key: string]: string }, session: any) => {
+          acc[session._id] = session.title;
+          return acc;
+        }, {});
+
+        // Processar perguntas
+        const introQuestion = questionsData.find((q: any) => q.type === 'intro') || null;
+        const validQuestions = questionsData.filter(
           (q: any) =>
             q.type !== 'intro' &&
             (q.type !== 'multiple_choice' || (q.choices && q.choices.length > 0))
         );
 
+        // Agrupar questões por sessão
+        interface SessionMap {
+          [key: string]: Question[];
+        }
+
+        const groupedSessions: SessionMap = validQuestions.reduce((acc: SessionMap, question: Question) => {
+          const sessionId = question.session_id;
+          if (!acc[sessionId]) {
+            acc[sessionId] = [];
+          }
+          acc[sessionId].push(question);
+          return acc;
+        }, {});
+
         setIntro(introQuestion);
         setQuestions(validQuestions);
+        setSessions(groupedSessions);
+        setSessionTitles(titlesMap);
       } catch (err) {
-        console.error('Erro ao buscar questões:', err);
+        console.error('Erro ao buscar dados:', err);
         setError('Erro ao buscar o questionário. Tente novamente mais tarde.');
       }
     };
 
-    if (token) fetchQuestions();
+    if (token) fetchQuestionsAndSessions();
   }, [token]);
 
   if (error) return <SurveyContainer>{error}</SurveyContainer>;
@@ -69,6 +104,9 @@ const Survey: React.FC = () => {
 
   const isQuestionAnswered = (index: number) => {
     const questionId = questions[index]?._id;
+    if (questions[index].text.includes("comentário")) {
+      return true; // Não é obrigatória
+    }
     return questionId && answers[questionId] && answers[questionId].length > 0;
   };
 
@@ -103,7 +141,15 @@ const Survey: React.FC = () => {
 
       const data = await response.json();
       console.log('Respostas enviadas com sucesso:', data);
-      alert('Questionário finalizado com sucesso!');
+      setIsCompleted(true);
+
+      // Redirecionar após 5 segundos
+      setTimeout(() => {
+        router.push({
+          pathname: '/respostas',
+          query: { token, answers: JSON.stringify(answers) },
+        });
+      }, 5000);
     } catch (error) {
       console.error('Erro ao enviar respostas:', error);
     }
@@ -124,51 +170,62 @@ const Survey: React.FC = () => {
 
   return (
     <SurveyContainer>
-      {/* Barra lateral de navegação */}
       <SidebarContainer>
         <h4>Navegação</h4>
-        <ul>
-          {questions.map((q, index) => (
-            <li key={q._id}>
-              <SidebarButton
-                onClick={() => handleQuestionSelect(index)}
-                disabled={!questions.slice(0, index).every((_, i) => isQuestionAnswered(i))}
-                isActive={index === currentQuestionIndex} // boolean
-                isAnswered={!!isQuestionAnswered(index)} // boolean
-              >
-                Pergunta {index + 1}
-              </SidebarButton>
-            </li>
-          ))}
-        </ul>
+        {Object.entries(sessions).map(([sessionId, sessionQuestions]) => (
+          <div key={sessionId}>
+            <h5 style={{ margin: '1rem 0 0.5rem', color: '#6c5ce7', padding: '0.75rem', backgroundColor: 'rgba(108, 92, 231, 0.1)', borderRadius: '12px' }}>
+              {sessionTitles[sessionId] || `Sessão ${sessionId}`}
+            </h5>
+            <ul>
+              {sessionQuestions.map((q, index) => (
+                <li key={q._id}>
+                  <SidebarButton
+                    onClick={() => handleQuestionSelect(questions.indexOf(q))}
+                    disabled={!questions.slice(0, questions.indexOf(q)).every((_, i) => isQuestionAnswered(i))}
+                    isActive={questions.indexOf(q) === currentQuestionIndex}
+                    isAnswered={!!isQuestionAnswered(questions.indexOf(q))}
+                    title={q.text} // Tooltip com a pergunta completa
+                  >
+                    {q.text.slice(0, 35)}... {/* Trecho da pergunta */}
+                  </SidebarButton>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))}
       </SidebarContainer>
 
-      {/* Área do questionário */}
       <div style={{ flex: 1 }}>
         <ProgressContainer>
           <ProgressBar progress={progress} />
           <p>{`Progresso: ${currentQuestionIndex + 1}/${questions.length}`}</p>
         </ProgressContainer>
 
-        {/* Exibir introdução antes do questionário começar */}
         {currentQuestionIndex === -1 && intro && (
           <IntroContainer>
             <h2>Bem-vindo ao Questionário</h2>
-            <p dangerouslySetInnerHTML={{ __html: intro.text }} />
+            <p dangerouslySetInnerHTML={{ __html: intro.text.replace(/<br \/>/g, '<br />') }} />
             {intro.note && <Note>{intro.note}</Note>}
-            <NavigationButton onClick={() => setCurrentQuestionIndex(0)}>Começar</NavigationButton>
+            <NavigationButton className="start-button" onClick={() => setCurrentQuestionIndex(0)}>
+              Começar
+            </NavigationButton>
           </IntroContainer>
         )}
 
-        {/* Exibir a pergunta atual e as opções de resposta */}
         {currentQuestion && (
           <QuestionContainer>
             <QuestionText>{currentQuestion.text}</QuestionText>
             {currentQuestion.note && <Note>{currentQuestion.note}</Note>}
 
-            {/* Perguntas de múltipla escolha */}
             {currentQuestion.type === 'multiple_choice' && currentQuestion.choices && (
-              <div>
+              <div
+                style={{
+                  display: 'grid',
+                  gridTemplateColumns: currentQuestion.choices.length > 4 ? '1fr 1fr' : '1fr',
+                  gap: '0.75rem',
+                }}
+              >
                 {currentQuestion.choices.map((choice) => (
                   <ChoiceLabel
                     key={choice._id}
@@ -191,42 +248,117 @@ const Survey: React.FC = () => {
               </div>
             )}
 
-            {/* Perguntas de texto e número */}
+            {currentQuestion.type === 'single_choice' && currentQuestion.choices && (
+              <div>
+                {currentQuestion.choices.map((choice) => (
+                  <ChoiceLabel
+                    key={choice._id}
+                    isSelected={answers[currentQuestion._id] === choice.text}
+                  >
+                    <input
+                      type="radio"
+                      name={currentQuestion._id}
+                      value={choice.text}
+                      checked={answers[currentQuestion._id] === choice.text}
+                      onChange={() => handleAnswerChange(choice.text)}
+                    />
+                    {choice.text}
+                  </ChoiceLabel>
+                ))}
+              </div>
+            )}
+
             {['text', 'number'].includes(currentQuestion.type) && (
               <InputField
                 type={currentQuestion.type}
                 value={answers[currentQuestion._id] || ''}
                 onChange={(e) => handleAnswerChange(e.target.value)}
+                style={
+                  currentQuestion.type === 'number' && currentQuestion.text.includes('idade')
+                    ? { width: '100px' }
+                    : currentQuestion.type === 'number' && currentQuestion.text.includes('ano')
+                      ? { width: '120px' }
+                      : {}
+                }
+                min={
+                  currentQuestion.type === 'number' && currentQuestion.text.includes('idade')
+                    ? 18
+                    : currentQuestion.type === 'number' && currentQuestion.text.includes('ano')
+                      ? 1970
+                      : undefined
+                }
+                max={
+                  currentQuestion.type === 'number' && currentQuestion.text.includes('idade')
+                    ? 100
+                    : currentQuestion.type === 'number' && currentQuestion.text.includes('ano')
+                      ? new Date().getFullYear()
+                      : undefined
+                }
               />
             )}
 
-            {/* Perguntas de escala */}
             {currentQuestion.type === 'scale' && (
-              <StyledRangeInput
-                min="1"
-                max="5"
-                step={0.1}
-                value={answers[currentQuestion._id] || '3'}
-                onChange={(e) => handleAnswerChange(e.target.value)}
-              />
+              <div style={{ position: 'relative' }}>
+                <StyledRangeInput
+                  min="1"
+                  max="5"
+                  step={0.1}
+                  value={answers[currentQuestion._id] || '3'}
+                  onChange={(e) => handleAnswerChange(e.target.value)}
+                />
+                <div
+                  style={{
+                    position: 'absolute',
+                    top: '-4px',
+                    left: `calc(${(Number(answers[currentQuestion._id]) || 3) - 1} / 4 * 100% - 10px)`,
+                    backgroundColor: '#6c5ce7',
+                    color: '#fff',
+                    padding: '4px 8px',
+                    borderRadius: '4px',
+                    fontSize: '0.875rem',
+                  }}
+                >
+                  {answers[currentQuestion._id] || '3'}
+                </div>
+              </div>
             )}
           </QuestionContainer>
         )}
 
-        {/* Botões de navegação */}
-        <div>
-          <NavigationButton onClick={handleBack} disabled={currentQuestionIndex === -1}>
-            {currentQuestionIndex === 0 ? 'Voltar à Introdução' : 'Voltar'}
-          </NavigationButton>
+        {isCompleted && (
+          <div
+            style={{
+              textAlign: 'center',
+              marginTop: '2rem',
+              padding: '2rem',
+              backgroundColor: '#f8f9fa',
+              borderRadius: '12px',
+              boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)',
+            }}
+          >
+            <p style={{ fontSize: '1.25rem', color: '#2d3436', marginBottom: '1rem' }}>
+              Questionário enviado com sucesso! Redirecionando...
+            </p>
+          </div>
+        )}
 
-          <NavigationButton onClick={handleNext} disabled={!isQuestionAnswered(currentQuestionIndex)}>
-            Próximo
-          </NavigationButton>
+        {!isCompleted && currentQuestionIndex !== -1 && (
+          <div>
+            <NavigationButton className="back-button" onClick={handleBack} disabled={currentQuestionIndex === -1}>
+              {currentQuestionIndex === 0 ? 'Voltar à Introdução' : 'Voltar'}
+            </NavigationButton>
 
-          {currentQuestionIndex === questions.length - 1 && (
-            <SubmitButton onClick={handleSubmit}>Enviar Respostas</SubmitButton>
-          )}
-        </div>
+            {currentQuestionIndex !== questions.length - 1 && (
+              <NavigationButton onClick={handleNext} disabled={!isQuestionAnswered(currentQuestionIndex)}>
+                Próximo
+              </NavigationButton>
+            )}
+
+            {currentQuestionIndex === questions.length - 1 && (
+              <SubmitButton onClick={handleSubmit}>Enviar Respostas</SubmitButton>
+            )}
+          </div>
+        )}
       </div>
     </SurveyContainer>
   );

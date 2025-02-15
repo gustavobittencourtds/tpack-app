@@ -1,7 +1,7 @@
 [
   {
     "session_id": 1,
-    "text": "Esta pesquisa aborda as práticas pedagógicas e os impactos causados pela pandemia. Ao responder essa pesquisa, você contribui com a identificação de práticas utilizadas neste período e impacto que estas sofreram, identificando o surgimento de novas abordagens e adaptação de outras consolidadas entre professores e estudantes. O tempo de preenchimento é de aproximadamente 8 minutos. Os seus dados de identificação não serão coletados e suas respostas serão confidenciais, permanecerão em sigilo de pesquisa e não serão divulgadas individualmente. O termo de consentimento livre e esclarecido se encontra disponível no link ao lado, ao clicar em prosseguir você aceita os termos de coleta dessa pesquisa. O IFRS e seus pesquisadores agradecem a sua contribuição!",
+    "text": "Esta pesquisa aborda as práticas pedagógicas e os impactos causados pela pandemia.<br /><br />Ao responder essa pesquisa, você contribui com a identificação de práticas utilizadas neste período e impacto que estas sofreram, identificando o surgimento de novas abordagens e adaptação de outras consolidadas entre professores e estudantes.<br /><br />O tempo de preenchimento é de aproximadamente 8 minutos. Os seus dados de identificação não serão coletados e suas respostas serão confidenciais, permanecerão em sigilo de pesquisa e não serão divulgadas individualmente.<br /><br />O termo de consentimento livre e esclarecido se encontra disponível no link ao lado, ao clicar em prosseguir você aceita os termos de coleta dessa pesquisa.<br /><br />O IFRS e seus pesquisadores agradecem a sua contribuição!",
     "type": "intro",
     "order": 1,
     "note": null
@@ -25,7 +25,7 @@
     "text": "Sobre a sua formação, selecione todas as concluídas:",
     "type": "multiple_choice",
     "order": 4,
-    "note": null
+    "note": "Nota: você pode marcar mais de uma alternativa"
   },
   {
     "session_id": 2,
@@ -39,7 +39,7 @@
     "text": "Qual o ano da sua última formação?",
     "type": "number",
     "order": 6,
-    "note": null
+    "note": "O ano deve ser maior ou igual a 1970."
   },
   {
     "session_id": 3,
@@ -53,21 +53,21 @@
     "text": "Posso adaptar meu método de ensino para diferentes estudantes",
     "type": "scale",
     "order": 8,
-    "note": null
+    "note": "1 para discordo totalmente e 5 para concordo totalmente"
   },
   {
     "session_id": 3,
     "text": "Posso usar uma ampla variedade de abordagens de ensino em sala de aula",
     "type": "scale",
     "order": 9,
-    "note": null
+    "note": "1 para discordo totalmente e 5 para concordo totalmente"
   },
   {
     "session_id": 3,
     "text": "Posso avaliar a aprendizagem dos estudantes de várias maneiras",
     "type": "scale",
     "order": 10,
-    "note": null
+    "note": "1 para discordo totalmente e 5 para concordo totalmente"
   },
   {
     "session_id": 4,
@@ -81,21 +81,21 @@
     "text": "Posso empregar uma maneira específica de pensar no meu conteúdo de ensino",
     "type": "scale",
     "order": 12,
-    "note": null
+    "note": "1 para discordo totalmente e 5 para concordo totalmente"
   },
   {
     "session_id": 4,
     "text": "Conheço as teorias e conceitos básicos do meu conteúdo de ensino",
     "type": "scale",
     "order": 13,
-    "note": null
+    "note": "1 para discordo totalmente e 5 para concordo totalmente"
   },
   {
     "session_id": 4,
     "text": "Conheço a história e o desenvolvimento de teorias importantes do meu conteúdo de ensino",
     "type": "scale",
     "order": 14,
-    "note": null
+    "note": "1 para discordo totalmente e 5 para concordo totalmente"
   },
   {
     "session_id": 5,
@@ -109,21 +109,21 @@
     "text": "Frequentemente uso tecnologia",
     "type": "scale",
     "order": 16,
-    "note": null
+    "note": "1 para discordo totalmente e 5 para concordo totalmente"
   },
   {
     "session_id": 5,
     "text": "Conheço muitas tecnologias diferentes",
     "type": "scale",
     "order": 17,
-    "note": null
+    "note": "1 para discordo totalmente e 5 para concordo totalmente"
   },
   {
     "session_id": 5,
     "text": "Tenho habilidades técnicas necessárias para usar tecnologia",
     "type": "scale",
     "order": 18,
-    "note": null
+    "note": "1 para discordo totalmente e 5 para concordo totalmente"
   },
   {
     "session_id": 6,
@@ -137,21 +137,21 @@
     "text": "Eu sei como desenvolver tarefas apropriadas para possibilitar aos estudantes um pensamento complexo do meu conteúdo de ensino",
     "type": "scale",
     "order": 20,
-    "note": null
+    "note": "1 para discordo totalmente e 5 para concordo totalmente"
   },
   {
     "session_id": 6,
     "text": "Eu sei como desenvolver exercícios com os quais os estudantes podem consolidar seus conhecimentos sobre o meu conteúdo de ensino",
     "type": "scale",
     "order": 21,
-    "note": null
+    "note": "1 para discordo totalmente e 5 para concordo totalmente"
   },
   {
     "session_id": 6,
     "text": "Eu sei como avaliar o desempenho dos estudantes no meu conteúdo de ensino",
     "type": "scale",
     "order": 22,
-    "note": null
+    "note": "1 para discordo totalmente e 5 para concordo totalmente"
   },
   {
     "session_id": 7,
@@ -165,21 +165,21 @@
     "text": "Posso escolher tecnologias que aprimoram o aprendizado dos estudantes para uma aula",
     "type": "scale",
     "order": 24,
-    "note": null
+    "note": "1 para discordo totalmente e 5 para concordo totalmente"
   },
   {
     "session_id": 7,
     "text": "Posso adaptar o uso das tecnologias que estou aprendendo a diferentes atividades de ensino",
     "type": "scale",
     "order": 25,
-    "note": null
+    "note": "1 para discordo totalmente e 5 para concordo totalmente"
   },
   {
     "session_id": 7,
     "text": "Estou pensando criticamente sobre como usar tecnologia na minha sala de aula",
     "type": "scale",
     "order": 26,
-    "note": null
+    "note": "1 para discordo totalmente e 5 para concordo totalmente"
   },
   {
     "session_id": 8,
@@ -193,21 +193,21 @@
     "text": "Posso explicar quais tecnologias foram usadas em pesquisas na minha área",
     "type": "scale",
     "order": 28,
-    "note": null
+    "note": "1 para discordo totalmente e 5 para concordo totalmente"
   },
   {
     "session_id": 8,
     "text": "Eu sei quais novas tecnologias estão sendo desenvolvidas atualmente na área do meu assunto",
     "type": "scale",
     "order": 29,
-    "note": null
+    "note": "1 para discordo totalmente e 5 para concordo totalmente"
   },
   {
     "session_id": 8,
     "text": "Eu sei como usar tecnologias para participar de debates científicos na minha área",
     "type": "scale",
     "order": 30,
-    "note": null
+    "note": "1 para discordo totalmente e 5 para concordo totalmente"
   },
   {
     "session_id": 9,
@@ -221,21 +221,21 @@
     "text": "Posso escolher tecnologias que aprimoram o conteúdo de uma aula",
     "type": "scale",
     "order": 32,
-    "note": null
+    "note": "1 para discordo totalmente e 5 para concordo totalmente"
   },
   {
     "session_id": 9,
     "text": "Posso selecionar tecnologias para uso em minha sala de aula que aprimoram o que eu ensino, como ensino e o que os estudantes aprendem",
     "type": "scale",
     "order": 33,
-    "note": null
+    "note": "1 para discordo totalmente e 5 para concordo totalmente"
   },
   {
     "session_id": 9,
     "text": "Posso ensinar lições que combinam adequadamente o meu conteúdo de ensino, tecnologias e abordagens de ensino",
     "type": "scale",
     "order": 34,
-    "note": null
+    "note": "1 para discordo totalmente e 5 para concordo totalmente"
   },
   {
     "session_id": 10,
@@ -249,14 +249,14 @@
     "text": "As Tecnologias Digitais de Informação e Comunicação utilizadas na prática docente, proporcionaram melhorias nos processos pedagógicos",
     "type": "scale",
     "order": 36,
-    "note": null
+    "note": "1 para discordo totalmente e 5 para concordo totalmente"
   },
   {
     "session_id": 10,
     "text": "As Tecnologias Digitais de Informação e Comunicação utilizadas na prática docente, proporcionaram maior engajamento dos estudantes",
     "type": "scale",
     "order": 37,
-    "note": null
+    "note": "1 para discordo totalmente e 5 para concordo totalmente"
   },
   {
     "session_id": 10,
@@ -271,12 +271,12 @@
     "text": "Assinale as opções de ferramentas on-line utilizadas nas práticas pedagógicas durante a pandemia que você pretende continuar aplicando no pós-pandemia",
     "type": "multiple_choice",
     "order": 39,
-    "note": "<span class='font-weight-bold'>Nota:</span> você pode marcar mais de uma alternativa"
+    "note": "Nota: você pode marcar mais de uma alternativa"
   },
   {
     "session_id": 11,
     "text": "Gênero",
-    "type": "text",
+    "type": "single_choice",
     "order": 40,
     "note": null
   },
@@ -285,7 +285,7 @@
     "text": "Idade (em anos)",
     "type": "number",
     "order": 41,
-    "note": null
+    "note": "A idade deve estar entre 18 e 100 anos."
   },
   {
     "session_id": 11,
@@ -299,13 +299,6 @@
     "text": "Se desejar fazer algum comentário sobre a pesquisa ou fornecer alguma informação que julgar pertinente, utilize esse espaço.",
     "type": "text",
     "order": 43,
-    "note": null
-  },
-  {
-    "session_id": 12,
-    "text": "Comentários",
-    "type": "text",
-    "order": 44,
     "note": null
   }
 ]

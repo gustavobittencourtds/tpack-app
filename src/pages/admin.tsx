@@ -9,6 +9,7 @@ import {
   AdminListItem,
   AdminButton,
   LoadingText,
+  RespostaItem,
 } from '../styles/adminStyles';
 
 interface Professor {
@@ -146,9 +147,13 @@ export default function AdminDashboard() {
             <AdminList>
               {Array.isArray(answers) && answers.length > 0 ? (
                 answers.map((answer, index) => (
-                  <AdminListItem key={index}>
-                    <strong>{answer.questionText}</strong>: {Array.isArray(answer.answer) ? answer.answer.join(', ') : answer.answer}
-                  </AdminListItem>
+                  <RespostaItem key={index}>
+                    <h3>{answer.questionText}</h3>
+                    <p>
+                      <strong>Resposta:</strong>{' '}
+                      {Array.isArray(answer.answer) ? answer.answer.join(', ') : answer.answer}
+                    </p>
+                  </RespostaItem>
                 ))
               ) : (
                 <LoadingText>Nenhuma resposta encontrada para este questionário.</LoadingText>

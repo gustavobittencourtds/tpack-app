@@ -61,7 +61,7 @@ async function processEmailsFromCSV(filePath: string) {
 
           // Envia o e-mail com o link
           await sendEmail(email, link);
-          console.log(`✅ E-mail enviado para ${email} com link: ${link}`);
+          console.log(`✅ E-mail enviado para ${email}`);
         } catch (error) {
           console.error(`❌ Erro ao criar questionário ou enviar e-mail para ${email}:`, error);
         }
