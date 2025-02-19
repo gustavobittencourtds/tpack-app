@@ -56,6 +56,13 @@ const Respostas: React.FC = () => {
         Respondido por <strong>{professorEmail}</strong> em <strong>{date}</strong>
       </RespostasSubheader>
 
+      <p style={{ margin: '2rem 0', fontSize: '0.75rem', textAlign: 'center' }}>
+        Caso deseje entrar em contato, envie um e-mail para:{' '}
+        <ContactLink href="mailto:gustavo.bittencourtds@gmail.com">
+          gustavo.bittencourtds@gmail.com
+        </ContactLink>
+      </p>
+
       {loading ? (
         <p>Carregando respostas...</p>
       ) : error ? (
@@ -72,13 +79,6 @@ const Respostas: React.FC = () => {
       ) : (
         <p>Nenhuma resposta encontrada.</p>
       )}
-
-      <p style={{ marginTop: '2rem', fontSize: '0.75rem', textAlign: 'center' }}>
-        Caso deseje entrar em contato, envie um e-mail para:{' '}
-        <ContactLink href="mailto:gustavo.bittencourtds@gmail.com">
-          gustavo.bittencourtds@gmail.com
-        </ContactLink>
-      </p>
     </RespostasContainer>
   );
 };
