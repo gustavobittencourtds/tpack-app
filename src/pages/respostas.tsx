@@ -3,95 +3,77 @@ import { useRouter } from 'next/router';
 import {
   RespostasContainer,
   RespostasHeader,
+  RespostasSubheader,
   RespostasContent,
   RespostaItem,
+  PerguntaHeader,
+  RespostaBody,
   ContactLink,
 } from '../styles/respostasStyle';
 
 const Respostas: React.FC = () => {
   const router = useRouter();
-  const { token, answers } = router.query;
-  const [questions, setQuestions] = useState<any[]>([]);
-  const [choices, setChoices] = useState<{ [key: string]: any[] }>({});
+  const { questionnaireId } = router.query;
+  const [answers, setAnswers] = useState<{ questionId: string; questionText: string; answer: string | string[] }[]>([]);
+  const [questionnaireTitle, setQuestionnaireTitle] = useState<string | null>(null);
+  const [professorEmail, setProfessorEmail] = useState<string | null>(null);
+  const [date, setDate] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  // Buscar perguntas e opções do banco de dados
   useEffect(() => {
-    const fetchQuestionsAndChoices = async () => {
+    if (!questionnaireId) return;
+
+    const fetchAnswers = async () => {
+      setLoading(true);
       try {
-        // Buscar perguntas
-        const questionsResponse = await fetch(`/api/questions?token=${token}`);
-        if (!questionsResponse.ok) {
-          console.error('Erro ao buscar perguntas:', await questionsResponse.json());
-          return;
-        }
-        const questionsData = await questionsResponse.json();
-        setQuestions(questionsData);
+        const response = await fetch(`/api/get-answers?questionnaireId=${questionnaireId}`);
+        const data = await response.json();
 
-        // Buscar opções (choices)
-        const choicesResponse = await fetch('/api/choices');
-        if (!choicesResponse.ok) {
-          console.error('Erro ao buscar opções:', await choicesResponse.json());
-          return;
-        }
-        const choicesData = await choicesResponse.json();
+        if (!response.ok) throw new Error(data.message || 'Erro ao buscar respostas');
 
-        // Mapear opções por questão
-        const choicesMap = choicesData.reduce((acc: { [key: string]: any[] }, choice: any) => {
-          if (!acc[choice.question_id]) {
-            acc[choice.question_id] = [];
-          }
-          acc[choice.question_id].push(choice);
-          return acc;
-        }, {});
-        setChoices(choicesMap);
-      } catch (error) {
-        console.error('Erro ao buscar dados:', error);
+        setAnswers(data.answers || []);
+        setQuestionnaireTitle(data.questionnaireTitle || 'Questionário');
+        setProfessorEmail(data.professorEmail || 'Desconhecido');
+        setDate(data.date ? new Date(data.date).toLocaleDateString('pt-BR') : 'Data não disponível');
+      } catch (err: any) {
+        console.error('Erro ao buscar respostas:', err);
+        setError('Erro ao carregar as respostas.');
+      } finally {
+        setLoading(false);
       }
     };
 
-    if (token) fetchQuestionsAndChoices();
-  }, [token]);
-
-  // Converter as respostas de string para objeto
-  const parsedAnswers = answers ? JSON.parse(answers as string) : {};
-
-  // Função para obter o texto da resposta com base no ID
-  const getAnswerText = (questionId: string, answer: string | string[]) => {
-    if (Array.isArray(answer)) {
-      return answer
-        .map((id) => {
-          const choice = choices[questionId]?.find((c) => c._id === id);
-          return choice ? choice.text : id;
-        })
-        .join(', ');
-    } else {
-      const choice = choices[questionId]?.find((c) => c._id === answer);
-      return choice ? choice.text : answer;
-    }
-  };
+    fetchAnswers();
+  }, [questionnaireId]);
 
   return (
     <RespostasContainer>
-      <RespostasHeader>Respostas Enviadas com Sucesso!</RespostasHeader>
-      <p>Obrigado por participar do questionário.</p>
+      <RespostasHeader>
+        Respostas do Questionário - {questionnaireTitle}
+      </RespostasHeader>
+      <RespostasSubheader>
+        Respondido por <strong>{professorEmail}</strong> em <strong>{date}</strong>
+      </RespostasSubheader>
 
-      <RespostasContent>
-        <h2>Suas Respostas:</h2>
-        {Object.entries(parsedAnswers).map(([questionId, answer]) => {
-          const question = questions.find((q) => q._id === questionId);
-          return (
+      {loading ? (
+        <p>Carregando respostas...</p>
+      ) : error ? (
+        <p style={{ color: 'red' }}>{error}</p>
+      ) : answers.length > 0 ? (
+        <RespostasContent>
+          {answers.map(({ questionId, questionText, answer }) => (
             <RespostaItem key={questionId}>
-              <h3>{question ? question.text : `Pergunta ${questionId}`}</h3>
-              <p>
-                <strong>Resposta:</strong>{' '}
-                {getAnswerText(questionId, answer as string | string[])}
-              </p>
+              <PerguntaHeader>{questionText}</PerguntaHeader>
+              <RespostaBody>{Array.isArray(answer) ? answer.join(', ') : answer}</RespostaBody>
             </RespostaItem>
-          );
-        })}
-      </RespostasContent>
+          ))}
+        </RespostasContent>
+      ) : (
+        <p>Nenhuma resposta encontrada.</p>
+      )}
 
-      <p style={{ marginTop: '2rem' }}>
+      <p style={{ marginTop: '2rem', fontSize: '0.75rem', textAlign: 'center' }}>
         Caso deseje entrar em contato, envie um e-mail para:{' '}
         <ContactLink href="mailto:gustavo.bittencourtds@gmail.com">
           gustavo.bittencourtds@gmail.com

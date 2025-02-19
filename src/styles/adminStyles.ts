@@ -1,133 +1,91 @@
-import styled, { keyframes } from 'styled-components';
-
-const fadeIn = keyframes`
-  from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
-`;
+import styled from 'styled-components';
 
 export const AdminContainer = styled.div`
-  font-family: 'Inter', sans-serif;
-  max-width: 1200px;
-  margin: 2rem auto;
-  padding: 2rem;
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(10px);
-  border-radius: 20px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  animation: ${fadeIn} 0.6s ease-out;
-
-  @media (prefers-color-scheme: dark) {
-    background: rgba(30, 30, 30, 0.95);
-    border-color: rgba(255, 255, 255, 0.1);
-  }
+  background-color: #ffffff;
+  padding: 1.5rem;
+  max-width: 1100px;
+  margin: auto;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+  font-family: 'Poppins', sans-serif;
 `;
 
 export const AdminHeader = styled.h1`
-  font-size: 2rem;
-  color: #2d3436;
-  margin-bottom: 1.5rem;
-  font-weight: 700;
-  letter-spacing: -0.5px;
-
-  @media (prefers-color-scheme: dark) {
-    color: #ffffff;
-  }
-`;
-
-export const AdminSection = styled.section`
-  margin-bottom: 2rem;
-`;
-
-export const AdminSectionTitle = styled.h2`
   font-size: 1.5rem;
-  color: #2d3436;
+  font-weight: 500;
+  color: #333;
+  text-align: center;
   margin-bottom: 1rem;
-  font-weight: 600;
+`;
 
-  @media (prefers-color-scheme: dark) {
-    color: #ffffff;
+export const TableContainer = styled.div`
+  overflow-x: auto;
+  border-radius: 6px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+`;
+
+export const Table = styled.table`
+  width: 100%;
+  border-collapse: collapse;
+  background: #fcfcfc;
+`;
+
+export const TableRow = styled.tr`
+  &:nth-child(even) {
+    background: #e8e8e8;
   }
 `;
 
-export const AdminList = styled.ul`
-  list-style: none;
-  padding: 0;
+export const TableHeader = styled.th`
+  background: #6c5ce7;
+  color: #FFF;
+  padding: 0.8rem;
+  text-align: left;
+  font-size: 0.875rem;
+  font-weight: 400;
+
+  &:first-child {
+    border-right: solid 1px #FFF;
+  }
 `;
 
-export const AdminListItem = styled.li`
-  margin-bottom: 0.75rem;
+export const TableCell = styled.td`
+  padding: 0.8rem;
+  font-size: 0.75rem;
+`;
+
+export const ProfessorCell = styled(TableCell)`
+  font-weight: 500;
+  color: #2d3436;
+`;
+
+export const QuestionCell = styled(TableCell)`
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
 `;
 
 export const AdminButton = styled.button`
-  padding: 0.75rem 1.5rem;
-  border: none;
-  border-radius: 12px;
-  font-weight: 500;
-  background: linear-gradient(135deg, #6c5ce7, #8e7cf3);
+  background: #6c5ce7;
   color: white;
+  padding: 0.4rem 0.8rem;
+  border: none;
+  border-radius: 5px;
   cursor: pointer;
-  transition: all 0.3s ease;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  box-shadow: 0 4px 6px rgba(108, 92, 231, 0.2);
+  font-size: 0.75rem;
+  font-weight: 400;
+  transition: background 0.2s, box-shadow 0.2s;
 
   &:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 12px rgba(108, 92, 231, 0.3);
-  }
-
-  &:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
-    background: #e0e0e0;
-    color: #666;
-    box-shadow: none;
+    background: #5948d6;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   }
 `;
 
 export const LoadingText = styled.p`
-  font-size: 1rem;
-  color: #636e72;
+  font-style: italic;
   text-align: center;
-
-  @media (prefers-color-scheme: dark) {
-    color: #b2bec3;
-  }
-`;
-
-export const RespostaItem = styled.div`
-  margin-bottom: 1.5rem;
-  padding: 1rem;
-  background: rgba(255, 255, 255, 0.9);
-  border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-  border: 1px solid rgba(0, 0, 0, 0.05);
-
-  h3 {
-    font-size: 1.25rem;
-    color: #2d3436;
-    margin-bottom: 0.75rem;
-    font-weight: 600;
-  }
-
-  p {
-    font-size: 1rem;
-    color: #636e72;
-    line-height: 1.6;
-  }
-
-  @media (prefers-color-scheme: dark) {
-    background: rgba(40, 40, 40, 0.9);
-    border-color: rgba(255, 255, 255, 0.1);
-
-    h3 {
-      color: #ffffff;
-    }
-
-    p {
-      color: #b2bec3;
-    }
-  }
+  color: #222;
+  font-size: 0.875rem;
+  margin-top: 2rem;
 `;

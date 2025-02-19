@@ -1,86 +1,94 @@
 import styled, { keyframes } from 'styled-components';
 
 const fadeIn = keyframes`
-  from { opacity: 0; transform: translateY(20px); }
+  from { opacity: 0; transform: translateY(8px); }
   to { opacity: 1; transform: translateY(0); }
 `;
 
 export const RespostasContainer = styled.div`
   font-family: 'Inter', sans-serif;
-  max-width: 1200px;
+  max-width: 1000px;
   margin: 2rem auto;
-  padding: 2rem;
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(10px);
-  border-radius: 20px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  animation: ${fadeIn} 0.6s ease-out;
+  padding: 1.5rem;
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+  animation: ${fadeIn} 0.4s ease-out;
 
   @media (prefers-color-scheme: dark) {
-    background: rgba(30, 30, 30, 0.95);
-    border-color: rgba(255, 255, 255, 0.1);
+    background: #1e1e1e;
+    color: #f1f1f1;
   }
 `;
 
 export const RespostasHeader = styled.h1`
-  font-size: 2rem;
-  color: #2d3436;
-  margin-bottom: 1.5rem;
-  font-weight: 700;
-  letter-spacing: -0.5px;
+  font-size: 1.5rem;
+  font-weight: 500;
+  color: #333;
+  text-align: center;
+  margin-bottom: 0.5rem;
 
   @media (prefers-color-scheme: dark) {
-    color: #ffffff;
+    color: #f1f1f1;
+  }
+`;
+
+export const RespostasSubheader = styled.p`
+  font-size: 0.9rem;
+  color: #636e72;
+  text-align: center;
+  margin-bottom: 1.5rem;
+
+  strong {
+    color: #6c5ce7;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    color: #b2bec3;
   }
 `;
 
 export const RespostasContent = styled.div`
-  margin-top: 2rem;
+  margin-top: 1rem;
   text-align: left;
   max-width: 800px;
   margin: 0 auto;
 `;
 
 export const RespostaItem = styled.div`
-  margin-bottom: 1.5rem;
-  padding: 1rem;
-  background: rgba(255, 255, 255, 0.9);
-  border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  margin-bottom: 1rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
   border: 1px solid rgba(0, 0, 0, 0.05);
+  overflow: hidden;
+`;
 
-  h3 {
-    font-size: 1.25rem;
-    color: #2d3436;
-    margin-bottom: 0.75rem;
-    font-weight: 600;
-  }
+export const PerguntaHeader = styled.div`
+  background: #6c5ce7;
+  color: white;
+  padding: 0.5rem 1rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+`;
 
-  p {
-    font-size: 1rem;
-    color: #636e72;
-    line-height: 1.6;
-  }
+export const RespostaBody = styled.div`
+  padding: 0.5rem 1rem;
+  background: #fafafa;
+  font-size: 0.75rem;
+  color: #2d3436;
+  line-height: 1.5;
 
   @media (prefers-color-scheme: dark) {
-    background: rgba(40, 40, 40, 0.9);
-    border-color: rgba(255, 255, 255, 0.1);
-
-    h3 {
-      color: #ffffff;
-    }
-
-    p {
-      color: #b2bec3;
-    }
+    background: #2a2a2a;
+    color: #b2bec3;
   }
 `;
 
 export const ContactLink = styled.a`
   color: #6c5ce7;
   text-decoration: none;
-  font-weight: 500;
+  font-weight: 400;
+  font-size: 0.75rem;
 
   &:hover {
     text-decoration: underline;
