@@ -69,6 +69,7 @@ export const PerguntaHeader = styled.div`
   padding: 0.5rem 1rem;
   font-size: 0.75rem;
   font-weight: 500;
+  line-height: 1.4;
 `;
 
 export const RespostaBody = styled.div`
