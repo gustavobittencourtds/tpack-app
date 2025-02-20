@@ -12,6 +12,7 @@ import {
   QuestionCell,
   AdminButton,
   LoadingText,
+  DateHeader, // Adicione o estilo para o cabeçalho da data
 } from '../styles/adminStyles';
 
 interface Professor {
@@ -23,11 +24,14 @@ interface Questionnaire {
   _id: string;
   title: string;
   completed: boolean;
+  sentDate: Date;
+  responseDate: Date;
+  userId: string; // Add userId property
 }
 
 export default function AdminDashboard() {
   const [professors, setProfessors] = useState<Professor[]>([]);
-  const [questionnaires, setQuestionnaires] = useState<{ [key: string]: Questionnaire[] }>({});
+  const [questionnairesByDate, setQuestionnairesByDate] = useState<{ [key: string]: Questionnaire[] }>({});
   const [loading, setLoading] = useState(false);
   const router = useRouter();
 
@@ -47,7 +51,18 @@ export default function AdminDashboard() {
             questionnaireData[prof._id] = data.data || [];
           })
         );
-        setQuestionnaires(questionnaireData);
+
+        // Agrupar questionários por data de envio
+        const groupedByDate: { [key: string]: Questionnaire[] } = {};
+        Object.values(questionnaireData).flat().forEach((q) => {
+          const dateKey = new Date(q.sentDate).toLocaleDateString('pt-BR');
+          if (!groupedByDate[dateKey]) {
+            groupedByDate[dateKey] = [];
+          }
+          groupedByDate[dateKey].push(q);
+        });
+
+        setQuestionnairesByDate(groupedByDate);
       } catch (err) {
         console.error('Erro ao buscar dados:', err);
       } finally {
@@ -60,7 +75,7 @@ export default function AdminDashboard() {
 
   return (
     <AdminContainer>
-      <AdminHeader>Aplicações realizadas</AdminHeader>
+      <AdminHeader>Avaliação TPACK</AdminHeader>
 
       {loading ? (
         <LoadingText>Carregando...</LoadingText>
@@ -70,24 +85,29 @@ export default function AdminDashboard() {
             <thead>
               <TableRow>
                 <TableHeader>Professores</TableHeader>
-                <TableHeader>Questionários</TableHeader>
+                {Object.keys(questionnairesByDate).map((date) => (
+                  <DateHeader key={date}>{date}</DateHeader> // Cabeçalho com a data de envio
+                ))}
               </TableRow>
             </thead>
             <tbody>
               {professors.map((professor) => (
                 <TableRow key={professor._id}>
                   <ProfessorCell>{professor.email}</ProfessorCell>
-                  <QuestionCell>
-                    {questionnaires[professor._id]?.length > 0 ? (
-                      questionnaires[professor._id].map((q) => (
-                        <AdminButton key={q._id} onClick={() => router.push(`/respostas?questionnaireId=${q._id}`)}>
-                          {q.title}
-                        </AdminButton>
-                      ))
-                    ) : (
-                      <LoadingText>Sem questionários</LoadingText>
-                    )}
-                  </QuestionCell>
+                  {Object.keys(questionnairesByDate).map((date) => (
+                    <QuestionCell key={date}>
+                      {questionnairesByDate[date]
+                        .filter((q) => q.userId === professor._id) // Filtra questionários do professor
+                        .map((q) => (
+                          <div key={q._id}>
+                            <AdminButton onClick={() => router.push(`/respostas?questionnaireId=${q._id}&fromAdmin=true`)}>
+                              {q.title}
+                            </AdminButton>
+                            <p>Respondido em: {q.responseDate ? new Date(q.responseDate).toLocaleDateString('pt-BR') : 'Pendente'}</p>
+                          </div>
+                        ))}
+                    </QuestionCell>
+                  ))}
                 </TableRow>
               ))}
             </tbody>

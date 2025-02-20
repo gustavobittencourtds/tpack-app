@@ -1,4 +1,3 @@
-// src/models/Questionnaire.ts
 import mongoose, { Schema, Document, Types } from 'mongoose';
 
 interface IQuestionnaire extends Document {
@@ -7,6 +6,8 @@ interface IQuestionnaire extends Document {
   userId: Types.ObjectId;
   questions: Types.ObjectId[];
   completed: boolean;
+  sentDate: Date;
+  responseDate: Date;
 }
 
 const questionnaireSchema = new Schema<IQuestionnaire>({
@@ -15,6 +16,8 @@ const questionnaireSchema = new Schema<IQuestionnaire>({
   userId: { type: Schema.Types.ObjectId, ref: 'Professor', required: true },
   questions: [{ type: Schema.Types.ObjectId, ref: 'Question', required: true }],
   completed: { type: Boolean, default: false },
+  sentDate: { type: Date },
+  responseDate: { type: Date },
 });
 
 export default mongoose.models.Questionnaire || mongoose.model<IQuestionnaire>('Questionnaire', questionnaireSchema);

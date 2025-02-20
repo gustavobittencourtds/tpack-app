@@ -89,3 +89,8 @@ export const LoadingText = styled.p`
   font-size: 0.875rem;
   margin-top: 2rem;
 `;
+
+export const DateHeader = styled(TableHeader)`
+  background-color: #6c5ce7;
+  color: white;
+`;

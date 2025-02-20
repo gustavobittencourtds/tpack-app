@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
+import jwt from 'jsonwebtoken';
 import {
   SurveyContainer,
   SidebarContainer,
@@ -30,10 +31,14 @@ const Survey: React.FC = () => {
   const router = useRouter();
   const { token } = router.query;
 
+  // Decodifica o token para obter o questionnaireId
+  const decodedToken = token ? jwt.decode(token as string) as { userId: string; questionnaireId: string } : null;
+  const questionnaireId = decodedToken?.questionnaireId;
+
   useEffect(() => {
     const fetchQuestionsAndSessions = async () => {
       try {
-        // Buscar perguntas
+        // Busca as perguntas
         const questionsResponse = await fetch(`/api/questions?token=${token}`);
         if (!questionsResponse.ok) {
           const errorData = await questionsResponse.json();
@@ -43,7 +48,7 @@ const Survey: React.FC = () => {
         }
         const questionsData = await questionsResponse.json();
 
-        // Buscar sessões
+        // Busca as sessões
         const sessionsResponse = await fetch('/api/sessions');
         if (!sessionsResponse.ok) {
           console.error('Erro ao buscar sessões:', sessionsResponse.statusText);
@@ -52,13 +57,13 @@ const Survey: React.FC = () => {
         }
         const sessionsData = await sessionsResponse.json();
 
-        // Mapear IDs das sessões para seus títulos
+        // Mapeia os IDs das sessões para seus títulos
         const titlesMap = sessionsData.reduce((acc: { [key: string]: string }, session: any) => {
           acc[session._id] = session.title;
           return acc;
         }, {});
 
-        // Processar perguntas
+        // Processa as perguntas
         const introQuestion = questionsData.find((q: any) => q.type === 'intro') || null;
         const validQuestions = questionsData.filter(
           (q: any) =>
@@ -66,7 +71,7 @@ const Survey: React.FC = () => {
             (q.type !== 'multiple_choice' || (q.choices && q.choices.length > 0))
         );
 
-        // Agrupar questões por sessão
+        // Agrupaa as questões por sessão
         interface SessionMap {
           [key: string]: Question[];
         }
@@ -143,13 +148,11 @@ const Survey: React.FC = () => {
       console.log('Respostas enviadas com sucesso:', data);
       setIsCompleted(true);
 
-      // Redirecionar após 5 segundos
-      setTimeout(() => {
-        router.push({
-          pathname: '/respostas',
-          query: { token, answers: JSON.stringify(answers) },
-        });
-      }, 5000);
+      // Redireciona para a tela de respostas com o questionnaireId
+      router.push({
+        pathname: '/respostas',
+        query: { questionnaireId }, // Passa o questionnaireId na URL
+      });
     } catch (error) {
       console.error('Erro ao enviar respostas:', error);
     }
@@ -185,7 +188,7 @@ const Survey: React.FC = () => {
                     disabled={!questions.slice(0, questions.indexOf(q)).every((_, i) => isQuestionAnswered(i))}
                     isActive={questions.indexOf(q) === currentQuestionIndex}
                     isAnswered={!!isQuestionAnswered(questions.indexOf(q))}
-                    title={q.text} // Tooltip com a pergunta completa
+                    title={q.text}
                   >
                     {q.text.slice(0, 35)}... {/* Trecho da pergunta */}
                   </SidebarButton>

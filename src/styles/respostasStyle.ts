@@ -95,3 +95,16 @@ export const ContactLink = styled.a`
     text-decoration: underline;
   }
 `;
+
+export const BackButton = styled.button`
+  background-color: #6c5ce7;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-bottom: 1rem;
+  &:hover {
+    background-color: #5a4dbf;
+  }
+`;
