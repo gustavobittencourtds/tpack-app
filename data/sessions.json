@@ -1,6 +1,10 @@
 [
   {
-    "title": "Práticas pedagógicas digitais no contexto de pandemia",
+    "title": "Práticas pedagógicas digitais",
+    "order": 0
+  },
+  {
+    "title": "Caracterização do respondente",
     "order": 1
   },
   {
@@ -38,10 +42,6 @@
   {
     "title": "Uso de Tecnologia Digital de Informação e Comunicação",
     "order": 10
-  },
-  {
-    "title": "Caracterização do respondente",
-    "order": 11
   },
   {
     "title": "Encerramento",

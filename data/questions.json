@@ -1,17 +1,24 @@
 [
   {
-    "session_id": 1,
+    "session_id": 0,
     "text": "Esta pesquisa aborda as práticas pedagógicas e os impactos causados pela pandemia.<br /><br />Ao responder essa pesquisa, você contribui com a identificação de práticas utilizadas neste período e impacto que estas sofreram, identificando o surgimento de novas abordagens e adaptação de outras consolidadas entre professores e estudantes.<br /><br />O tempo de preenchimento é de aproximadamente 8 minutos. Os seus dados de identificação não serão coletados e suas respostas serão confidenciais, permanecerão em sigilo de pesquisa e não serão divulgadas individualmente.<br /><br />O termo de consentimento livre e esclarecido se encontra disponível no link ao lado, ao clicar em prosseguir você aceita os termos de coleta dessa pesquisa.<br /><br />O IFRS e seus pesquisadores agradecem a sua contribuição!",
     "type": "intro",
     "order": 1,
     "note": null
   },
   {
-    "session_id": 2,
-    "text": "Qual o âmbito da instituição de ensino que você leciona?",
-    "type": "multiple_choice",
-    "order": 2,
-    "note": "Nota: você pode marcar mais de uma alternativa"
+    "session_id": 1,
+    "text": "Gênero",
+    "type": "single_choice",
+    "order": 40,
+    "note": null
+  },
+  {
+    "session_id": 1,
+    "text": "Idade (em anos)",
+    "type": "number",
+    "order": 41,
+    "note": "A idade deve estar entre 18 e 100 anos."
   },
   {
     "session_id": 2,
@@ -26,13 +33,6 @@
     "type": "multiple_choice",
     "order": 4,
     "note": "Nota: você pode marcar mais de uma alternativa"
-  },
-  {
-    "session_id": 2,
-    "text": "Qual a área da sua última formação?",
-    "type": "text",
-    "order": 5,
-    "note": null
   },
   {
     "session_id": 2,
@@ -257,42 +257,6 @@
     "type": "scale",
     "order": 37,
     "note": "1 para discordo totalmente e 5 para concordo totalmente"
-  },
-  {
-    "session_id": 10,
-    "text": "Você acredita que alguma de suas práticas pedagógicas no pós-pandemia permanecerão com as alterações tecnológicas realizadas durante o período de pandemia?",
-    "type": "text",
-    "order": 38,
-    "note": null
-  },
-  {
-    "id": 39,
-    "session_id": 10,
-    "text": "Assinale as opções de ferramentas on-line utilizadas nas práticas pedagógicas durante a pandemia que você pretende continuar aplicando no pós-pandemia",
-    "type": "multiple_choice",
-    "order": 39,
-    "note": "Nota: você pode marcar mais de uma alternativa"
-  },
-  {
-    "session_id": 11,
-    "text": "Gênero",
-    "type": "single_choice",
-    "order": 40,
-    "note": null
-  },
-  {
-    "session_id": 11,
-    "text": "Idade (em anos)",
-    "type": "number",
-    "order": 41,
-    "note": "A idade deve estar entre 18 e 100 anos."
-  },
-  {
-    "session_id": 11,
-    "text": "Região: estado e município",
-    "type": "text",
-    "order": 42,
-    "note": null
   },
   {
     "session_id": 12,

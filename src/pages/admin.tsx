@@ -7,7 +7,6 @@ import {
   Table,
   TableRow,
   TableHeader,
-  TableCell,
   ProfessorCell,
   QuestionCell,
   AdminButton,
