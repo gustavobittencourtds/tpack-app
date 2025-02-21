@@ -1,4 +1,3 @@
-// src/tasks/sendEmails.ts
 import csvParser from 'csv-parser';
 import fs from 'fs';
 import jwt from 'jsonwebtoken';
@@ -8,9 +7,26 @@ import dbConnect from '../utils/dbConnect';
 import Questionnaire from '../models/Questionnaire';
 import Question from '../models/Question';
 import Professor from '../models/Professor';
+import Round from '../models/Round';
 import mongoose from 'mongoose';
 
 dotenv.config();
+
+async function createNewRound(): Promise<mongoose.Types.ObjectId> {
+  // Busca a última rodada para gerar o próximo número
+  const lastRound = await Round.findOne().sort({ roundNumber: -1 }).lean();
+  const nextRoundNumber = lastRound ? lastRound.roundNumber + 1 : 1;
+
+  // Cria uma nova rodada
+  const newRound = await Round.create({
+    roundNumber: nextRoundNumber,
+    sentDate: new Date(),
+    status: 'open',
+    description: `Rodada de envio ${nextRoundNumber}`,
+  });
+
+  return newRound._id;
+}
 
 async function processEmailsFromCSV(filePath: string) {
   await dbConnect();
@@ -21,11 +37,13 @@ async function processEmailsFromCSV(filePath: string) {
     .pipe(csvParser())
     .on('data', (data) => results.push(data.email))
     .on('end', async () => {
+      const roundId = await createNewRound();
+
       for (const email of results) {
         try {
           const professor = await Professor.findOne({ email }).lean();
           if (!professor) {
-            console.warn(`⚠ Professor com e-mail ${email} não encontrado. Pulando...`);
+            console.warn(`Professor com e-mail ${email} não encontrado. Pulando...`);
             continue;
           }
 
@@ -41,6 +59,7 @@ async function processEmailsFromCSV(filePath: string) {
             questions: questionIds,
             completed: false,
             sentDate: new Date(),
+            roundId,
           });
 
           const questionnaireId = newQuestionnaire._id;

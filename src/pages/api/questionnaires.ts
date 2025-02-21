@@ -27,18 +27,19 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
   if (req.method === 'POST') {
     try {
-      const { title, description, userId, questions } = req.body;
+      const { title, description, userId, questions, round } = req.body;
 
-      if (!title || !userId || !questions || !Array.isArray(questions)) {
+      if (!title || !userId || !questions || !Array.isArray(questions) || !round) {
         return res.status(400).json({ message: 'Dados inválidos' });
       }
 
       const newQuestionnaire = await Questionnaire.create({
-        title: `TPACK - Aplicação ${new Date().toLocaleDateString('pt-BR')}`, // Adiciona a data ao título
+        title: `TPACK - Aplicação ${new Date().toLocaleDateString('pt-BR')}`,
         description,
         userId,
         questions,
-        sentDate: new Date(), // Data de envio
+        sentDate: new Date(),
+        round
       });
 
       return res.status(201).json({ message: 'Questionário criado com sucesso', data: newQuestionnaire });

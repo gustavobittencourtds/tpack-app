@@ -7,7 +7,8 @@ interface IQuestionnaire extends Document {
   questions: Types.ObjectId[];
   completed: boolean;
   sentDate: Date;
-  responseDate: Date;
+  responseDate?: Date;
+  roundId: Types.ObjectId; // Referência à rodada
 }
 
 const questionnaireSchema = new Schema<IQuestionnaire>({
@@ -18,6 +19,7 @@ const questionnaireSchema = new Schema<IQuestionnaire>({
   completed: { type: Boolean, default: false },
   sentDate: { type: Date },
   responseDate: { type: Date },
+  roundId: { type: Schema.Types.ObjectId, ref: 'Round', required: true }, // Referência à rodada
 });
 
 export default mongoose.models.Questionnaire || mongoose.model<IQuestionnaire>('Questionnaire', questionnaireSchema);

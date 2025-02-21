@@ -7,11 +7,9 @@ import {
   Table,
   TableRow,
   TableHeader,
-  ProfessorCell,
-  QuestionCell,
+  TableCell,
   AdminButton,
   LoadingText,
-  DateHeader, // Adicione o estilo para o cabeçalho da data
 } from '../styles/adminStyles';
 
 interface Professor {
@@ -23,45 +21,68 @@ interface Questionnaire {
   _id: string;
   title: string;
   completed: boolean;
-  sentDate: Date;
-  responseDate: Date;
-  userId: string; // Add userId property
+  sentDate: Date | string;
+  responseDate?: Date | string;
+  userId: string;
+  roundId: string;
+}
+
+interface Round {
+  _id: string;
+  roundNumber: number;
 }
 
 export default function AdminDashboard() {
   const [professors, setProfessors] = useState<Professor[]>([]);
-  const [questionnairesByDate, setQuestionnairesByDate] = useState<{ [key: string]: Questionnaire[] }>({});
+  const [questionnairesByRound, setQuestionnairesByRound] = useState<{ [roundId: string]: { [profId: string]: Questionnaire[] } }>({});
+  const [rounds, setRounds] = useState<Round[]>([]);
   const [loading, setLoading] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
-    const fetchProfessorsAndQuestionnaires = async () => {
+    const fetchData = async () => {
       setLoading(true);
       try {
+        // Buscar professores
         const professorRes = await fetch('/api/professors');
         const professorData = await professorRes.json();
         setProfessors(professorData.professors);
 
+        // Buscar questionários
         const questionnaireData: { [key: string]: Questionnaire[] } = {};
         await Promise.all(
           professorData.professors.map(async (prof: Professor) => {
-            const res: Response = await fetch(`/api/questionnaires?userId=${prof._id}`);
-            const data: { data: Questionnaire[] } = await res.json();
+            const res = await fetch(`/api/questionnaires?userId=${prof._id}`);
+            const data = await res.json();
             questionnaireData[prof._id] = data.data || [];
           })
         );
 
-        // Agrupar questionários por data de envio
-        const groupedByDate: { [key: string]: Questionnaire[] } = {};
-        Object.values(questionnaireData).flat().forEach((q) => {
-          const dateKey = new Date(q.sentDate).toLocaleDateString('pt-BR');
-          if (!groupedByDate[dateKey]) {
-            groupedByDate[dateKey] = [];
-          }
-          groupedByDate[dateKey].push(q);
+        // Buscar rodadas
+        const roundsRes = await fetch('/api/rounds');
+        const roundsData = await roundsRes.json();
+
+        // Ordenar rodadas da mais recente para a mais antiga
+        const sortedRounds = roundsData.sort((a: Round, b: Round) => b.roundNumber - a.roundNumber);
+        setRounds(sortedRounds);
+
+        // Agrupar questionários por rodada e professor
+        const groupedByRound: { [roundId: string]: { [profId: string]: Questionnaire[] } } = {};
+        Object.entries(questionnaireData).forEach(([profId, questionnaires]) => {
+          questionnaires.forEach((q) => {
+            const roundId = q.roundId;
+
+            if (!groupedByRound[roundId]) {
+              groupedByRound[roundId] = {};
+            }
+            if (!groupedByRound[roundId][profId]) {
+              groupedByRound[roundId][profId] = [];
+            }
+            groupedByRound[roundId][profId].push(q);
+          });
         });
 
-        setQuestionnairesByDate(groupedByDate);
+        setQuestionnairesByRound(groupedByRound);
       } catch (err) {
         console.error('Erro ao buscar dados:', err);
       } finally {
@@ -69,7 +90,7 @@ export default function AdminDashboard() {
       }
     };
 
-    fetchProfessorsAndQuestionnaires();
+    fetchData();
   }, []);
 
   return (
@@ -81,32 +102,49 @@ export default function AdminDashboard() {
       ) : (
         <TableContainer>
           <Table>
+            {/* Cabeçalho com professores */}
             <thead>
               <TableRow>
-                <TableHeader>Professores</TableHeader>
-                {Object.keys(questionnairesByDate).map((date) => (
-                  <DateHeader key={date}>{date}</DateHeader> // Cabeçalho com a data de envio
+                <TableHeader>Rodadas</TableHeader>
+                {professors.map((professor) => (
+                  <TableHeader key={professor._id}>{professor.email}</TableHeader>
                 ))}
               </TableRow>
             </thead>
+
+            {/* Corpo da tabela com rodadas e questionários */}
             <tbody>
-              {professors.map((professor) => (
-                <TableRow key={professor._id}>
-                  <ProfessorCell>{professor.email}</ProfessorCell>
-                  {Object.keys(questionnairesByDate).map((date) => (
-                    <QuestionCell key={date}>
-                      {questionnairesByDate[date]
-                        .filter((q) => q.userId === professor._id) // Filtra questionários do professor
-                        .map((q) => (
-                          <div key={q._id}>
-                            <AdminButton onClick={() => router.push(`/respostas?questionnaireId=${q._id}&fromAdmin=true`)}>
-                              {q.title}
-                            </AdminButton>
-                            <p>Respondido em: {q.responseDate ? new Date(q.responseDate).toLocaleDateString('pt-BR') : 'Pendente'}</p>
-                          </div>
-                        ))}
-                    </QuestionCell>
-                  ))}
+              {rounds.map((round) => (
+                <TableRow key={round._id}>
+                  {/* Nome da rodada */}
+                  <TableCell>Rodada {round.roundNumber}</TableCell>
+
+                  {/* Questionários de cada professor nessa rodada */}
+                  {professors.map((professor) => {
+                    const questionnaires = questionnairesByRound[round._id]?.[professor._id] || [];
+                    return (
+                      <TableCell key={`${round._id}-${professor._id}`}>
+                        {questionnaires.length > 0 ? (
+                          questionnaires.map((q) => (
+                            <div key={q._id} style={{ marginBottom: '8px' }}>
+                              <AdminButton onClick={() => router.push(`/respostas?questionnaireId=${q._id}&fromAdmin=true`)}>
+                                {q.title}
+                              </AdminButton>
+                              <p><strong>Enviado em:</strong> {new Date(q.sentDate).toLocaleDateString('pt-BR')}</p>
+                              <p>
+                                <strong>Status:</strong> {q.completed ? 'Respondido' : 'Pendente'}
+                                {q.responseDate && q.completed && (
+                                  <> em {new Date(q.responseDate).toLocaleDateString('pt-BR')}</>
+                                )}
+                              </p>
+                            </div>
+                          ))
+                        ) : (
+                          <p>-</p>
+                        )}
+                      </TableCell>
+                    );
+                  })}
                 </TableRow>
               ))}
             </tbody>

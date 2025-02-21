@@ -22,7 +22,6 @@ async function fetchUserAnswers() {
   try {
     console.log(`Buscando todos os professores cadastrados...`);
 
-    // 🔹 Buscar todos os professores no banco
     const professors = await Professor.find().lean();
 
     if (professors.length === 0) {
@@ -61,7 +60,7 @@ async function fetchUserAnswers() {
         })
           .populate({
             path: 'questionId',
-            populate: { path: 'choices', model: 'Choice' }, // 🔹 Popula as opções de resposta
+            populate: { path: 'choices', model: 'Choice' },
           })
           .lean();
 
@@ -74,7 +73,7 @@ async function fetchUserAnswers() {
             // 🔹 Se a resposta for um array de IDs (opções selecionadas)
             if (Array.isArray(answer.answer)) {
               const choices = await Choice.find({ _id: { $in: answer.answer } }).lean();
-              formattedAnswer = choices.map((choice) => choice.text); // 🔹 Converte para o texto das opções
+              formattedAnswer = choices.map((choice) => choice.text);
             }
 
             return {
@@ -105,5 +104,4 @@ async function fetchUserAnswers() {
   }
 }
 
-// 🔹 Executar a função
 fetchUserAnswers().then((res) => console.log(JSON.stringify(res, null, 2)));
