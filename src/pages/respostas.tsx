@@ -9,12 +9,13 @@ import {
   PerguntaHeader,
   RespostaBody,
   ContactLink,
-  BackButton, // Adicione o estilo do botão "Voltar"
+  BackButton,
 } from '../styles/respostasStyle';
 
 const Respostas: React.FC = () => {
   const router = useRouter();
-  const { questionnaireId, fromAdmin } = router.query; // Adicione o parâmetro fromAdmin
+  const { questionnaireId, roundId, fromAdmin } = router.query;
+
   const [answers, setAnswers] = useState<{ questionId: string; questionText: string; answer: string | string[] }[]>([]);
   const [questionnaireTitle, setQuestionnaireTitle] = useState<string | null>(null);
   const [professorEmail, setProfessorEmail] = useState<string | null>(null);
@@ -51,17 +52,18 @@ const Respostas: React.FC = () => {
   }, [questionnaireId]);
 
   const handleBack = () => {
-    router.push('/admin'); // Redireciona para a tela de admin
+    if (fromAdmin) {
+      router.push('/admin');
+    } else if (roundId) {
+      router.push(`/round?roundId=${roundId}`);
+    } else {
+      router.push('/');
+    }
   };
 
   return (
     <RespostasContainer>
-      {/* Botão "Voltar" (só aparece se fromAdmin estiver presente) */}
-      {fromAdmin && (
-        <BackButton onClick={handleBack}>
-          Voltar para Admin
-        </BackButton>
-      )}
+      <BackButton onClick={handleBack}>Voltar</BackButton>
 
       <RespostasHeader>
         Respostas do Questionário - {questionnaireTitle}

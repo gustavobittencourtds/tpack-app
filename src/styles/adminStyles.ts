@@ -52,6 +52,11 @@ export const TableHeader = styled.th`
 export const TableCell = styled.td`
   padding: 0.8rem;
   font-size: 0.75rem;
+  
+  &.round-cell {
+    display: flex;
+  }
+  
 `;
 
 export const ProfessorCell = styled(TableCell)`
@@ -93,4 +98,23 @@ export const LoadingText = styled.p`
 export const DateHeader = styled(TableHeader)`
   background-color: #6c5ce7;
   color: white;
+`;
+
+export const BackButton = styled.button`
+  background: #6c5ce7;
+  color: white;
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: background 0.2s, box-shadow 0.2s;
+  display: inline-block;
+  margin-bottom: 1rem;
+
+  &:hover {
+    background: #5948d6;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
 `;

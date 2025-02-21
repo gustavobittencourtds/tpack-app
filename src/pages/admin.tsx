@@ -116,8 +116,12 @@ export default function AdminDashboard() {
             <tbody>
               {rounds.map((round) => (
                 <TableRow key={round._id}>
-                  {/* Nome da rodada */}
-                  <TableCell>Rodada {round.roundNumber}</TableCell>
+                  {/* Nome da rodada como um botão para acessar sua página */}
+                  <TableCell className="round-cell">
+                    <AdminButton onClick={() => router.push(`/round?roundId=${round._id}`)}>
+                      Rodada {round.roundNumber}
+                    </AdminButton>
+                  </TableCell>
 
                   {/* Questionários de cada professor nessa rodada */}
                   {professors.map((professor) => {
@@ -126,7 +130,7 @@ export default function AdminDashboard() {
                       <TableCell key={`${round._id}-${professor._id}`}>
                         {questionnaires.length > 0 ? (
                           questionnaires.map((q) => (
-                            <div key={q._id} style={{ marginBottom: '8px' }}>
+                            <div key={q._id}>
                               <AdminButton onClick={() => router.push(`/respostas?questionnaireId=${q._id}&fromAdmin=true`)}>
                                 {q.title}
                               </AdminButton>
