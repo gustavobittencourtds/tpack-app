@@ -1,3 +1,4 @@
+import { border } from './../../node_modules/@mui/system/borders/borders.d';
 import styled from "styled-components";
 
 export const RoundContainer = styled.div`
@@ -78,34 +79,48 @@ export const BackButton = styled.button`
   }
 `;
 
-export const ChartsGrid = styled.div`
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 20px;
-  justify-content: center;
-  align-items: center;
-  padding: 20px;
-`;
-
 export const ChartContainer = styled.div`
-  height: 400px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-items: flex-start;
+  justify-content: space-between;
   background: #f8f9fa;
   padding: 20px;
   border-radius: 12px;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
-
-  &:not(:last-child) {
-    margin-bottom: 20px;
-  }
+  width: 100%;
+  margin-bottom: 20px;
 `;
 
 export const ChartTitle = styled.h3`
   font-size: 1rem;
   text-align: center;
-  margin-bottom: 10px;
+  margin-bottom: 2rem;
   color: #2d3436;
+`;
+
+export const LegendContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  margin-left: 20px;
+`;
+
+export const LegendItem = styled.div`
+  display: flex;
+  align-items: center;
+  margin-bottom: 1.5rem;
+`;
+
+export const LegendColor = styled.div`
+  min-width: 1rem;
+  width: 1rem;
+  height: 1rem;
+  background-color: ${(props) => props.color};
+  margin-right: 16px;
+  border-radius: 100%;
+`;
+
+export const LegendText = styled.span`
+  font-size: 0.75rem;
+  color: #333;
 `;

@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
-import { Doughnut } from "react-chartjs-2";
-import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
+import { PieChart } from '@mui/x-charts/PieChart';
+import { createTheme, ThemeProvider } from '@mui/material/styles';
+import { CssBaseline } from '@mui/material';
 import {
   RoundContainer,
   RoundHeader,
@@ -14,6 +15,10 @@ import {
   BackButton,
   ChartContainer,
   ChartTitle,
+  LegendContainer,
+  LegendItem,
+  LegendColor,
+  LegendText,
 } from "../styles/roundStyles";
 
 interface Answer {
@@ -53,7 +58,35 @@ interface SessionAverage {
   questionAverages: { questionId: string; average: number }[];
 }
 
-ChartJS.register(ArcElement, Tooltip, Legend);
+const theme = createTheme({
+  typography: {
+    fontFamily: 'Poppins, Arial, sans-serif',
+  },
+});
+
+interface LegendProps {
+  data: { label: string; value: number }[];
+  colors: string[];
+  title: string;
+}
+
+const Legend = ({ data, colors, title }: LegendProps) => {
+  return (
+    <LegendContainer>
+      {title && <ChartTitle>{title}</ChartTitle>}
+      {data.map((item, index) => (
+        <LegendItem key={index}>
+          <LegendColor color={colors[index % colors.length]} />
+          <LegendText>
+            {item.label}
+            <br />
+            <span style={{ fontWeight: 'bold' }}>Média: {item.value.toFixed(2)}</span>
+          </LegendText>
+        </LegendItem>
+      ))}
+    </LegendContainer>
+  );
+};
 
 export default function RoundPage() {
   const router = useRouter();
@@ -89,133 +122,112 @@ export default function RoundPage() {
     };
 
     fetchRoundData();
-
-    return () => {
-      // Função de limpeza para destruir a instância do gráfico
-      const chart = ChartJS.getChart(roundId as string);
-      if (chart) {
-        chart.destroy();
-      }
-    };
   }, [roundId]);
 
-  // Agrupar questões por sessão
   const sessionsMap = sessions.reduce((acc, session) => {
     acc[session._id] = session.title;
     return acc;
   }, {} as Record<string, string>);
 
-  console.log("Categorias e questões:", sessionAverages); // Log para depuração
+  const colors = ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF', '#FF9F40'];
 
   return (
-    <RoundContainer>
-      {loading && <p>Carregando...</p>}
+    <ThemeProvider theme={theme}>
+      <CssBaseline />
+      <RoundContainer>
+        {loading && <p>Carregando...</p>}
 
-      <BackButton onClick={() => router.push("/admin")}>Voltar</BackButton>
+        <BackButton onClick={() => router.push("/admin")}>Voltar</BackButton>
 
-      {round && (
-        <>
-          <RoundHeader>Rodada {round.roundNumber}</RoundHeader>
-          <RoundSubheader>
-            Data de Envio: <strong>{new Date(round.sentDate).toLocaleDateString("pt-BR")}</strong>
-          </RoundSubheader>
-        </>
-      )}
+        {round && (
+          <>
+            <RoundHeader>Rodada {round.roundNumber}</RoundHeader>
+            <RoundSubheader>
+              Data de Envio: <strong>{new Date(round.sentDate).toLocaleDateString("pt-BR")}</strong>
+            </RoundSubheader>
+          </>
+        )}
 
-      <TableContainer>
-        <Table>
-          <thead>
-            <TableRow>
-              <TableHeader>Questionário</TableHeader>
-              <TableHeader>Enviado em</TableHeader>
-              <TableHeader>Respondido em</TableHeader>
-            </TableRow>
-          </thead>
-          <tbody>
-            {questionnaires.map((q) => (
-              <TableRow key={q._id}>
-                <TableCell>{q.title}</TableCell>
-                <TableCell>{new Date(q.sentDate).toLocaleDateString("pt-BR")}</TableCell>
-                <TableCell>
-                  {q.responseDate ? (
-                    new Date(q.responseDate).toLocaleDateString("pt-BR")
-                  ) : (
-                    "Pendente"
-                  )}
-                </TableCell>
+        <TableContainer>
+          <Table>
+            <thead>
+              <TableRow>
+                <TableHeader>Questionário</TableHeader>
+                <TableHeader>Enviado em</TableHeader>
+                <TableHeader>Respondido em</TableHeader>
               </TableRow>
-            ))}
-          </tbody>
-        </Table>
-      </TableContainer>
+            </thead>
+            <tbody>
+              {questionnaires.map((q) => (
+                <TableRow key={q._id}>
+                  <TableCell>{q.title}</TableCell>
+                  <TableCell>{new Date(q.sentDate).toLocaleDateString("pt-BR")}</TableCell>
+                  <TableCell>
+                    {q.responseDate ? (
+                      new Date(q.responseDate).toLocaleDateString("pt-BR")
+                    ) : (
+                      "Pendente"
+                    )}
+                  </TableCell>
+                </TableRow>
+              ))}
+            </tbody>
+          </Table>
+        </TableContainer>
 
-      {/* Gráficos de Rosca */}
-      <RoundHeader>Relatório da Rodada</RoundHeader>
-      {sessionAverages.map(({ sessionId, questionAverages }) => {
-        const sessionTitle = sessionsMap[sessionId];
-        const questionTexts = questionAverages.map((qa) => {
-          const question = questions.find((q) => q._id === qa.questionId);
-          return question ? question.text : "Questão desconhecida";
-        });
+        <RoundHeader>Relatório da Rodada</RoundHeader>
+        {sessionAverages.map(({ sessionId, questionAverages }) => {
+          const sessionTitle = sessionsMap[sessionId];
+          const questionTexts = questionAverages.map((qa) => {
+            const question = questions.find((q) => q._id === qa.questionId);
+            return question ? question.text : "Questão desconhecida";
+          });
 
-        console.log(`Médias das questões para a categoria ${sessionTitle}:`, questionAverages);
+          const pieChartData = questionAverages.map((qa, index) => ({
+            id: qa.questionId,
+            value: qa.average,
+            label: questionTexts[index],
+            color: colors[index % colors.length],
+          }));
 
-        return (
-          <ChartContainer key={sessionId}>
-            <ChartTitle>{sessionTitle}</ChartTitle>
-            <div style={{ width: '100%', height: '500px', margin: '0 auto' }}>
-              <Doughnut
-                data={{
-                  labels: questionTexts,
-                  datasets: [
+          return (
+            <ChartContainer key={sessionId}>
+              <div>
+                <PieChart
+                  series={[
                     {
-                      label: "Média",
-                      data: questionAverages.map((qa) => qa.average),
-                      backgroundColor: ["#6a89cc", "#ffce56", "#ff6384", "#36a2eb", "#cc65fe", "#ff9f40", "#4bc0c0"],
+                      data: pieChartData,
+                      innerRadius: 40,
                     },
-                  ],
-                }}
-                options={{
-                  responsive: true,
-                  maintainAspectRatio: false,
-                  plugins: {
-                    tooltip: {
-                      displayColors: true,
-                      bodyFont: {
-                        size: 14,
-                        weight: 'normal',
-                      },
-                      boxPadding: 10,
-                      padding: 10,
-                      caretPadding: 10,
-                      cornerRadius: 4,
-                      backgroundColor: 'rgba(0, 0, 0, 0.8)',
-                      titleFont: {
-                        size: 14,
-                        weight: 'normal',
-                      },
-                      titleMarginBottom: 10,
-                    },
+                  ]}
+                  height={320}
+                  slotProps={{
                     legend: {
-                      display: true,
-                      position: "left",
-                      align: 'start',
-                      labels: {
-                        boxWidth: 20,
-                        padding: 10,
-                        font: {
-                          size: 12,
-                        },
-                        usePointStyle: true,
-                      },
+                      hidden: true,
                     },
-                  },
-                }}
-              />
-            </div>
-          </ChartContainer>
-        );
-      })}
-    </RoundContainer>
+                    popper: {
+                      sx: {
+                        fontSize: '0.875rem',
+                        maxWidth: '48rem',
+                        '& .MuiChartsTooltip-mark': {
+                          width: '1rem',
+                          height: '1rem',
+                          marginRight: '0.5rem',
+                        },
+                        '& .MuiChartsTooltip-cell:last-of-type': {
+                          fontSize: '1rem',
+                          fontWeight: 700,
+                        },
+                      }
+                    },
+                  }}
+                />
+              </div>
+              <Legend data={pieChartData} colors={colors} title={sessionTitle} />
+            </ChartContainer>
+          );
+        })}
+      </RoundContainer>
+    </ThemeProvider>
   );
 }
