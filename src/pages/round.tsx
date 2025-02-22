@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import { Pie } from "react-chartjs-2";
+import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
 import {
   RoundContainer,
   RoundHeader,
@@ -17,7 +18,7 @@ import {
 
 interface Answer {
   questionId: string;
-  value: number;
+  answer: string;
 }
 
 interface Questionnaire {
@@ -36,6 +37,24 @@ interface Round {
   sentDate: string;
 }
 
+interface Question {
+  _id: string;
+  text: string;
+  session_id: string;
+}
+
+interface Session {
+  _id: string;
+  title: string;
+}
+
+interface SessionAverage {
+  sessionId: string;
+  questionAverages: { questionId: string; average: number }[];
+}
+
+ChartJS.register(ArcElement, Tooltip, Legend);
+
 export default function RoundPage() {
   const router = useRouter();
   const { roundId } = router.query;
@@ -43,6 +62,9 @@ export default function RoundPage() {
   const [round, setRound] = useState<Round | null>(null);
   const [questionnaires, setQuestionnaires] = useState<Questionnaire[]>([]);
   const [answers, setAnswers] = useState<Answer[]>([]);
+  const [questions, setQuestions] = useState<Question[]>([]);
+  const [sessions, setSessions] = useState<Session[]>([]);
+  const [sessionAverages, setSessionAverages] = useState<SessionAverage[]>([]);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -55,6 +77,10 @@ export default function RoundPage() {
         const data = await res.json();
         setQuestionnaires(data.questionnaires);
         setAnswers(data.answers); // Pegamos todas as respostas da rodada
+        setQuestions(data.questions); // Pegamos todas as questões da rodada
+        setSessions(data.sessions); // Pegamos todas as sessões
+        setSessionAverages(data.sessionAverages); // Pegamos as médias das sessões
+        console.log("Dados da rodada:", data); // Log para depuração
       } catch (error) {
         console.error("Erro ao buscar dados da rodada:", error);
       } finally {
@@ -63,34 +89,23 @@ export default function RoundPage() {
     };
 
     fetchRoundData();
+
+    return () => {
+      // Função de limpeza para destruir a instância do gráfico
+      const chart = ChartJS.getChart(roundId as string);
+      if (chart) {
+        chart.destroy();
+      }
+    };
   }, [roundId]);
 
-  // Definir categorias e perguntas associadas
-  const categories = {
-    "Conhecimento pedagógico tecnológico do conteúdo": [
-      "Pergunta 1",
-      "Pergunta 2",
-    ],
-    "Conhecimento do conteúdo tecnológico": ["Pergunta 3", "Pergunta 4"],
-    "Conhecimento pedagógico tecnológico": ["Pergunta 5", "Pergunta 6"],
-    "Conhecimento pedagógico do conteúdo": ["Pergunta 7", "Pergunta 8"],
-    "Conhecimento em tecnologia": ["Pergunta 9", "Pergunta 10"],
-    "Conhecimento de conteúdo": ["Pergunta 11", "Pergunta 12"],
-    "Conhecimento pedagógico": ["Pergunta 13", "Pergunta 14"],
-  };
+  // Agrupar questões por sessão
+  const sessionsMap = sessions.reduce((acc, session) => {
+    acc[session._id] = session.title;
+    return acc;
+  }, {} as Record<string, string>);
 
-  // Calcular médias para cada categoria
-  const categoryAverages = Object.entries(categories).map(([category, questions]) => {
-    const filteredAnswers = answers.filter((answer) =>
-      questions.includes(answer.questionId)
-    );
-
-    const total = filteredAnswers.reduce((sum, ans) => sum + ans.value, 0);
-    const count = filteredAnswers.length;
-    const average = count > 0 ? total / count : 0;
-
-    return { category, average };
-  });
+  console.log("Categorias e questões:", sessionAverages); // Log para depuração
 
   return (
     <RoundContainer>
@@ -136,28 +151,38 @@ export default function RoundPage() {
 
       {/* Gráficos de Pizza */}
       <RoundHeader>Relatório da Rodada</RoundHeader>
-      {categoryAverages.map(({ category, average }) => (
-        <ChartContainer key={category}>
-          <ChartTitle>{category}</ChartTitle>
-          <Pie
-            data={{
-              labels: ["1", "2", "3", "4", "5"],
-              datasets: [
-                {
-                  data: [average, 5 - average], // Média vs. diferença para o total máximo (5)
-                  backgroundColor: ["#6a89cc", "#ffce56"],
-                },
-              ],
-            }}
-            options={{
-              responsive: true,
-              maintainAspectRatio: false, // Corrige problema do tamanho infinito
-            }}
-            width={400}
-            height={400}
-          />
-        </ChartContainer>
-      ))}
+      {sessionAverages.map(({ sessionId, questionAverages }) => {
+        const sessionTitle = sessionsMap[sessionId];
+        const questionTexts = questionAverages.map((qa) => {
+          const question = questions.find((q) => q._id === qa.questionId);
+          return question ? question.text : "Questão desconhecida";
+        });
+
+        console.log(`Médias das questões para a categoria ${sessionTitle}:`, questionAverages); // Log para depuração
+
+        return (
+          <ChartContainer key={sessionId}>
+            <ChartTitle>{sessionTitle}</ChartTitle>
+            <Pie
+              data={{
+                labels: questionTexts,
+                datasets: [
+                  {
+                    data: questionAverages.map((qa) => qa.average),
+                    backgroundColor: ["#6a89cc", "#ffce56", "#ff6384", "#36a2eb", "#cc65fe", "#ff9f40", "#4bc0c0"],
+                  },
+                ],
+              }}
+              options={{
+                responsive: true,
+                maintainAspectRatio: false, // Corrige problema do tamanho infinito
+              }}
+              width={400}
+              height={400}
+            />
+          </ChartContainer>
+        );
+      })}
     </RoundContainer>
   );
 }
