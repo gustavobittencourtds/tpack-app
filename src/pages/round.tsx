@@ -116,6 +116,7 @@ export default function RoundPage() {
         setQuestions(data.questions);
         setSessions(data.sessions);
         setSessionAverages(data.sessionAverages);
+        setRound(data.round || null);
         console.log("Dados da rodada:", data);
       } catch (error) {
         console.error("Erro ao buscar dados da rodada:", error);
@@ -175,8 +176,7 @@ export default function RoundPage() {
             </tbody>
           </Table>
         </TableContainer>
-
-        <RoundHeader>Relatório da Rodada</RoundHeader>
+        
         {sessionAverages.map(({ sessionId, questionAverages }) => {
           const sessionTitle = sessionsMap[sessionId];
           const questionTexts = questionAverages.map((qa) => {

@@ -4,6 +4,7 @@ import Questionnaire from '../../models/Questionnaire';
 import Answer from '../../models/Answer';
 import Question from '../../models/Question';
 import Session from '../../models/Session';
+import Round from '../../models/Round';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   await dbConnect();
@@ -15,6 +16,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
 
   try {
+
+    // Busca o objeto round correspondente ao roundId
+    const round = await Round.findById(roundId).lean();
+
     // Busca todos os questionários da rodada
     const questionnaires = await Questionnaire.find({ roundId }).lean();
 
@@ -56,7 +61,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       return { sessionId: session._id, questionAverages };
     });
 
-    return res.status(200).json({ questionnaires, answers, questions, sessions, sessionAverages });
+    return res.status(200).json({ round, questionnaires, answers, questions, sessions, sessionAverages });
   } catch (error) {
     console.error('Erro ao gerar relatório:', error);
     return res.status(500).json({ message: 'Erro ao gerar relatório', error });

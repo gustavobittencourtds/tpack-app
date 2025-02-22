@@ -12,18 +12,19 @@ export const RoundContainer = styled.div`
 `;
 
 export const RoundHeader = styled.h1`
-  font-size: 1.5rem;
-  font-weight: 500;
+  font-size: 1.25rem;
+  font-weight: 700;
   color: #333;
   text-align: center;
-  margin-bottom: 1rem;
+  margin-bottom: 0.25;
 `;
 
 export const RoundSubheader = styled.p`
   font-size: 1rem;
   text-align: center;
   color: #555;
-  margin-bottom: 2rem;
+  margin-bottom: 01.875rem;
+  margin-top: 0;
 `;
 
 export const TableContainer = styled.div`
