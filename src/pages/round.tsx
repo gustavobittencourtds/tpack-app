@@ -88,6 +88,9 @@ const Legend = ({ data, colors, title }: LegendProps) => {
   );
 };
 
+// Paleta de cores padrão do Chart.js
+const chartJsColors = ['#36A2EB', '#FF6384', '#FFCE56', '#4BC0C0', '#9966FF', '#FF9F40'];
+
 export default function RoundPage() {
   const router = useRouter();
   const { roundId } = router.query;
@@ -128,8 +131,6 @@ export default function RoundPage() {
     acc[session._id] = session.title;
     return acc;
   }, {} as Record<string, string>);
-
-  const colors = ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF', '#FF9F40'];
 
   return (
     <ThemeProvider theme={theme}>
@@ -187,7 +188,7 @@ export default function RoundPage() {
             id: qa.questionId,
             value: qa.average,
             label: questionTexts[index],
-            color: colors[index % colors.length],
+            color: chartJsColors[index % chartJsColors.length], // Usando a paleta do Chart.js
           }));
 
           return (
@@ -223,7 +224,7 @@ export default function RoundPage() {
                   }}
                 />
               </div>
-              <Legend data={pieChartData} colors={colors} title={sessionTitle} />
+              <Legend data={pieChartData} colors={chartJsColors} title={sessionTitle} />
             </ChartContainer>
           );
         })}
