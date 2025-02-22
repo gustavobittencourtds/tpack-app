@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
-import { Pie } from "react-chartjs-2";
+import { Doughnut } from "react-chartjs-2";
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
 import {
   RoundContainer,
@@ -76,11 +76,11 @@ export default function RoundPage() {
         const res = await fetch(`/api/report?roundId=${roundId}`);
         const data = await res.json();
         setQuestionnaires(data.questionnaires);
-        setAnswers(data.answers); // Pegamos todas as respostas da rodada
-        setQuestions(data.questions); // Pegamos todas as questões da rodada
-        setSessions(data.sessions); // Pegamos todas as sessões
-        setSessionAverages(data.sessionAverages); // Pegamos as médias das sessões
-        console.log("Dados da rodada:", data); // Log para depuração
+        setAnswers(data.answers);
+        setQuestions(data.questions);
+        setSessions(data.sessions);
+        setSessionAverages(data.sessionAverages);
+        console.log("Dados da rodada:", data);
       } catch (error) {
         console.error("Erro ao buscar dados da rodada:", error);
       } finally {
@@ -149,7 +149,7 @@ export default function RoundPage() {
         </Table>
       </TableContainer>
 
-      {/* Gráficos de Pizza */}
+      {/* Gráficos de Rosca */}
       <RoundHeader>Relatório da Rodada</RoundHeader>
       {sessionAverages.map(({ sessionId, questionAverages }) => {
         const sessionTitle = sessionsMap[sessionId];
@@ -158,28 +158,61 @@ export default function RoundPage() {
           return question ? question.text : "Questão desconhecida";
         });
 
-        console.log(`Médias das questões para a categoria ${sessionTitle}:`, questionAverages); // Log para depuração
+        console.log(`Médias das questões para a categoria ${sessionTitle}:`, questionAverages);
 
         return (
           <ChartContainer key={sessionId}>
             <ChartTitle>{sessionTitle}</ChartTitle>
-            <Pie
-              data={{
-                labels: questionTexts,
-                datasets: [
-                  {
-                    data: questionAverages.map((qa) => qa.average),
-                    backgroundColor: ["#6a89cc", "#ffce56", "#ff6384", "#36a2eb", "#cc65fe", "#ff9f40", "#4bc0c0"],
+            <div style={{ width: '100%', height: '500px', margin: '0 auto' }}>
+              <Doughnut
+                data={{
+                  labels: questionTexts,
+                  datasets: [
+                    {
+                      label: "Média",
+                      data: questionAverages.map((qa) => qa.average),
+                      backgroundColor: ["#6a89cc", "#ffce56", "#ff6384", "#36a2eb", "#cc65fe", "#ff9f40", "#4bc0c0"],
+                    },
+                  ],
+                }}
+                options={{
+                  responsive: true,
+                  maintainAspectRatio: false,
+                  plugins: {
+                    tooltip: {
+                      displayColors: true,
+                      bodyFont: {
+                        size: 14,
+                        weight: 'normal',
+                      },
+                      boxPadding: 10,
+                      padding: 10,
+                      caretPadding: 10,
+                      cornerRadius: 4,
+                      backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                      titleFont: {
+                        size: 14,
+                        weight: 'normal',
+                      },
+                      titleMarginBottom: 10,
+                    },
+                    legend: {
+                      display: true,
+                      position: "left",
+                      align: 'start',
+                      labels: {
+                        boxWidth: 20,
+                        padding: 10,
+                        font: {
+                          size: 12,
+                        },
+                        usePointStyle: true,
+                      },
+                    },
                   },
-                ],
-              }}
-              options={{
-                responsive: true,
-                maintainAspectRatio: false, // Corrige problema do tamanho infinito
-              }}
-              width={400}
-              height={400}
-            />
+                }}
+              />
+            </div>
           </ChartContainer>
         );
       })}

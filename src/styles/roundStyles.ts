@@ -88,8 +88,6 @@ export const ChartsGrid = styled.div`
 `;
 
 export const ChartContainer = styled.div`
-  width: 100%;
-  max-width: 400px;
   height: 400px;
   display: flex;
   flex-direction: column;
@@ -99,6 +97,10 @@ export const ChartContainer = styled.div`
   padding: 20px;
   border-radius: 12px;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+
+  &:not(:last-child) {
+    margin-bottom: 20px;
+  }
 `;
 
 export const ChartTitle = styled.h3`
