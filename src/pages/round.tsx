@@ -1,12 +1,13 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
-import { PieChart } from '@mui/x-charts/PieChart';
-import { createTheme, ThemeProvider } from '@mui/material/styles';
-import { CssBaseline } from '@mui/material';
+import { PieChart } from "@mui/x-charts/PieChart";
+import { createTheme, ThemeProvider } from "@mui/material/styles";
+import { CssBaseline } from "@mui/material";
 import {
   RoundContainer,
   RoundHeader,
-  RoundSubheader,
+  RoundInfoContainer,
+  RoundInfoItem,
   TableContainer,
   Table,
   TableRow,
@@ -19,12 +20,16 @@ import {
   LegendItem,
   LegendColor,
   LegendText,
+  ProfessorsListContainer,
+  ProfessorItem,
+  ProfessorActions,
 } from "../styles/roundStyles";
 import ProtectedRoute from "../components/ProtectedRoute";
 
 interface Answer {
   questionId: string;
   answer: string;
+  userId: string;
 }
 
 interface Questionnaire {
@@ -54,6 +59,11 @@ interface Session {
   title: string;
 }
 
+interface Professor {
+  _id: string;
+  email: string;
+}
+
 interface SessionAverage {
   sessionId: string;
   questionAverages: { questionId: string; average: number }[];
@@ -61,36 +71,9 @@ interface SessionAverage {
 
 const theme = createTheme({
   typography: {
-    fontFamily: 'Poppins, Arial, sans-serif',
+    fontFamily: "Poppins, Arial, sans-serif",
   },
 });
-
-interface LegendProps {
-  data: { label: string; value: number }[];
-  colors: string[];
-  title: string;
-}
-
-const Legend = ({ data, colors, title }: LegendProps) => {
-  return (
-    <LegendContainer>
-      {title && <ChartTitle>{title}</ChartTitle>}
-      {data.map((item, index) => (
-        <LegendItem key={index}>
-          <LegendColor color={colors[index % colors.length]} />
-          <LegendText>
-            {item.label}
-            <br />
-            <span style={{ fontWeight: 'bold' }}>Média: {item.value.toFixed(2)}</span>
-          </LegendText>
-        </LegendItem>
-      ))}
-    </LegendContainer>
-  );
-};
-
-// Paleta de cores padrão do Chart.js
-const chartJsColors = ['#36A2EB', '#FF6384', '#FFCE56', '#4BC0C0', '#9966FF', '#FF9F40'];
 
 export default function RoundPage() {
   const router = useRouter();
@@ -102,6 +85,7 @@ export default function RoundPage() {
   const [questions, setQuestions] = useState<Question[]>([]);
   const [sessions, setSessions] = useState<Session[]>([]);
   const [sessionAverages, setSessionAverages] = useState<SessionAverage[]>([]);
+  const [professors, setProfessors] = useState<Professor[]>([]);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -110,14 +94,41 @@ export default function RoundPage() {
     const fetchRoundData = async () => {
       setLoading(true);
       try {
-        const res = await fetch(`/api/report?roundId=${roundId}`);
+        const token = localStorage.getItem("token");
+        if (!token) {
+          throw new Error("Token não encontrado");
+        }
+
+        const res = await fetch(`/api/report?roundId=${roundId}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        });
+
+        if (!res.ok) {
+          throw new Error(`Erro ao buscar relatório: ${res.statusText}`);
+        }
+
         const data = await res.json();
-        setQuestionnaires(data.questionnaires);
-        setAnswers(data.answers);
-        setQuestions(data.questions);
-        setSessions(data.sessions);
-        setSessionAverages(data.sessionAverages);
+        setQuestionnaires(data.questionnaires || []);
+        setAnswers(data.answers || []);
+        setQuestions(data.questions || []);
+        setSessions(data.sessions || []);
+        setSessionAverages(data.sessionAverages || []);
         setRound(data.round || null);
+
+        // Buscar professores que responderam
+        const professorIds = [...new Set(data.answers.map((a: Answer) => a.userId))];
+
+        if (professorIds.length > 0) {
+          const profRes = await fetch(`/api/professors?ids=${professorIds.join(",")}`, {
+            headers: { Authorization: `Bearer ${token}` },
+          });
+          const profData = await profRes.json();
+          setProfessors(profData.professors || []);
+        }
+
         console.log("Dados da rodada:", data);
       } catch (error) {
         console.error("Erro ao buscar dados da rodada:", error);
@@ -128,11 +139,6 @@ export default function RoundPage() {
 
     fetchRoundData();
   }, [roundId]);
-
-  const sessionsMap = sessions.reduce((acc, session) => {
-    acc[session._id] = session.title;
-    return acc;
-  }, {} as Record<string, string>);
 
   return (
     <ProtectedRoute>
@@ -146,9 +152,37 @@ export default function RoundPage() {
           {round && (
             <>
               <RoundHeader>Rodada {round.roundNumber}</RoundHeader>
-              <RoundSubheader>
-                Data de Envio: <strong>{new Date(round.sentDate).toLocaleDateString("pt-BR")}</strong>
-              </RoundSubheader>
+
+              <RoundInfoContainer>
+                <RoundInfoItem>
+                  <strong>Data de Envio:</strong> {new Date(round.sentDate).toLocaleDateString("pt-BR")}
+                </RoundInfoItem>
+                <RoundInfoItem>
+                  <strong>Professores Respondentes:</strong> {professors.length}
+                </RoundInfoItem>
+              </RoundInfoContainer>
+
+              {professors.length > 0 && (
+                <ProfessorsListContainer>
+                  <strong>Professores que responderam:</strong>
+                  {professors.map((professor) => {
+                    const professorQuestionnaire = questionnaires.find(q => q.userId === professor._id);
+
+                    return (
+                      <ProfessorItem key={professor._id}>
+                        {professor.email}
+                        {professorQuestionnaire && (
+                          <ProfessorActions>
+                            <button onClick={() => router.push(`/respostas?questionnaireId=${professorQuestionnaire._id}`)}>
+                              Ver Respostas
+                            </button>
+                          </ProfessorActions>
+                        )}
+                      </ProfessorItem>
+                    );
+                  })}
+                </ProfessorsListContainer>
+              )}
             </>
           )}
 
@@ -167,69 +201,43 @@ export default function RoundPage() {
                     <TableCell>{q.title}</TableCell>
                     <TableCell>{new Date(q.sentDate).toLocaleDateString("pt-BR")}</TableCell>
                     <TableCell>
-                      {q.responseDate ? (
-                        new Date(q.responseDate).toLocaleDateString("pt-BR")
-                      ) : (
-                        "Pendente"
-                      )}
+                      {q.responseDate ? new Date(q.responseDate).toLocaleDateString("pt-BR") : "Pendente"}
                     </TableCell>
                   </TableRow>
                 ))}
               </tbody>
             </Table>
           </TableContainer>
-          
-          {sessionAverages.map(({ sessionId, questionAverages }) => {
-            const sessionTitle = sessionsMap[sessionId];
-            const questionTexts = questionAverages.map((qa) => {
-              const question = questions.find((q) => q._id === qa.questionId);
-              return question ? question.text : "Questão desconhecida";
-            });
 
-            const pieChartData = questionAverages.map((qa, index) => ({
-              id: qa.questionId,
-              value: qa.average,
-              label: questionTexts[index],
-              color: chartJsColors[index % chartJsColors.length], // Usando a paleta do Chart.js
-            }));
+          {sessionAverages.length > 0 && sessions.length > 0 && (
+            sessionAverages.map(({ sessionId, questionAverages }) => {
+              const sessionTitle = sessions.find(s => s._id === sessionId)?.title || "Sessão desconhecida";
+              const pieChartData = questionAverages.map((qa, index) => ({
+                id: qa.questionId,
+                value: qa.average,
+                label: questions.find((q) => q._id === qa.questionId)?.text || "Questão desconhecida",
+              }));
 
-            return (
-              <ChartContainer key={sessionId}>
-                <div>
+              return (
+                <ChartContainer key={sessionId}>
                   <PieChart
-                    series={[
-                      {
-                        data: pieChartData,
-                        innerRadius: 40,
-                      },
-                    ]}
+                    series={[{ data: pieChartData, innerRadius: 40 }]}
                     height={320}
-                    slotProps={{
-                      legend: {
-                        hidden: true,
-                      },
-                      popper: {
-                        sx: {
-                          fontSize: '0.875rem',
-                          maxWidth: '48rem',
-                          '& .MuiChartsTooltip-mark': {
-                            width: '1rem',
-                            height: '1rem',
-                            marginRight: '0.5rem',
-                          },
-                          '& .MuiChartsTooltip-cell:last-of-type': {
-                            fontSize: '1rem',
-                            fontWeight: 700,
-                          },
-                        }
-                      },
-                    }}
+                    slotProps={{ legend: { hidden: true } }}
                   />
-                </div>
-                <Legend data={pieChartData} colors={chartJsColors} title={sessionTitle} />
-              </ChartContainer>
-            );
-          })}
+                  <LegendContainer>
+                    <ChartTitle>{sessionTitle}</ChartTitle>
+                    {pieChartData.map((item, index) => (
+                      <LegendItem key={index}>
+                        <LegendColor color={`hsl(${index * 30}, 70%, 50%)`} />
+                        <LegendText>{item.label}: <strong>{item.value.toFixed(2)}</strong></LegendText>
+                      </LegendItem>
+                    ))}
+                  </LegendContainer>
+                </ChartContainer>
+              );
+            })
+          )}
         </RoundContainer>
       </ThemeProvider>
     </ProtectedRoute>

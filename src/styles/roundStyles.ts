@@ -125,3 +125,39 @@ export const LegendText = styled.span`
   font-size: 0.75rem;
   color: #333;
 `;
+
+export const RoundInfoContainer = styled.div`
+  display: flex;
+  gap: 2rem;
+  margin-bottom: 1.5rem;
+`;
+
+export const RoundInfoItem = styled.div`
+  font-size: 1rem;
+  background: #f5f5f5;
+  padding: 0.8rem 1.2rem;
+  border-radius: 8px;
+  font-weight: bold;
+`;
+
+export const ProfessorsListContainer = styled.div`
+  margin-top: 1.5rem;
+  padding: 1rem;
+  background: #f9f9f9;
+  border-radius: 8px;
+`;
+
+export const ProfessorItem = styled.p`
+  font-size: 0.9rem;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid #ddd;
+
+  &:last-child {
+    border-bottom: none;
+  }
+`;
+
+export const ProfessorActions = styled.div`
+  margin-left: 10px;
+  display: inline-block;
+`;
