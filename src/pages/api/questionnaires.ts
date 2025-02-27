@@ -8,15 +8,34 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
   if (req.method === 'GET') {
     try {
-      const { userId } = req.query;
+      const { userId, roundId } = req.query;
 
-      if (!userId || !mongoose.Types.ObjectId.isValid(userId as string)) {
-        return res.status(400).json({ message: 'userId inválido' });
+      if (!userId && !roundId) {
+        return res.status(400).json({ message: 'É necessário fornecer userId ou roundId' });
       }
 
-      const questionnaires = await Questionnaire.find({ userId: new mongoose.Types.ObjectId(userId as string) })
+      let filter: any = {};
+      if (userId) {
+        if (!mongoose.Types.ObjectId.isValid(userId as string)) {
+          return res.status(400).json({ message: 'userId inválido' });
+        }
+        filter.userId = new mongoose.Types.ObjectId(userId as string);
+      }
+
+      if (roundId) {
+        if (!mongoose.Types.ObjectId.isValid(roundId as string)) {
+          return res.status(400).json({ message: 'roundId inválido' });
+        }
+        filter.round = new mongoose.Types.ObjectId(roundId as string);
+      }
+
+      const questionnaires = await Questionnaire.find(filter)
         .populate('questions')
         .lean();
+
+      if (!questionnaires.length) {
+        return res.status(404).json({ message: 'Nenhum questionário encontrado' });
+      }
 
       return res.status(200).json({ message: 'Questionários encontrados', data: questionnaires });
     } catch (error) {
@@ -39,7 +58,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         userId,
         questions,
         sentDate: new Date(),
-        round
+        round: new mongoose.Types.ObjectId(round), // Garante que roundId é um ObjectId
       });
 
       return res.status(201).json({ message: 'Questionário criado com sucesso', data: newQuestionnaire });

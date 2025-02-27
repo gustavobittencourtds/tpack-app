@@ -18,56 +18,30 @@ export const AdminHeader = styled.h1`
   margin-bottom: 1rem;
 `;
 
-export const TableContainer = styled.div`
-  overflow-x: auto;
-  border-radius: 6px;
+export const RoundCard = styled.div`
+  background: #f8f9fa;
+  border-radius: 8px;
+  padding: 1rem;
+  margin-bottom: 1rem;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 `;
 
-export const Table = styled.table`
-  width: 100%;
-  border-collapse: collapse;
-  background: #fcfcfc;
-`;
-
-export const TableRow = styled.tr`
-  &:nth-child(even) {
-    background: #e8e8e8;
-  }
-`;
-
-export const TableHeader = styled.th`
-  background: #6c5ce7;
-  color: #FFF;
-  padding: 0.8rem;
-  text-align: left;
-  font-size: 0.875rem;
-  font-weight: 400;
-
-  &:first-child {
-    border-right: solid 1px #FFF;
-  }
-`;
-
-export const TableCell = styled.td`
-  padding: 0.8rem;
-  font-size: 0.75rem;
-  
-  &.round-cell {
-    display: flex;
-  }
-  
-`;
-
-export const ProfessorCell = styled(TableCell)`
+export const RoundCardHeader = styled.h2`
+  font-size: 1.25rem;
   font-weight: 500;
-  color: #2d3436;
+  color: #333;
+  margin-bottom: 0.5rem;
 `;
 
-export const QuestionCell = styled(TableCell)`
+export const RoundCardContent = styled.div`
+  font-size: 0.875rem;
+  color: #555;
+  margin-bottom: 1rem;
+`;
+
+export const RoundCardFooter = styled.div`
   display: flex;
-  flex-wrap: wrap;
-  gap: 0.4rem;
+  justify-content: flex-end;
 `;
 
 export const AdminButton = styled.button`
@@ -93,28 +67,4 @@ export const LoadingText = styled.p`
   color: #222;
   font-size: 0.875rem;
   margin-top: 2rem;
-`;
-
-export const DateHeader = styled(TableHeader)`
-  background-color: #6c5ce7;
-  color: white;
-`;
-
-export const BackButton = styled.button`
-  background: #6c5ce7;
-  color: white;
-  padding: 0.5rem 1rem;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  font-size: 0.875rem;
-  font-weight: 500;
-  transition: background 0.2s, box-shadow 0.2s;
-  display: inline-block;
-  margin-bottom: 1rem;
-
-  &:hover {
-    background: #5948d6;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  }
 `;

@@ -25,9 +25,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     }
 
     // Busca o professor associado ao questionário (se houver)
-    const professor = questionnaire.professorId
-      ? await Professor.findById(questionnaire.professorId).lean()
-      : null;
+    const professor = await Professor.findOne({ userId: questionnaire.userId }).lean();
 
     const answers = await Answer.find({ questionnaireId: new mongoose.Types.ObjectId(questionnaireId as string) })
       .populate('questionId', 'text')
