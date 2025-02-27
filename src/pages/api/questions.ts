@@ -1,8 +1,6 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import dbConnect from '../../utils/dbConnect';
-import mongoose from 'mongoose';
 import Question from '../../models/Question';
-import Choice from '../../models/Choice';
 import jwt, { TokenExpiredError } from 'jsonwebtoken';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {

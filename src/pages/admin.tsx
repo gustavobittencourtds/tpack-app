@@ -11,6 +11,7 @@ import {
   AdminButton,
   LoadingText,
 } from '../styles/adminStyles';
+import ProtectedRoute from '../components/ProtectedRoute';
 
 interface Professor {
   _id: string;
@@ -43,23 +44,42 @@ export default function AdminDashboard() {
     const fetchData = async () => {
       setLoading(true);
       try {
+        const token = localStorage.getItem('token'); // Obtém o token do localStorage
+
         // Buscar professores
-        const professorRes = await fetch('/api/professors');
+        const professorRes = await fetch('/api/professors', {
+          headers: {
+            Authorization: `Bearer ${token}`, // Envia o token no cabeçalho
+          },
+        });
         const professorData = await professorRes.json();
         setProfessors(professorData.professors);
+
+        if (!professorData.professors || professorData.professors.length === 0) {
+          setLoading(false);
+          return;
+        }
 
         // Buscar questionários
         const questionnaireData: { [key: string]: Questionnaire[] } = {};
         await Promise.all(
           professorData.professors.map(async (prof: Professor) => {
-            const res = await fetch(`/api/questionnaires?userId=${prof._id}`);
+            const res = await fetch(`/api/questionnaires?userId=${prof._id}`, {
+              headers: {
+                Authorization: `Bearer ${token}`, // Envia o token no cabeçalho
+              },
+            });
             const data = await res.json();
             questionnaireData[prof._id] = data.data || [];
           })
         );
 
         // Buscar rodadas
-        const roundsRes = await fetch('/api/rounds');
+        const roundsRes = await fetch('/api/rounds', {
+          headers: {
+            Authorization: `Bearer ${token}`, // Envia o token no cabeçalho
+          },
+        });
         const roundsData = await roundsRes.json();
 
         // Ordenar rodadas da mais recente para a mais antiga
@@ -94,67 +114,74 @@ export default function AdminDashboard() {
   }, []);
 
   return (
-    <AdminContainer>
-      <AdminHeader>Avaliação TPACK</AdminHeader>
+    <ProtectedRoute >
+      <AdminContainer>
+        <AdminHeader>Avaliação TPACK</AdminHeader>
 
-      {loading ? (
-        <LoadingText>Carregando...</LoadingText>
-      ) : (
-        <TableContainer>
-          <Table>
-            {/* Cabeçalho com professores */}
-            <thead>
-              <TableRow>
-                <TableHeader>Rodadas</TableHeader>
-                {professors.map((professor) => (
-                  <TableHeader key={professor._id}>{professor.email}</TableHeader>
-                ))}
-              </TableRow>
-            </thead>
-
-            {/* Corpo da tabela com rodadas e questionários */}
-            <tbody>
-              {rounds.map((round) => (
-                <TableRow key={round._id}>
-                  {/* Nome da rodada como um botão para acessar sua página */}
-                  <TableCell className="round-cell">
-                    <AdminButton onClick={() => router.push(`/round?roundId=${round._id}`)}>
-                      Rodada {round.roundNumber}
-                    </AdminButton>
-                  </TableCell>
-
-                  {/* Questionários de cada professor nessa rodada */}
-                  {professors.map((professor) => {
-                    const questionnaires = questionnairesByRound[round._id]?.[professor._id] || [];
-                    return (
-                      <TableCell key={`${round._id}-${professor._id}`}>
-                        {questionnaires.length > 0 ? (
-                          questionnaires.map((q) => (
-                            <div key={q._id}>
-                              <AdminButton onClick={() => router.push(`/respostas?questionnaireId=${q._id}&fromAdmin=true`)}>
-                                {q.title}
-                              </AdminButton>
-                              <p><strong>Enviado em:</strong> {new Date(q.sentDate).toLocaleDateString('pt-BR')}</p>
-                              <p>
-                                <strong>Status:</strong> {q.completed ? 'Respondido' : 'Pendente'}
-                                {q.responseDate && q.completed && (
-                                  <> em {new Date(q.responseDate).toLocaleDateString('pt-BR')}</>
-                                )}
-                              </p>
-                            </div>
-                          ))
-                        ) : (
-                          <p>-</p>
-                        )}
-                      </TableCell>
-                    );
-                  })}
+        {loading ? (
+          <LoadingText>Carregando...</LoadingText>
+        ) : !professors || professors.length === 0 ? (
+          <div>
+            <p>Nenhum professor cadastrado ainda. Por favor, cadastre professores para enviar os primeiros questionários.</p>
+            <AdminButton onClick={() => router.push('/professors')}>Cadastrar Professor</AdminButton>
+          </div>
+        ) : (
+          <TableContainer>
+            <Table>
+              {/* Cabeçalho com professores */}
+              <thead>
+                <TableRow>
+                  <TableHeader>Rodadas</TableHeader>
+                  {professors.map((professor) => (
+                    <TableHeader key={professor._id}>{professor.email}</TableHeader>
+                  ))}
                 </TableRow>
-              ))}
-            </tbody>
-          </Table>
-        </TableContainer>
-      )}
-    </AdminContainer>
+              </thead>
+
+              {/* Corpo da tabela com rodadas e questionários */}
+              <tbody>
+                {rounds.map((round) => (
+                  <TableRow key={round._id}>
+                    {/* Nome da rodada como um botão para acessar sua página */}
+                    <TableCell className="round-cell">
+                      <AdminButton onClick={() => router.push(`/round?roundId=${round._id}`)}>
+                        Rodada {round.roundNumber}
+                      </AdminButton>
+                    </TableCell>
+
+                    {/* Questionários de cada professor nessa rodada */}
+                    {professors.map((professor) => {
+                      const questionnaires = questionnairesByRound[round._id]?.[professor._id] || [];
+                      return (
+                        <TableCell key={`${round._id}-${professor._id}`}>
+                          {questionnaires.length > 0 ? (
+                            questionnaires.map((q) => (
+                              <div key={q._id}>
+                                <AdminButton onClick={() => router.push(`/respostas?questionnaireId=${q._id}&fromAdmin=true`)}>
+                                  {q.title}
+                                </AdminButton>
+                                <p><strong>Enviado em:</strong> {new Date(q.sentDate).toLocaleDateString('pt-BR')}</p>
+                                <p>
+                                  <strong>Status:</strong> {q.completed ? 'Respondido' : 'Pendente'}
+                                  {q.responseDate && q.completed && (
+                                    <> em {new Date(q.responseDate).toLocaleDateString('pt-BR')}</>
+                                  )}
+                                </p>
+                              </div>
+                            ))
+                          ) : (
+                            <p>-</p>
+                          )}
+                        </TableCell>
+                      );
+                    })}
+                  </TableRow>
+                ))}
+              </tbody>
+            </Table>
+          </TableContainer>
+        )}
+      </AdminContainer>
+    </ProtectedRoute>
   );
 }

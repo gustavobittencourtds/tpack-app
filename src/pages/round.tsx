@@ -20,6 +20,7 @@ import {
   LegendColor,
   LegendText,
 } from "../styles/roundStyles";
+import ProtectedRoute from "../components/ProtectedRoute";
 
 interface Answer {
   questionId: string;
@@ -134,101 +135,103 @@ export default function RoundPage() {
   }, {} as Record<string, string>);
 
   return (
-    <ThemeProvider theme={theme}>
-      <CssBaseline />
-      <RoundContainer>
-        {loading && <p>Carregando...</p>}
+    <ProtectedRoute>
+      <ThemeProvider theme={theme}>
+        <CssBaseline />
+        <RoundContainer>
+          {loading && <p>Carregando...</p>}
 
-        <BackButton onClick={() => router.push("/admin")}>Voltar</BackButton>
+          <BackButton onClick={() => router.push("/admin")}>Voltar</BackButton>
 
-        {round && (
-          <>
-            <RoundHeader>Rodada {round.roundNumber}</RoundHeader>
-            <RoundSubheader>
-              Data de Envio: <strong>{new Date(round.sentDate).toLocaleDateString("pt-BR")}</strong>
-            </RoundSubheader>
-          </>
-        )}
+          {round && (
+            <>
+              <RoundHeader>Rodada {round.roundNumber}</RoundHeader>
+              <RoundSubheader>
+                Data de Envio: <strong>{new Date(round.sentDate).toLocaleDateString("pt-BR")}</strong>
+              </RoundSubheader>
+            </>
+          )}
 
-        <TableContainer>
-          <Table>
-            <thead>
-              <TableRow>
-                <TableHeader>Questionário</TableHeader>
-                <TableHeader>Enviado em</TableHeader>
-                <TableHeader>Respondido em</TableHeader>
-              </TableRow>
-            </thead>
-            <tbody>
-              {questionnaires.map((q) => (
-                <TableRow key={q._id}>
-                  <TableCell>{q.title}</TableCell>
-                  <TableCell>{new Date(q.sentDate).toLocaleDateString("pt-BR")}</TableCell>
-                  <TableCell>
-                    {q.responseDate ? (
-                      new Date(q.responseDate).toLocaleDateString("pt-BR")
-                    ) : (
-                      "Pendente"
-                    )}
-                  </TableCell>
+          <TableContainer>
+            <Table>
+              <thead>
+                <TableRow>
+                  <TableHeader>Questionário</TableHeader>
+                  <TableHeader>Enviado em</TableHeader>
+                  <TableHeader>Respondido em</TableHeader>
                 </TableRow>
-              ))}
-            </tbody>
-          </Table>
-        </TableContainer>
-        
-        {sessionAverages.map(({ sessionId, questionAverages }) => {
-          const sessionTitle = sessionsMap[sessionId];
-          const questionTexts = questionAverages.map((qa) => {
-            const question = questions.find((q) => q._id === qa.questionId);
-            return question ? question.text : "Questão desconhecida";
-          });
+              </thead>
+              <tbody>
+                {questionnaires.map((q) => (
+                  <TableRow key={q._id}>
+                    <TableCell>{q.title}</TableCell>
+                    <TableCell>{new Date(q.sentDate).toLocaleDateString("pt-BR")}</TableCell>
+                    <TableCell>
+                      {q.responseDate ? (
+                        new Date(q.responseDate).toLocaleDateString("pt-BR")
+                      ) : (
+                        "Pendente"
+                      )}
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </tbody>
+            </Table>
+          </TableContainer>
+          
+          {sessionAverages.map(({ sessionId, questionAverages }) => {
+            const sessionTitle = sessionsMap[sessionId];
+            const questionTexts = questionAverages.map((qa) => {
+              const question = questions.find((q) => q._id === qa.questionId);
+              return question ? question.text : "Questão desconhecida";
+            });
 
-          const pieChartData = questionAverages.map((qa, index) => ({
-            id: qa.questionId,
-            value: qa.average,
-            label: questionTexts[index],
-            color: chartJsColors[index % chartJsColors.length], // Usando a paleta do Chart.js
-          }));
+            const pieChartData = questionAverages.map((qa, index) => ({
+              id: qa.questionId,
+              value: qa.average,
+              label: questionTexts[index],
+              color: chartJsColors[index % chartJsColors.length], // Usando a paleta do Chart.js
+            }));
 
-          return (
-            <ChartContainer key={sessionId}>
-              <div>
-                <PieChart
-                  series={[
-                    {
-                      data: pieChartData,
-                      innerRadius: 40,
-                    },
-                  ]}
-                  height={320}
-                  slotProps={{
-                    legend: {
-                      hidden: true,
-                    },
-                    popper: {
-                      sx: {
-                        fontSize: '0.875rem',
-                        maxWidth: '48rem',
-                        '& .MuiChartsTooltip-mark': {
-                          width: '1rem',
-                          height: '1rem',
-                          marginRight: '0.5rem',
-                        },
-                        '& .MuiChartsTooltip-cell:last-of-type': {
-                          fontSize: '1rem',
-                          fontWeight: 700,
-                        },
-                      }
-                    },
-                  }}
-                />
-              </div>
-              <Legend data={pieChartData} colors={chartJsColors} title={sessionTitle} />
-            </ChartContainer>
-          );
-        })}
-      </RoundContainer>
-    </ThemeProvider>
+            return (
+              <ChartContainer key={sessionId}>
+                <div>
+                  <PieChart
+                    series={[
+                      {
+                        data: pieChartData,
+                        innerRadius: 40,
+                      },
+                    ]}
+                    height={320}
+                    slotProps={{
+                      legend: {
+                        hidden: true,
+                      },
+                      popper: {
+                        sx: {
+                          fontSize: '0.875rem',
+                          maxWidth: '48rem',
+                          '& .MuiChartsTooltip-mark': {
+                            width: '1rem',
+                            height: '1rem',
+                            marginRight: '0.5rem',
+                          },
+                          '& .MuiChartsTooltip-cell:last-of-type': {
+                            fontSize: '1rem',
+                            fontWeight: 700,
+                          },
+                        }
+                      },
+                    }}
+                  />
+                </div>
+                <Legend data={pieChartData} colors={chartJsColors} title={sessionTitle} />
+              </ChartContainer>
+            );
+          })}
+        </RoundContainer>
+      </ThemeProvider>
+    </ProtectedRoute>
   );
 }

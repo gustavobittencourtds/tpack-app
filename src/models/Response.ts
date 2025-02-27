@@ -1,20 +1,19 @@
-// src/models/Response.ts
 import mongoose, { Document } from 'mongoose';
 
 interface IResponse extends Document {
-  professor_id: mongoose.Schema.Types.ObjectId;
-  session_id: mongoose.Schema.Types.ObjectId;
-  question_id: mongoose.Schema.Types.ObjectId;
-  answer: string | number | Array<string | number>;
-  timestamp: Date;
+  professor_id: mongoose.Schema.Types.ObjectId; // Referência ao professor
+  session_id: mongoose.Schema.Types.ObjectId; // Referência à sessão
+  question_id: mongoose.Schema.Types.ObjectId; // Referência à questão
+  answer: string | number | Array<string | number>; // Resposta
+  timestamp: Date; // Data de envio
 }
 
 const responseSchema = new mongoose.Schema<IResponse>({
   professor_id: { type: mongoose.Schema.Types.ObjectId, ref: 'Professor', required: true },
   session_id: { type: mongoose.Schema.Types.ObjectId, ref: 'Session', required: true },
   question_id: { type: mongoose.Schema.Types.ObjectId, ref: 'Question', required: true },
-  answer: { type: mongoose.Schema.Types.Mixed, required: true }, // Permite flexibilidade no tipo de resposta
-  timestamp: { type: Date, default: Date.now }
+  answer: { type: mongoose.Schema.Types.Mixed, required: true },
+  timestamp: { type: Date, default: Date.now },
 });
 
-export default mongoose.model<IResponse>('Response', responseSchema);
+export default mongoose.models.Response || mongoose.model<IResponse>('Response', responseSchema);

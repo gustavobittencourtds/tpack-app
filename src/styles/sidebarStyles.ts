@@ -31,3 +31,19 @@ export const SidebarMenuItem = styled.li`
     color: #2d3436;
   }
 `;
+
+export const LogoutButton = styled.button`
+  width: 100%;
+  padding: 0.75rem 1rem;
+  background: #ff4757;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background 0.3s;
+  margin-top: 1rem;
+
+  &:hover {
+    background: #e84118;
+  }
+`;

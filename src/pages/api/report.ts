@@ -5,6 +5,7 @@ import Answer from '../../models/Answer';
 import Question from '../../models/Question';
 import Session from '../../models/Session';
 import Round from '../../models/Round';
+import jwt from 'jsonwebtoken';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   await dbConnect();
@@ -16,12 +17,19 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
 
   try {
+    const token = req.headers.authorization?.split(' ')[1];
+    if (!token) {
+      return res.status(401).json({ message: 'Token não fornecido' });
+    }
 
-    // Busca o objeto round correspondente ao roundId
-    const round = await Round.findById(roundId).lean();
+    const decoded = jwt.verify(token, process.env.JWT_SECRET as string) as { userId: string };
+    const userId = decoded.userId;
 
-    // Busca todos os questionários da rodada
-    const questionnaires = await Questionnaire.find({ roundId }).lean();
+    // Busca o objeto round correspondente ao roundId e userId
+    const round = await Round.findOne({ _id: roundId, userId }).lean();
+
+    // Busca todos os questionários da rodada e userId
+    const questionnaires = await Questionnaire.find({ roundId, userId }).lean();
 
     // Busca todas as respostas dos questionários da rodada
     const answers = await Answer.find({

@@ -1,7 +1,7 @@
 import mongoose, { Schema, Document } from 'mongoose';
 
-export interface IChoice extends Document {
-  question_id: mongoose.Types.ObjectId;
+interface IChoice extends Document {
+  question_id: mongoose.Types.ObjectId; // Referência à questão
   text: string;
   level?: number;
   nextLevel?: number;

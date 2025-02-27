@@ -33,6 +33,43 @@ export const RespostasHeader = styled.h1`
   }
 `;
 
+export const RespostasTable = styled.table`
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 1rem;
+`;
+
+export const RespostasTableRow = styled.tr`
+  &:nth-child(even) {
+    background-color: #f2f2f2;
+
+    @media (prefers-color-scheme: dark) {
+      background-color: #2a2a2a;
+    }
+  }
+`;
+
+export const RespostasTableHeader = styled.th`
+  background-color: #6c5ce7;
+  color: white;
+  padding: 0.75rem;
+  text-align: left;
+  border-bottom: 2px solid #ddd;
+
+  @media (prefers-color-scheme: dark) {
+    border-bottom: 2px solid #444;
+  }
+`;
+
+export const RespostasTableCell = styled.td`
+  padding: 0.75rem;
+  border-bottom: 1px solid #ddd;
+
+  @media (prefers-color-scheme: dark) {
+    border-bottom: 1px solid #444;
+  }
+`;
+
 export const RespostasSubheader = styled.p`
   font-size: 0.9rem;
   color: #636e72;

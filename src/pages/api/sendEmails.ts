@@ -11,7 +11,7 @@ import { sendEmail } from '../../utils/emailUtils';
 
 dotenv.config();
 
-async function createNewRound(): Promise<mongoose.Types.ObjectId> {
+async function createNewRound(userId: mongoose.Types.ObjectId): Promise<mongoose.Types.ObjectId> {
   const lastRound = await Round.findOne().sort({ roundNumber: -1 }).lean();
   const nextRoundNumber = lastRound ? lastRound.roundNumber + 1 : 1;
 
@@ -20,6 +20,7 @@ async function createNewRound(): Promise<mongoose.Types.ObjectId> {
     sentDate: new Date(),
     status: 'open',
     description: `Rodada de envio ${nextRoundNumber}`,
+    userId, // Inclui o userId na nova rodada
   });
 
   return newRound._id;
@@ -39,7 +40,15 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
 
   try {
-    const roundId = await createNewRound();
+    const token = req.headers.authorization?.split(' ')[1];
+    if (!token) {
+      return res.status(401).json({ message: 'Token não fornecido' });
+    }
+
+    const decoded = jwt.verify(token, process.env.JWT_SECRET as string) as { userId: string };
+    const userId = new mongoose.Types.ObjectId(decoded.userId);
+
+    const roundId = await createNewRound(userId);
 
     for (const professorId of professorIds) {
       const professor = await Professor.findById(professorId).lean();
@@ -47,8 +56,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         console.warn(`Professor com ID ${professorId} não encontrado. Pulando...`);
         continue;
       }
-
-      const userId = new mongoose.Types.ObjectId(professor._id);
 
       const questions = await Question.find().select('_id');
       const questionIds = questions.map((q) => q._id);

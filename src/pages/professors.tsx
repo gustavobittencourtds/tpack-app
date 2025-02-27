@@ -15,6 +15,7 @@ import {
   SendButton,
   SelectAllButton,
 } from '../styles/professorsStyles';
+import ProtectedRoute from '../components/ProtectedRoute';
 
 interface Professor {
   _id: string;
@@ -26,12 +27,18 @@ export default function ProfessorsPage() {
   const [newProfessorEmail, setNewProfessorEmail] = useState('');
   const [selectedProfessors, setSelectedProfessors] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchProfessors = async () => {
       setLoading(true);
       try {
-        const res = await fetch('/api/professors');
+        const token = localStorage.getItem('token');
+        const res = await fetch('/api/professors', {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
         const data = await res.json();
         setProfessors(data.professors);
       } catch (error) {
@@ -49,23 +56,28 @@ export default function ProfessorsPage() {
     if (!newProfessorEmail) return;
 
     try {
+      const token = localStorage.getItem('token');
       const res = await fetch('/api/professors', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
         },
         body: JSON.stringify({ email: newProfessorEmail }),
       });
 
+      const data = await res.json(); // Lê o corpo da resposta uma vez
       if (res.ok) {
-        const newProfessor = await res.json();
-        setProfessors([...professors, newProfessor]);
+        // Adiciona o novo professor ao array existente
+        setProfessors((prevProfessors) => Array.isArray(prevProfessors) ? [...prevProfessors, data] : [data]);
         setNewProfessorEmail('');
+        setMessage('Professor adicionado com sucesso!');
       } else {
-        console.error('Erro ao adicionar professor:', await res.text());
+        setMessage(data.message || 'Erro ao adicionar professor');
       }
     } catch (error) {
       console.error('Erro ao adicionar professor:', error);
+      setMessage('Erro ao adicionar professor.');
     }
   };
 
@@ -74,21 +86,27 @@ export default function ProfessorsPage() {
     if (!newEmail) return;
 
     try {
+      const token = localStorage.getItem('token');
       const res = await fetch(`/api/professors?id=${professor._id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
         },
         body: JSON.stringify({ email: newEmail }),
       });
 
       if (res.ok) {
         setProfessors(professors.map((p) => (p._id === professor._id ? { ...p, email: newEmail } : p)));
+        setMessage('Professor editado com sucesso!');
       } else {
-        console.error('Erro ao editar professor:', await res.text());
+        const errorText = await res.text();
+        console.error('Erro ao editar professor:', errorText);
+        setMessage(`Erro ao editar professor: ${errorText}`);
       }
     } catch (error) {
       console.error('Erro ao editar professor:', error);
+      setMessage('Erro ao editar professor.');
     }
   };
 
@@ -96,17 +114,25 @@ export default function ProfessorsPage() {
     if (!confirm('Tem certeza que deseja remover este professor?')) return;
 
     try {
+      const token = localStorage.getItem('token');
       const res = await fetch(`/api/professors?id=${professorId}`, {
         method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
       });
 
       if (res.ok) {
         setProfessors(professors.filter((p) => p._id !== professorId));
+        setMessage('Professor removido com sucesso!');
       } else {
-        console.error('Erro ao remover professor:', await res.text());
+        const errorText = await res.text();
+        console.error('Erro ao remover professor:', errorText);
+        setMessage(`Erro ao remover professor: ${errorText}`);
       }
     } catch (error) {
       console.error('Erro ao remover professor:', error);
+      setMessage('Erro ao remover professor.');
     }
   };
 
@@ -119,7 +145,7 @@ export default function ProfessorsPage() {
   };
 
   const handleSelectAll = () => {
-    if (selectedProfessors.length === professors.length) {
+    if (!professors || selectedProfessors.length === professors.length) {
       setSelectedProfessors([]);
     } else {
       setSelectedProfessors(professors.map((professor) => professor._id));
@@ -130,80 +156,90 @@ export default function ProfessorsPage() {
     const professorIds = selectedOnly ? selectedProfessors : professors.map((professor) => professor._id);
 
     try {
+      const token = localStorage.getItem('token');
       const res = await fetch('/api/sendEmails', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
         },
         body: JSON.stringify({ professorIds }),
       });
 
       if (res.ok) {
         alert('Questionários enviados com sucesso!');
+        setMessage('Questionários enviados com sucesso!');
       } else {
-        console.error('Erro ao enviar questionários:', await res.text());
+        const errorText = await res.text();
+        console.error('Erro ao enviar questionários:', errorText);
+        setMessage(`Erro ao enviar questionários: ${errorText}`);
       }
     } catch (error) {
       console.error('Erro ao enviar questionários:', error);
+      setMessage('Erro ao enviar questionários.');
     }
   };
 
   return (
-    <ProfessorsContainer>
-      <ProfessorsHeader>Professores</ProfessorsHeader>
+    <ProtectedRoute>
+      <ProfessorsContainer>
+        <ProfessorsHeader>Professores</ProfessorsHeader>
 
-      <AddProfessorForm onSubmit={handleAddProfessor}>
-        <AddProfessorInput
-          type="email"
-          placeholder="Email do professor"
-          value={newProfessorEmail}
-          onChange={(e) => setNewProfessorEmail(e.target.value)}
-        />
-        <AddProfessorButton type="submit">Adicionar</AddProfessorButton>
-      </AddProfessorForm>
+        <AddProfessorForm onSubmit={handleAddProfessor}>
+          <AddProfessorInput
+            type="email"
+            placeholder="Email do professor"
+            value={newProfessorEmail}
+            onChange={(e) => setNewProfessorEmail(e.target.value)}
+          />
+          <AddProfessorButton type="submit">Adicionar</AddProfessorButton>
+        </AddProfessorForm>
 
-      <SelectAllButton onClick={handleSelectAll}>
-        {selectedProfessors.length === professors.length ? 'Desmarcar Todos' : 'Selecionar Todos'}
-      </SelectAllButton>
+        {message && <p>{message}</p>}
 
-      <SendButton onClick={() => handleSendQuestionnaires(false)}>Enviar Questionário para Todos</SendButton>
-      <SendButton onClick={() => handleSendQuestionnaires(true)} disabled={selectedProfessors.length === 0}>
-        Enviar Questionário para Selecionados
-      </SendButton>
+        <SelectAllButton onClick={handleSelectAll}>
+          {!professors || selectedProfessors.length === professors.length ? 'Desmarcar Todos' : 'Selecionar Todos'}
+        </SelectAllButton>
 
-      {loading ? (
-        <p>Carregando...</p>
-      ) : (
-        <TableContainer>
-          <Table>
-            <thead>
-              <TableRow>
-                <TableHeader>Selecionar</TableHeader>
-                <TableHeader>Email</TableHeader>
-                <TableHeader>Ações</TableHeader>
-              </TableRow>
-            </thead>
-            <tbody>
-              {professors.map((professor) => (
-                <TableRow key={professor._id}>
-                  <TableCell>
-                    <input
-                      type="checkbox"
-                      checked={selectedProfessors.includes(professor._id)}
-                      onChange={() => handleSelectProfessor(professor._id)}
-                    />
-                  </TableCell>
-                  <TableCell>{professor.email}</TableCell>
-                  <TableCell>
-                    <EditButton onClick={() => handleEditProfessor(professor)}>Editar</EditButton>
-                    <DeleteButton onClick={() => handleDeleteProfessor(professor._id)}>Remover</DeleteButton>
-                  </TableCell>
+        <SendButton onClick={() => handleSendQuestionnaires(false)}>Enviar Questionário para Todos</SendButton>
+        <SendButton onClick={() => handleSendQuestionnaires(true)} disabled={selectedProfessors.length === 0}>
+          Enviar Questionário para Selecionados
+        </SendButton>
+
+        {loading ? (
+          <p>Carregando...</p>
+        ) : (
+          <TableContainer>
+            <Table>
+              <thead>
+                <TableRow>
+                  <TableHeader>Selecionar</TableHeader>
+                  <TableHeader>Email</TableHeader>
+                  <TableHeader>Ações</TableHeader>
                 </TableRow>
-              ))}
-            </tbody>
-          </Table>
-        </TableContainer>
-      )}
-    </ProfessorsContainer>
+              </thead>
+              <tbody>
+                {professors && professors.map((professor) => (
+                  <TableRow key={professor._id}>
+                    <TableCell>
+                      <input
+                        type="checkbox"
+                        checked={selectedProfessors.includes(professor._id)}
+                        onChange={() => handleSelectProfessor(professor._id)}
+                      />
+                    </TableCell>
+                    <TableCell>{professor.email}</TableCell>
+                    <TableCell>
+                      <EditButton onClick={() => handleEditProfessor(professor)}>Editar</EditButton>
+                      <DeleteButton onClick={() => handleDeleteProfessor(professor._id)}>Remover</DeleteButton>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </tbody>
+            </Table>
+          </TableContainer>
+        )}
+      </ProfessorsContainer>
+    </ProtectedRoute>
   );
 }

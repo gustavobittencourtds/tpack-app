@@ -5,9 +5,12 @@ import '../models/Question'; // Certifique-se de importar o modelo aqui
 let isConnected = false;
 
 export default async function dbConnect() {
-  if (isConnected) return;
+  if (isConnected) {
+    return;
+  }
 
   try {
+    console.log('Tentando conectar ao MongoDB...');
     const db = await mongoose.connect(process.env.DB_URI as string);
     isConnected = db.connections[0].readyState === 1;
     console.log('Conectado ao MongoDB');

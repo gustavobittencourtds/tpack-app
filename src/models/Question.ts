@@ -1,8 +1,7 @@
-// src/models/Question.ts
 import mongoose, { Schema, Document } from 'mongoose';
 
-export interface IQuestion extends Document {
-  session_id: mongoose.Types.ObjectId;
+interface IQuestion extends Document {
+  session_id: mongoose.Types.ObjectId; // Referência à sessão
   text: string;
   type: 'multiple_choice' | 'single_choice' | 'scale' | 'number' | 'text' | 'intro';
   note?: string;
@@ -16,7 +15,7 @@ const QuestionSchema = new Schema<IQuestion>({
   type: { type: String, enum: ['multiple_choice', 'single_choice', 'scale', 'number', 'text', 'intro'], required: true },
   note: { type: String },
   order: { type: Number, required: true },
-  choices: [{ type: Schema.Types.ObjectId, ref: 'Choice' }], // Referência às Choices
+  choices: [{ type: Schema.Types.ObjectId, ref: 'Choice' }],
 });
 
 export default mongoose.models.Question || mongoose.model<IQuestion>('Question', QuestionSchema);
