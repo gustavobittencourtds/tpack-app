@@ -6,12 +6,18 @@ const fadeIn = keyframes`
 `;
 
 export const ProfessorsContainer = styled.div`
-  max-width: 900px;
-  margin: 2rem auto;
-  padding: 2rem;
-  background: #fff;
+  padding: 1.5rem 5%;
+  background: #FFFFFF;
   border-radius: 16px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  max-width: 1480px;
+  animation: ${fadeIn} 0.4s ease-out;
+  margin: 0 auto;
+
+  @media (prefers-color-scheme: dark) {
+    background: #1e1e1e;
+    color: #f1f1f1;
+  }
 `;
 
 export const ProfessorsHeader = styled.h1`

@@ -13,7 +13,9 @@ import {
   SelectAllButton,
 } from '../styles/professorsStyles';
 import ProtectedRoute from '../components/ProtectedRoute';
-import FeatherIcon from 'feather-icons-react';
+import dynamic from 'next/dynamic';
+
+const FeatherIcon = dynamic(() => import('feather-icons-react'), { ssr: false });
 
 interface Professor {
   _id: string;
@@ -183,7 +185,7 @@ export default function ProfessorsPage() {
                 />
                 <span>{professor.email}</span>
               </div>
-              <div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
                 <EditButton onClick={() => handleEditProfessor(professor)}>
                   <FeatherIcon icon="edit" /> Editar
                 </EditButton>

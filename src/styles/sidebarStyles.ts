@@ -2,13 +2,15 @@ import styled from 'styled-components';
 
 export const SidebarContainer = styled.div`
   width: 260px;
-  height: 100vh;
-  background: #34495e;
+  background:rgb(102, 116, 130);
   color: #ecf0f1;
   padding: 1.5rem;
-  box-shadow: 4px 0 10px rgba(0, 0, 0, 0.15);
+  box-shadow: 4px 0 10px rgba(0, 0, 0, 0.1);
   display: flex;
   flex-direction: column;
+  position: sticky;
+  max-height: 100vh;
+  top: 0;
 `;
 
 export const SidebarMenu = styled.ul`

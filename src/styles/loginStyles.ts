@@ -1,15 +1,16 @@
 import styled from 'styled-components';
 
 export const LoginContainer = styled.div`
-  min-height: 100vh;
+  width: 100vw;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, #f0f2f5, #ebedf0);
-  padding: 2rem;
+  padding: 1.5rem;
+  overflow: hidden;
 
   > div {
     width: 100%;
+    margin: auto;
     max-width: 420px;
     padding: 2.5rem;
     background: #fff;

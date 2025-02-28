@@ -1,10 +1,23 @@
-import styled from 'styled-components';
+import styled, { keyframes } from 'styled-components';
+
+const fadeIn = keyframes`
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+`;
 
 export const AdminContainer = styled.div`
-  padding: 2rem;
-  max-width: 1200px;
+  padding: 1.5rem 5%;
+  background: #FFFFFF;
+  border-radius: 16px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  max-width: 1480px;
+  animation: ${fadeIn} 0.4s ease-out;
   margin: 0 auto;
-  font-family: 'Poppins', sans-serif;
+
+  @media (prefers-color-scheme: dark) {
+    background: #1e1e1e;
+    color: #f1f1f1;
+  }
 `;
 
 export const AdminHeader = styled.h1`
@@ -21,6 +34,7 @@ export const RoundCard = styled.div`
   padding: 1.5rem;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
   transition: transform 0.2s;
+  margin-bottom: 1.5rem;
 
   &:hover {
     transform: translateY(-5px);

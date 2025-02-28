@@ -6,20 +6,21 @@ const fadeIn = keyframes`
 `;
 
 export const RespostasContainer = styled.div`
-  font-family: 'Inter', sans-serif;
-  max-width: 1000px;
-  margin: 2rem auto;
-  padding: 1.5rem;
-  background: #ffffff;
-  border-radius: 12px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+  padding: 1.5rem 5%;
+  background: #FFFFFF;
+  border-radius: 16px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  max-width: 1480px;
   animation: ${fadeIn} 0.4s ease-out;
+  margin: 0 auto;
 
   @media (prefers-color-scheme: dark) {
     background: #1e1e1e;
     color: #f1f1f1;
   }
 `;
+
+// Outros estilos permanecem iguais
 
 export const RespostasHeader = styled.h1`
   font-size: 1.5rem;

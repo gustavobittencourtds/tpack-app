@@ -1,14 +1,23 @@
-import { border } from './../../node_modules/@mui/system/borders/borders.d';
-import styled from "styled-components";
+import styled, { keyframes } from 'styled-components';
+
+const fadeIn = keyframes`
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+`;
 
 export const RoundContainer = styled.div`
-  max-width: 1100px;
-  margin: auto;
-  padding: 1.5rem;
-  background: #fff;
-  border-radius: 8px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
-  font-family: "Poppins", sans-serif;
+  padding: 1.5rem 5%;
+  background: #FFFFFF;
+  border-radius: 16px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  max-width: 1480px;
+  animation: ${fadeIn} 0.4s ease-out;
+  margin: 0 auto;
+
+  @media (prefers-color-scheme: dark) {
+    background: #1e1e1e;
+    color: #f1f1f1;
+  }
 `;
 
 export const RoundHeader = styled.h1`
