@@ -1,142 +1,151 @@
-import styled from 'styled-components';
+import styled, { keyframes } from 'styled-components';
+
+const fadeIn = keyframes`
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+`;
 
 export const ProfessorsContainer = styled.div`
-  max-width: 800px;
+  max-width: 900px;
   margin: 2rem auto;
-  padding: 1.5rem;
-  background: #ffffff;
-  border-radius: 12px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+  padding: 2rem;
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
 `;
 
 export const ProfessorsHeader = styled.h1`
-  font-size: 1.5rem;
-  font-weight: 500;
+  font-size: 2rem;
+  font-weight: 600;
   color: #333;
   text-align: center;
-  margin-bottom: 1.5rem;
+  margin-bottom: 2rem;
 `;
 
-export const TableContainer = styled.div`
-  overflow-x: auto;
-  border-radius: 6px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-`;
-
-export const Table = styled.table`
-  width: 100%;
-  border-collapse: collapse;
-  background: #fcfcfc;
-`;
-
-export const TableRow = styled.tr`
-  &:nth-child(even) {
-    background: #f8f8f8;
-  }
-`;
-
-export const TableHeader = styled.th`
-  background: #6c5ce7;
-  color: #FFF;
-  padding: 0.8rem;
-  text-align: left;
-  font-size: 0.875rem;
-  font-weight: 400;
-`;
-
-export const TableCell = styled.td`
-  padding: 0.8rem;
-  font-size: 0.875rem;
+export const ProfessorCard = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  background: #f9fafb;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  animation: ${fadeIn} 0.3s ease-out;
 `;
 
 export const AddProfessorForm = styled.form`
   display: flex;
   justify-content: center;
-  margin-bottom: 1.5rem;
+  gap: 1rem;
+  margin-bottom: 2rem;
 `;
 
 export const AddProfessorInput = styled.input`
-  padding: 0.5rem;
+  padding: 0.75rem;
   font-size: 1rem;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  margin-right: 0.5rem;
+  border: 2px solid rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
+  width: 300px;
+
+  &:focus {
+    border-color: #6c5ce7;
+    outline: none;
+  }
 `;
 
 export const AddProfessorButton = styled.button`
-  padding: 0.5rem 1rem;
+  padding: 0.75rem 1.5rem;
   font-size: 1rem;
-  background-color: #6c5ce7;
+  background: linear-gradient(135deg, #6c5ce7, #8e7cf3);
   color: white;
   border: none;
-  border-radius: 4px;
+  border-radius: 10px;
   cursor: pointer;
+  display: flex;
+  align-items: center;
 
   &:hover {
-    background-color: #5a4dbf;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(108, 92, 231, 0.3);
+  }
+
+  svg {
+    margin-right: 8px;
   }
 `;
 
 export const EditButton = styled.button`
-  padding: 0.3rem 0.6rem;
-  font-size: 0.875rem;
-  background-color: #3498db;
+  padding: 0.5rem 1rem;
+  font-size: 0.9rem;
+  background: #3498db;
   color: white;
   border: none;
-  border-radius: 4px;
+  border-radius: 8px;
   cursor: pointer;
   margin-right: 0.5rem;
+  display: flex;
+  align-items: center;
 
   &:hover {
-    background-color: #2980b9;
+    background: #2980b9;
+  }
+
+  svg {
+    margin-right: 6px;
   }
 `;
 
 export const DeleteButton = styled.button`
-  padding: 0.3rem 0.6rem;
-  font-size: 0.875rem;
-  background-color: #e74c3c;
+  padding: 0.5rem 1rem;
+  font-size: 0.9rem;
+  background: #e74c3c;
   color: white;
   border: none;
-  border-radius: 4px;
+  border-radius: 8px;
   cursor: pointer;
+  display: flex;
+  align-items: center;
 
   &:hover {
-    background-color: #c0392b;
+    background: #c0392b;
+  }
+
+  svg {
+    margin-right: 6px;
   }
 `;
 
 export const SendButton = styled.button`
-  padding: 0.5rem 1rem;
+  padding: 0.75rem 1.5rem;
   font-size: 1rem;
-  background-color: #6c5ce7;
+  background: linear-gradient(135deg, #00b894, #00cec9);
   color: white;
   border: none;
-  border-radius: 4px;
+  border-radius: 10px;
   cursor: pointer;
-  margin: 0.5rem;
 
   &:hover {
-    background-color: #5a4dbf;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 184, 148, 0.3);
   }
 
   &:disabled {
-    background-color: #ccc;
+    background: #ccc;
     cursor: not-allowed;
   }
 `;
 
 export const SelectAllButton = styled.button`
-  padding: 0.5rem 1rem;
+  padding: 0.75rem 1.5rem;
   font-size: 1rem;
-  background-color: #3498db;
+  background: #3498db;
   color: white;
   border: none;
-  border-radius: 4px;
+  border-radius: 10px;
   cursor: pointer;
-  margin: 0.5rem;
 
   &:hover {
-    background-color: #2980b9;
+    background: #2980b9;
   }
 `;

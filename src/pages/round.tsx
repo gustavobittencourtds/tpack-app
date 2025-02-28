@@ -62,6 +62,7 @@ interface Session {
 interface Professor {
   _id: string;
   email: string;
+  userId: string;
 }
 
 interface SessionAverage {
@@ -118,15 +119,18 @@ export default function RoundPage() {
         setSessionAverages(data.sessionAverages || []);
         setRound(data.round || null);
 
-        // Buscar professores que responderam
-        const professorIds = [...new Set(data.answers.map((a: Answer) => a.userId))];
+        // Buscar professores pelos userIds dos questionários
+        if (data.questionnaires && data.questionnaires.length > 0) {
+          const userIds = [...new Set(data.questionnaires.map((q: { userId: string }) => q.userId))];
 
-        if (professorIds.length > 0) {
-          const profRes = await fetch(`/api/professors?ids=${professorIds.join(",")}`, {
-            headers: { Authorization: `Bearer ${token}` },
-          });
-          const profData = await profRes.json();
-          setProfessors(profData.professors || []);
+          if (userIds.length > 0) {
+            // Aqui buscamos professores pela propriedade userId, não pelo _id
+            const profRes = await fetch(`/api/professors?userIds=${userIds.join(",")}`, {
+              headers: { Authorization: `Bearer ${token}` },
+            });
+            const profData = await profRes.json();
+            setProfessors(profData.professors || []);
+          }
         }
 
         console.log("Dados da rodada:", data);
@@ -139,6 +143,22 @@ export default function RoundPage() {
 
     fetchRoundData();
   }, [roundId]);
+
+  useEffect(() => {
+    if (questionnaires.length > 0 && professors.length > 0) {
+      console.log("Dados carregados:");
+      console.log("Questionários:", questionnaires);
+      console.log("Professores:", professors);
+
+      // Verifique se os IDs estão corretamente associados
+      questionnaires.forEach(q => {
+        console.log(`Questionário ${q._id} associado ao usuário: ${q.userId}`);
+        // Aqui buscamos o professor pelo userId do questionário
+        const professorMatch = professors.find(p => p.userId === q.userId);
+        console.log("Professor correspondente:", professorMatch);
+      });
+    }
+  }, [questionnaires, professors]);
 
   return (
     <ProtectedRoute>
@@ -162,27 +182,40 @@ export default function RoundPage() {
                 </RoundInfoItem>
               </RoundInfoContainer>
 
-              {professors.length > 0 && (
-                <ProfessorsListContainer>
-                  <strong>Professores que responderam:</strong>
-                  {professors.map((professor) => {
-                    const professorQuestionnaire = questionnaires.find(q => q.userId === professor._id);
-
-                    return (
-                      <ProfessorItem key={professor._id}>
-                        {professor.email}
-                        {professorQuestionnaire && (
-                          <ProfessorActions>
-                            <button onClick={() => router.push(`/respostas?questionnaireId=${professorQuestionnaire._id}`)}>
-                              Ver Respostas
-                            </button>
-                          </ProfessorActions>
-                        )}
-                      </ProfessorItem>
-                    );
-                  })}
-                </ProfessorsListContainer>
-              )}
+              {professors.map((professor) => (
+                <div key={professor._id} style={{
+                  padding: "10px",
+                  margin: "5px 0",
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  borderBottom: "1px solid #eee"
+                }}>
+                  <span>{professor.email}</span>
+                  <button
+                    onClick={() => {
+                      // Encontre o questionário para este professor usando o userId
+                      const questionnaireId = questionnaires.find(q => q.userId === professor.userId)?._id;
+                      if (questionnaireId) {
+                        router.push(`/respostas?questionnaireId=${questionnaireId}`);
+                      } else {
+                        alert("Não foi possível encontrar o questionário para este professor.");
+                      }
+                    }}
+                    style={{
+                      backgroundColor: "#4682B4",
+                      color: "white",
+                      border: "none",
+                      padding: "8px 12px",
+                      borderRadius: "4px",
+                      cursor: "pointer",
+                      fontWeight: "bold"
+                    }}
+                  >
+                    Ver Respostas
+                  </button>
+                </div>
+              ))}
             </>
           )}
 

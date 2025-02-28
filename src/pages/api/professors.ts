@@ -23,17 +23,35 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const { method, query: { id }, body: { email } } = req;
 
     switch (method) {
+      // No arquivo professors.ts, modifique o case 'GET' para:
       case 'GET':
-        try {
-          const professors = await Professor.find({ userId }).select('_id email').lean();
+      try {
+        // Se foram passados userIds na query, filtra por eles
+        if (req.query.userIds) {
+          const userIds = Array.isArray(req.query.userIds)
+            ? req.query.userIds
+            : (req.query.userIds as string).split(',');
+
+          const professors = await Professor.find({
+            userId: { $in: userIds }
+          }).select('_id email userId').lean();
+
           if (!professors || professors.length === 0) {
             return res.status(404).json({ message: 'Nenhum professor encontrado' });
           }
           return res.status(200).json({ professors });
-        } catch (error) {
-          console.error('Erro ao buscar professores:', error);
-          return res.status(500).json({ message: 'Erro ao buscar professores', error: error instanceof Error ? error.message : 'Erro desconhecido' });
         }
+
+        // Caso contrário, mantém a busca original por userId do token
+        const professors = await Professor.find({ userId }).select('_id email userId').lean();
+        if (!professors || professors.length === 0) {
+          return res.status(404).json({ message: 'Nenhum professor encontrado' });
+        }
+        return res.status(200).json({ professors });
+      } catch (error) {
+        console.error('Erro ao buscar professores:', error);
+        return res.status(500).json({ message: 'Erro ao buscar professores', error: error instanceof Error ? error.message : 'Erro desconhecido' });
+      }
 
       case 'POST':
         if (!email) {
