@@ -8,7 +8,7 @@ function MyApp({ Component, pageProps }: AppProps) {
   const router = useRouter();
 
   // Definir quais rotas são públicas (não requerem Sidebar ou autenticação)
-  const publicRoutes = ['/login', '/register'];
+  const publicRoutes = ['/login', '/register', '/survey'];
   const isPublicRoute = publicRoutes.includes(router.pathname);
 
   return (

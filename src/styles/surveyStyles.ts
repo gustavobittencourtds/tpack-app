@@ -12,24 +12,19 @@ const pulse = keyframes`
 `;
 
 export const SurveyContainer = styled.div`
-  font-family: 'Inter', sans-serif;
-  max-width: 1200px;
-  margin: 2rem auto;
-  padding: 2rem;
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(10px);
-  border-radius: 20px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  animation: ${fadeIn} 0.6s ease-out;
+  padding: 1.5rem 5%;
+  background: #FFFFFF;
+  border-radius: 16px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  max-width: 1480px;
+  animation: ${fadeIn} 0.4s ease-out;
+  margin: 0 auto;
   display: flex;
   gap: 2rem;
-  max-height: 100vh;
-  overflow: hidden;
 
   @media (prefers-color-scheme: dark) {
-    background: rgba(30, 30, 30, 0.95);
-    border-color: rgba(255, 255, 255, 0.1);
+    background: #1e1e1e;
+    color: #f1f1f1;
   }
 `;
 
