@@ -1,14 +1,7 @@
 // Login.tsx
 import React, { useState } from 'react';
 import { useRouter } from 'next/router';
-import {
-  LoginContainer,
-  LoginForm,
-  LoginInput,
-  LoginButton,
-  RegisterButton,
-  ErrorMessage,
-} from '../styles/loginStyles';
+import styles from '../styles/login.module.css';
 
 const Login: React.FC = () => {
   const [email, setEmail] = useState('');
@@ -47,32 +40,34 @@ const Login: React.FC = () => {
   };
 
   return (
-    <LoginContainer>
+    <div className={styles.loginContainer}>
       <div>
-        <LoginForm onSubmit={handleLogin}>
+        <form className={styles.loginForm} onSubmit={handleLogin}>
           <h2>Login</h2>
-          {error && <ErrorMessage>{error}</ErrorMessage>}
-          <LoginInput
+          {error && <p className={styles.errorMessage}>{error}</p>}
+          <input
             type="email"
             placeholder="Email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
+            className={styles.loginInput}
           />
-          <LoginInput
+          <input
             type="password"
             placeholder="Senha"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
+            className={styles.loginInput}
           />
-          <LoginButton type="submit">Entrar</LoginButton>
-          <RegisterButton type="button" onClick={handleRegisterRedirect}>
+          <button type="submit" className={styles.loginButton}>Entrar</button>
+          <button type="button" className={styles.registerButton} onClick={handleRegisterRedirect}>
             Cadastre-se
-          </RegisterButton>
-        </LoginForm>
+          </button>
+        </form>
       </div>
-    </LoginContainer>
+    </div>
   );
 };
 

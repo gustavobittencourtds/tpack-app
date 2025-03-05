@@ -1,13 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
-import {
-  RespostasContainer,
-  RespostasHeader,
-  RespostasTable,
-  RespostasTableRow,
-  RespostasTableHeader,
-  RespostasTableCell,
-} from '../styles/respostasStyles';
+import styles from '../styles/respostas.module.css';
 
 interface Answer {
   questionId: string;
@@ -56,27 +49,27 @@ export default function Respostas() {
   if (error) return <p>{error}</p>;
 
   return (
-    <RespostasContainer>
-      <RespostasHeader>{questionnaireTitle}</RespostasHeader>
+    <div className={`${styles.respostasContainer} ${styles.fadeIn}`}>
+      <h1 className={styles.respostasHeader}>{questionnaireTitle}</h1>
       <p>Professor: {professorEmail}</p>
       {sentDate && <p>Data de envio: {sentDate.toLocaleDateString('pt-BR')}</p>}
       {responseDate && <p>Data de resposta: {responseDate.toLocaleDateString('pt-BR')}</p>}
-      <RespostasTable>
+      <table className={styles.respostasTable}>
         <thead>
-          <RespostasTableRow>
-            <RespostasTableHeader>Pergunta</RespostasTableHeader>
-            <RespostasTableHeader>Resposta</RespostasTableHeader>
-          </RespostasTableRow>
+          <tr className={styles.respostasTableRow}>
+            <th className={styles.respostasTableHeader}>Pergunta</th>
+            <th className={styles.respostasTableHeader}>Resposta</th>
+          </tr>
         </thead>
         <tbody>
           {answers.map((answer) => (
-            <RespostasTableRow key={answer.questionId}>
-              <RespostasTableCell>{answer.questionText}</RespostasTableCell>
-              <RespostasTableCell>{Array.isArray(answer.answer) ? answer.answer.join(', ') : answer.answer}</RespostasTableCell>
-            </RespostasTableRow>
+            <tr key={answer.questionId} className={styles.respostasTableRow}>
+              <td className={styles.respostasTableCell}>{answer.questionText}</td>
+              <td className={styles.respostasTableCell}>{Array.isArray(answer.answer) ? answer.answer.join(', ') : answer.answer}</td>
+            </tr>
           ))}
         </tbody>
-      </RespostasTable>
-    </RespostasContainer>
+      </table>
+    </div>
   );
 }

@@ -3,27 +3,7 @@ import { useRouter } from "next/router";
 import { PieChart } from "@mui/x-charts/PieChart";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { CssBaseline } from "@mui/material";
-import {
-  RoundContainer,
-  RoundHeader,
-  RoundInfoContainer,
-  RoundInfoItem,
-  TableContainer,
-  Table,
-  TableRow,
-  TableHeader,
-  TableCell,
-  BackButton,
-  ChartContainer,
-  ChartTitle,
-  LegendContainer,
-  LegendItem,
-  LegendColor,
-  LegendText,
-  ProfessorsListContainer,
-  ProfessorItem,
-  ProfessorActions,
-} from "../styles/roundStyles";
+import styles from "../styles/roundStyles.module.css";
 import ProtectedRoute from "../components/ProtectedRoute";
 
 interface Answer {
@@ -72,7 +52,7 @@ interface SessionAverage {
 
 const theme = createTheme({
   typography: {
-    fontFamily: "Poppins, Arial, sans-serif",
+    fontFamily: "Inter, sans-serif",
   },
 });
 
@@ -164,23 +144,23 @@ export default function RoundPage() {
     <ProtectedRoute>
       <ThemeProvider theme={theme}>
         <CssBaseline />
-        <RoundContainer>
+        <div className={styles.roundContainer}>
           {loading && <p>Carregando...</p>}
 
-          <BackButton onClick={() => router.push("/admin")}>Voltar</BackButton>
+          <button className={styles.backButton} onClick={() => router.push("/admin")}>Voltar</button>
 
           {round && (
             <>
-              <RoundHeader>Rodada {round.roundNumber}</RoundHeader>
+              <h1 className={styles.roundHeader}>Rodada {round.roundNumber}</h1>
 
-              <RoundInfoContainer>
-                <RoundInfoItem>
+              <div className={styles.roundInfoContainer}>
+                <div className={styles.roundInfoItem}>
                   <strong>Data de Envio:</strong> {new Date(round.sentDate).toLocaleDateString("pt-BR")}
-                </RoundInfoItem>
-                <RoundInfoItem>
+                </div>
+                <div className={styles.roundInfoItem}>
                   <strong>Professores Respondentes:</strong> {professors.length}
-                </RoundInfoItem>
-              </RoundInfoContainer>
+                </div>
+              </div>
 
               {professors.map((professor) => (
                 <div key={professor._id} style={{
@@ -219,28 +199,28 @@ export default function RoundPage() {
             </>
           )}
 
-          <TableContainer>
-            <Table>
+          <div className={styles.tableContainer}>
+            <table className={styles.table}>
               <thead>
-                <TableRow>
-                  <TableHeader>Questionário</TableHeader>
-                  <TableHeader>Enviado em</TableHeader>
-                  <TableHeader>Respondido em</TableHeader>
-                </TableRow>
+                <tr className={styles.tableRow}>
+                  <th className={styles.tableHeader}>Questionário</th>
+                  <th className={styles.tableHeader}>Enviado em</th>
+                  <th className={styles.tableHeader}>Respondido em</th>
+                </tr>
               </thead>
               <tbody>
                 {questionnaires.map((q) => (
-                  <TableRow key={q._id}>
-                    <TableCell>{q.title}</TableCell>
-                    <TableCell>{new Date(q.sentDate).toLocaleDateString("pt-BR")}</TableCell>
-                    <TableCell>
+                  <tr key={q._id} className={styles.tableRow}>
+                    <td className={styles.tableCell}>{q.title}</td>
+                    <td className={styles.tableCell}>{new Date(q.sentDate).toLocaleDateString("pt-BR")}</td>
+                    <td className={styles.tableCell}>
                       {q.responseDate ? new Date(q.responseDate).toLocaleDateString("pt-BR") : "Pendente"}
-                    </TableCell>
-                  </TableRow>
+                    </td>
+                  </tr>
                 ))}
               </tbody>
-            </Table>
-          </TableContainer>
+            </table>
+          </div>
 
           {sessionAverages.length > 0 && sessions.length > 0 && (
             sessionAverages.map(({ sessionId, questionAverages }) => {
@@ -252,26 +232,26 @@ export default function RoundPage() {
               }));
 
               return (
-                <ChartContainer key={sessionId}>
+                <div key={sessionId} className={styles.chartContainer}>
                   <PieChart
                     series={[{ data: pieChartData, innerRadius: 40 }]}
                     height={320}
                     slotProps={{ legend: { hidden: true } }}
                   />
-                  <LegendContainer>
-                    <ChartTitle>{sessionTitle}</ChartTitle>
+                  <div className={styles.legendContainer}>
+                    <h3 className={styles.chartTitle}>{sessionTitle}</h3>
                     {pieChartData.map((item, index) => (
-                      <LegendItem key={index}>
-                        <LegendColor color={`hsl(${index * 30}, 70%, 50%)`} />
-                        <LegendText>{item.label}: <strong>{item.value.toFixed(2)}</strong></LegendText>
-                      </LegendItem>
+                      <div key={index} className={styles.legendItem}>
+                        <div className={styles.legendColor} style={{ backgroundColor: `hsl(${index * 30}, 70%, 50%)` }} />
+                        <span className={styles.legendText}>{item.label}: <strong>{item.value.toFixed(2)}</strong></span>
+                      </div>
                     ))}
-                  </LegendContainer>
-                </ChartContainer>
+                  </div>
+                </div>
               );
             })
           )}
-        </RoundContainer>
+        </div>
       </ThemeProvider>
     </ProtectedRoute>
   );

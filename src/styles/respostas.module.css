@@ -1,0 +1,146 @@
+.fadeIn {
+  animation: fadeIn 0.4s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.respostasContainer {
+  padding: 1.5rem 5%;
+  background: #FFFFFF;
+  border-radius: 16px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  max-width: 1480px;
+  margin: 0 auto;
+}
+
+.respostasContainerDark {
+  background: #1e1e1e;
+  color: #f1f1f1;
+}
+
+.respostasHeader {
+  font-size: 1.5rem;
+  font-weight: 500;
+  color: #333;
+  text-align: center;
+  margin-bottom: 0.5rem;
+}
+
+.respostasHeaderDark {
+  color: #f1f1f1;
+}
+
+.respostasTable {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 1rem;
+}
+
+.respostasTableRow:nth-child(even) {
+  background-color: #f2f2f2;
+}
+
+.respostasTableRowDark:nth-child(even) {
+  background-color: #2a2a2a;
+}
+
+.respostasTableHeader {
+  background-color: #6c5ce7;
+  color: white;
+  padding: 0.75rem;
+  text-align: left;
+  border-bottom: 2px solid #ddd;
+}
+
+.respostasTableHeaderDark {
+  border-bottom: 2px solid #444;
+}
+
+.respostasTableCell {
+  padding: 0.75rem;
+  border-bottom: 1px solid #ddd;
+}
+
+.respostasTableCellDark {
+  border-bottom: 1px solid #444;
+}
+
+.respostasSubheader {
+  font-size: 0.9rem;
+  color: #636e72;
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+
+.respostasSubheaderStrong {
+  color: #6c5ce7;
+}
+
+.respostasSubheaderDark {
+  color: #b2bec3;
+}
+
+.respostasContent {
+  margin-top: 1rem;
+  text-align: left;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.respostaItem {
+  margin-bottom: 1rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  overflow: hidden;
+}
+
+.perguntaHeader {
+  background: #6c5ce7;
+  color: white;
+  padding: 0.5rem 1rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  line-height: 1.4;
+}
+
+.respostaBody {
+  padding: 0.5rem 1rem;
+  background: #fafafa;
+  font-size: 0.75rem;
+  color: #2d3436;
+  line-height: 1.5;
+}
+
+.respostaBodyDark {
+  background: #2a2a2a;
+  color: #b2bec3;
+}
+
+.contactLink {
+  color: #6c5ce7;
+  text-decoration: none;
+  font-weight: 400;
+  font-size: 0.75rem;
+}
+
+.contactLink:hover {
+  text-decoration: underline;
+}
+
+.backButton {
+  background-color: #6c5ce7;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-bottom: 1rem;
+}
+
+.backButton:hover {
+  background-color: #5a4dbf;
+}

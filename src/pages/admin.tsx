@@ -1,18 +1,8 @@
-// AdminDashboard.tsx
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import dynamic from 'next/dynamic';
-import {
-  AdminContainer,
-  AdminHeader,
-  RoundCard,
-  RoundCardHeader,
-  RoundCardContent,
-  RoundCardFooter,
-  AdminButton,
-  LoadingText,
-} from '../styles/adminStyles';
 import ProtectedRoute from '../components/ProtectedRoute';
+import styles from '../styles/Admin.module.css';
 
 const FeatherIcon = dynamic(() => import('feather-icons-react'), { ssr: false });
 
@@ -87,36 +77,36 @@ export default function AdminDashboard() {
 
   return (
     <ProtectedRoute>
-      <AdminContainer>
-        <AdminHeader>Avaliação TPACK</AdminHeader>
+      <div className={styles.adminContainer}>
+        <h1 className={styles.adminHeader}>Avaliação TPACK</h1>
         {loading ? (
-          <LoadingText>Carregando...</LoadingText>
+          <p className={styles.loadingText}>Carregando...</p>
         ) : !professors.length ? (
           <div style={{ textAlign: 'center' }}>
             <p>Nenhum professor cadastrado ainda.</p>
-            <AdminButton onClick={() => router.push('/professors')}>
+            <button className={styles.adminButton} onClick={() => router.push('/professors')}>
               <FeatherIcon icon="user-plus" /> Cadastrar Professor
-            </AdminButton>
+            </button>
           </div>
         ) : (
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '1.5rem' }}>
+          <div className={styles.roundsGrid}>
             {rounds.map((round) => (
-              <RoundCard key={round._id}>
-                <RoundCardHeader>Rodada {round.roundNumber}</RoundCardHeader>
-                <RoundCardContent>
+              <div key={round._id} className={styles.roundCard}>
+                <div className={styles.roundCardHeader}>Rodada {round.roundNumber}</div>
+                <div className={styles.roundCardContent}>
                   <p>Data de aplicação: {new Date(round.sentDate).toLocaleDateString('pt-BR')}</p>
                   <p>Professores participantes: {participants[round._id] ?? 'Carregando...'}</p>
-                </RoundCardContent>
-                <RoundCardFooter>
-                  <AdminButton onClick={() => router.push(`/round?roundId=${round._id}`)}>
+                </div>
+                <div className={styles.roundCardFooter}>
+                  <button className={styles.adminButton} onClick={() => router.push(`/round?roundId=${round._id}`)}>
                     Ver Detalhes
-                  </AdminButton>
-                </RoundCardFooter>
-              </RoundCard>
+                  </button>
+                </div>
+              </div>
             ))}
           </div>
         )}
-      </AdminContainer>
+      </div>
     </ProtectedRoute>
   );
 }

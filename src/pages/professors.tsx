@@ -1,19 +1,8 @@
 // ProfessorsPage.tsx
 import { useState, useEffect } from 'react';
-import {
-  ProfessorsContainer,
-  ProfessorsHeader,
-  ProfessorCard,
-  AddProfessorForm,
-  AddProfessorInput,
-  AddProfessorButton,
-  EditButton,
-  DeleteButton,
-  SendButton,
-  SelectAllButton,
-} from '../styles/professorsStyles';
 import ProtectedRoute from '../components/ProtectedRoute';
 import dynamic from 'next/dynamic';
+import styles from '../styles/professorsStyles.module.css';
 
 const FeatherIcon = dynamic(() => import('feather-icons-react'), { ssr: false });
 
@@ -147,36 +136,37 @@ export default function ProfessorsPage() {
 
   return (
     <ProtectedRoute>
-      <ProfessorsContainer>
-        <ProfessorsHeader>Professores</ProfessorsHeader>
-        <AddProfessorForm onSubmit={handleAddProfessor}>
-          <AddProfessorInput
+      <div className={styles.professorsContainer}>
+        <h1 className={styles.professorsHeader}>Professores</h1>
+        <form className={styles.addProfessorForm} onSubmit={handleAddProfessor}>
+          <input
             type="email"
             placeholder="Email do professor"
             value={newProfessorEmail}
             onChange={(e) => setNewProfessorEmail(e.target.value)}
+            className={styles.addProfessorInput}
           />
-          <AddProfessorButton type="submit">
+          <button type="submit" className={styles.addProfessorButton}>
             <FeatherIcon icon="plus" /> Adicionar
-          </AddProfessorButton>
-        </AddProfessorForm>
+          </button>
+        </form>
         {message && <p style={{ color: message.includes('Erro') ? '#e74c3c' : '#00b894', textAlign: 'center' }}>{message}</p>}
         <div style={{ display: 'flex', gap: '1rem', marginBottom: '1.5rem' }}>
-          <SelectAllButton onClick={handleSelectAll}>
+          <button className={styles.selectAllButton} onClick={handleSelectAll}>
             {selectedProfessors.length === professors.length ? 'Desmarcar Todos' : 'Selecionar Todos'}
-          </SelectAllButton>
-          <SendButton onClick={() => handleSendQuestionnaires(false)}>
+          </button>
+          <button className={styles.sendButton} onClick={() => handleSendQuestionnaires(false)}>
             Enviar para Todos
-          </SendButton>
-          <SendButton onClick={() => handleSendQuestionnaires(true)} disabled={selectedProfessors.length === 0}>
+          </button>
+          <button className={styles.sendButton} onClick={() => handleSendQuestionnaires(true)} disabled={selectedProfessors.length === 0}>
             Enviar para Selecionados
-          </SendButton>
+          </button>
         </div>
         {loading ? (
           <p style={{ textAlign: 'center', color: '#636e72' }}>Carregando...</p>
         ) : (
           professors.map((professor) => (
-            <ProfessorCard key={professor._id}>
+            <div key={professor._id} className={styles.professorCard}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
                 <input
                   type="checkbox"
@@ -186,17 +176,17 @@ export default function ProfessorsPage() {
                 <span>{professor.email}</span>
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-                <EditButton onClick={() => handleEditProfessor(professor)}>
+                <button className={styles.editButton} onClick={() => handleEditProfessor(professor)}>
                   <FeatherIcon icon="edit" /> Editar
-                </EditButton>
-                <DeleteButton onClick={() => handleDeleteProfessor(professor._id)}>
+                </button>
+                <button className={styles.deleteButton} onClick={() => handleDeleteProfessor(professor._id)}>
                   <FeatherIcon icon="trash-2" /> Remover
-                </DeleteButton>
+                </button>
               </div>
-            </ProfessorCard>
+            </div>
           ))
         )}
-      </ProfessorsContainer>
+      </div>
     </ProtectedRoute>
   );
 }

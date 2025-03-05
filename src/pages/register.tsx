@@ -1,7 +1,7 @@
 // Register.tsx
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
-import { RegisterContainer, RegisterForm, RegisterInput, RegisterButton, ErrorMessage } from '../styles/registerStyles';
+import styles from '../styles/register.module.css';
 
 const Register: React.FC = () => {
   const [email, setEmail] = useState('');
@@ -42,29 +42,31 @@ const Register: React.FC = () => {
   };
 
   return (
-    <RegisterContainer>
+    <div className={styles.registerContainer}>
       <div>
-        <RegisterForm onSubmit={handleRegister}>
+        <form className={styles.registerForm} onSubmit={handleRegister}>
           <h2>Registro</h2>
-          {error && <ErrorMessage>{error}</ErrorMessage>}
-          <RegisterInput
+          {error && <p className={styles.errorMessage}>{error}</p>}
+          <input
             type="email"
             placeholder="Email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
+            className={styles.registerInput}
           />
-          <RegisterInput
+          <input
             type="password"
             placeholder="Senha"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
+            className={styles.registerInput}
           />
-          <RegisterButton type="submit">Registrar</RegisterButton>
-        </RegisterForm>
+          <button type="submit" className={styles.registerButton}>Registrar</button>
+        </form>
       </div>
-    </RegisterContainer>
+    </div>
   );
 };
 

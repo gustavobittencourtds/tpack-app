@@ -2,7 +2,8 @@
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import dynamic from 'next/dynamic';
-import { SidebarContainer, SidebarMenu, SidebarMenuItem, LogoutButton } from '../styles/sidebarStyles';
+import Image from 'next/image';
+import styles from '../styles/sidebarStyles.module.css';
 
 const FeatherIcon = dynamic(() => import('feather-icons-react'), { ssr: false });
 
@@ -27,20 +28,20 @@ const Sidebar = () => {
   if (!isLoggedIn) return null;
 
   return (
-    <SidebarContainer>
-      <h2 style={{ fontSize: '1.5rem', marginBottom: '2rem', color: '#ecf0f1' }}>TPACK Gestão</h2>
-      <SidebarMenu>
-        <SidebarMenuItem onClick={() => router.push('/admin')} active={router.pathname === '/admin'}>
+    <div className={styles.sidebarContainer}>
+      <Image src="/images/logo.svg" alt="TPACK App" width={65} height={65} style={{ borderRadius: '16px', marginBottom: '2rem' }} />
+      <ul className={styles.sidebarMenu}>
+        <li onClick={() => router.push('/admin')} className={`${styles.sidebarMenuItem} ${router.pathname === '/admin' ? styles.sidebarMenuItemActive : ''}`}>
           <FeatherIcon icon="home" /> Dashboard
-        </SidebarMenuItem>
-        <SidebarMenuItem onClick={() => router.push('/professors')} active={router.pathname === '/professors'}>
+        </li>
+        <li onClick={() => router.push('/professors')} className={`${styles.sidebarMenuItem} ${router.pathname === '/professors' ? styles.sidebarMenuItemActive : ''}`}>
           <FeatherIcon icon="users" /> Professores
-        </SidebarMenuItem>
-      </SidebarMenu>
-      <LogoutButton onClick={handleLogout}>
+        </li>
+      </ul>
+      <button className={styles.logoutButton} onClick={handleLogout}>
         <FeatherIcon icon="log-out" /> Logout
-      </LogoutButton>
-    </SidebarContainer>
+      </button>
+    </div>
   );
 };
 

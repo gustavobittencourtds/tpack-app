@@ -1,22 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import jwt from 'jsonwebtoken';
-import {
-  SurveyContainer,
-  SidebarContainer,
-  SidebarButton,
-  ProgressContainer,
-  ProgressBar,
-  QuestionContainer,
-  QuestionText,
-  ChoiceLabel,
-  InputField,
-  NavigationButton,
-  SubmitButton,
-  Note,
-  IntroContainer,
-  StyledRangeInput,
-} from '../styles/surveyStyles';
+import styles from '../styles/surveyStyles.module.css'; // Importando o CSS Module
 import { Question } from '../types';
 
 const Survey: React.FC = () => {
@@ -71,7 +56,7 @@ const Survey: React.FC = () => {
             (q.type !== 'multiple_choice' || (q.choices && q.choices.length > 0))
         );
 
-        // Agrupaa as questões por sessão
+        // Agrupa as questões por sessão
         interface SessionMap {
           [key: string]: Question[];
         }
@@ -98,7 +83,7 @@ const Survey: React.FC = () => {
     if (token) fetchQuestionsAndSessions();
   }, [token]);
 
-  if (error) return <SurveyContainer>{error}</SurveyContainer>;
+  if (error) return <div className={styles.surveyContainer}>{error}</div>;
 
   const handleAnswerChange = (value: string | string[]) => {
     const questionId = questions[currentQuestionIndex]?._id;
@@ -172,8 +157,8 @@ const Survey: React.FC = () => {
   };
 
   return (
-    <SurveyContainer>
-      <SidebarContainer>
+    <div className={styles.surveyContainer}>
+      <div className={styles.sidebarContainer}>
         <h4>Navegação</h4>
         {Object.entries(sessions).map(([sessionId, sessionQuestions]) => (
           <div key={sessionId}>
@@ -183,43 +168,42 @@ const Survey: React.FC = () => {
             <ul>
               {sessionQuestions.map((q, index) => (
                 <li key={q._id}>
-                  <SidebarButton
+                  <button
+                    className={`${styles.sidebarButton} ${questions.indexOf(q) === currentQuestionIndex ? styles.isActive : ''} ${isQuestionAnswered(questions.indexOf(q)) ? styles.isAnswered : ''}`}
                     onClick={() => handleQuestionSelect(questions.indexOf(q))}
                     disabled={!questions.slice(0, questions.indexOf(q)).every((_, i) => isQuestionAnswered(i))}
-                    isActive={questions.indexOf(q) === currentQuestionIndex}
-                    isAnswered={!!isQuestionAnswered(questions.indexOf(q))}
                     title={q.text}
                   >
                     {q.text.slice(0, 35)}... {/* Trecho da pergunta */}
-                  </SidebarButton>
+                  </button>
                 </li>
               ))}
             </ul>
           </div>
         ))}
-      </SidebarContainer>
+      </div>
 
       <div style={{ flex: 1 }}>
-        <ProgressContainer>
-          <ProgressBar progress={progress} />
+        <div className={styles.progressContainer}>
+          <div className={styles.progressBar} style={{ '--progress': `${progress}%` } as React.CSSProperties} />
           <p>{`Progresso: ${currentQuestionIndex + 1}/${questions.length}`}</p>
-        </ProgressContainer>
+        </div>
 
         {currentQuestionIndex === -1 && intro && (
-          <IntroContainer>
+          <div className={styles.introContainer}>
             <h2>Bem-vindo ao Questionário</h2>
             <p dangerouslySetInnerHTML={{ __html: intro.text.replace(/<br \/>/g, '<br />') }} />
-            {intro.note && <Note>{intro.note}</Note>}
-            <NavigationButton className="start-button" onClick={() => setCurrentQuestionIndex(0)}>
+            {intro.note && <p className={styles.note}>{intro.note}</p>}
+            <button className={`${styles.navigationButton} ${styles.startButton}`} onClick={() => setCurrentQuestionIndex(0)}>
               Começar
-            </NavigationButton>
-          </IntroContainer>
+            </button>
+          </div>
         )}
 
         {currentQuestion && (
-          <QuestionContainer>
-            <QuestionText>{currentQuestion.text}</QuestionText>
-            {currentQuestion.note && <Note>{currentQuestion.note}</Note>}
+          <div className={styles.questionContainer}>
+            <h3 className={styles.questionText}>{currentQuestion.text}</h3>
+            {currentQuestion.note && <p className={styles.note}>{currentQuestion.note}</p>}
 
             {currentQuestion.type === 'multiple_choice' && currentQuestion.choices && (
               <div
@@ -230,9 +214,9 @@ const Survey: React.FC = () => {
                 }}
               >
                 {currentQuestion.choices.map((choice) => (
-                  <ChoiceLabel
+                  <label
                     key={choice._id}
-                    isSelected={(answers[currentQuestion._id] as string[])?.includes(choice._id)}
+                    className={`${styles.choiceLabel} ${(answers[currentQuestion._id] as string[])?.includes(choice._id) ? styles.isSelected : ''}`}
                   >
                     <input
                       type="checkbox"
@@ -246,7 +230,7 @@ const Survey: React.FC = () => {
                       }}
                     />
                     {choice.text}
-                  </ChoiceLabel>
+                  </label>
                 ))}
               </div>
             )}
@@ -254,9 +238,9 @@ const Survey: React.FC = () => {
             {currentQuestion.type === 'single_choice' && currentQuestion.choices && (
               <div>
                 {currentQuestion.choices.map((choice) => (
-                  <ChoiceLabel
+                  <label
                     key={choice._id}
-                    isSelected={answers[currentQuestion._id] === choice.text}
+                    className={`${styles.choiceLabel} ${answers[currentQuestion._id] === choice.text ? styles.isSelected : ''}`}
                   >
                     <input
                       type="radio"
@@ -266,13 +250,14 @@ const Survey: React.FC = () => {
                       onChange={() => handleAnswerChange(choice.text)}
                     />
                     {choice.text}
-                  </ChoiceLabel>
+                  </label>
                 ))}
               </div>
             )}
 
             {['text', 'number'].includes(currentQuestion.type) && (
-              <InputField
+              <input
+                className={styles.inputField}
                 type={currentQuestion.type}
                 value={answers[currentQuestion._id] || ''}
                 onChange={(e) => handleAnswerChange(e.target.value)}
@@ -302,7 +287,9 @@ const Survey: React.FC = () => {
 
             {currentQuestion.type === 'scale' && (
               <div style={{ position: 'relative' }}>
-                <StyledRangeInput
+                <input
+                  className={styles.rangeInput}
+                  type="range"
                   min="1"
                   max="5"
                   step={0.1}
@@ -325,7 +312,7 @@ const Survey: React.FC = () => {
                 </div>
               </div>
             )}
-          </QuestionContainer>
+          </div>
         )}
 
         {isCompleted && (
@@ -347,23 +334,33 @@ const Survey: React.FC = () => {
 
         {!isCompleted && currentQuestionIndex !== -1 && (
           <div>
-            <NavigationButton className="back-button" onClick={handleBack} disabled={currentQuestionIndex === -1}>
+            <button
+              className={`${styles.navigationButton} ${styles.backButton}`}
+              onClick={handleBack}
+              disabled={currentQuestionIndex === -1}
+            >
               {currentQuestionIndex === 0 ? 'Voltar à Introdução' : 'Voltar'}
-            </NavigationButton>
+            </button>
 
             {currentQuestionIndex !== questions.length - 1 && (
-              <NavigationButton onClick={handleNext} disabled={!isQuestionAnswered(currentQuestionIndex)}>
+              <button
+                className={styles.navigationButton}
+                onClick={handleNext}
+                disabled={!isQuestionAnswered(currentQuestionIndex)}
+              >
                 Próximo
-              </NavigationButton>
+              </button>
             )}
 
             {currentQuestionIndex === questions.length - 1 && (
-              <SubmitButton onClick={handleSubmit}>Enviar Respostas</SubmitButton>
+              <button className={`${styles.navigationButton} ${styles.submitButton}`} onClick={handleSubmit}>
+                Enviar Respostas
+              </button>
             )}
           </div>
         )}
       </div>
-    </SurveyContainer>
+    </div>
   );
 };
 
