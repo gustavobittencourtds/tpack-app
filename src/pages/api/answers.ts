@@ -52,6 +52,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         return res.status(404).json({ message: 'Questionário não encontrado' });
       }
 
+      // Verifica se o questionário já foi respondido
+      if (questionnaire?.completed) {
+        return res.status(400).json({ message: 'Este questionário já foi respondido!' });
+      }
+
       const professor = await Professor.findOne({ userId: questionnaire.userId }).lean();
       if (!professor) {
         return res.status(404).json({ message: 'Professor não encontrado' });

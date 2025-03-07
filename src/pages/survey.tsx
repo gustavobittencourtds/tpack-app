@@ -15,20 +15,18 @@ const Survey: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [isCompleted, setIsCompleted] = useState(false);
   const router = useRouter();
-  const { token, professorEmail } = router.query; // Adicione professorEmail aqui
+  const { token, professorEmail } = router.query;
 
-  // Decodifica o token para obter o questionnaireId
   const decodedToken = token ? jwt.decode(token as string) as { userId: string; questionnaireId: string } : null;
   const questionnaireId = decodedToken?.questionnaireId;
 
   useEffect(() => {
     const fetchQuestionsAndSessions = async () => {
       try {
-        // Busca as perguntas
+        // Verifica se o token é válido e se o questionário já foi respondido
         const questionsResponse = await fetch(`/api/questions?token=${token}`);
         if (!questionsResponse.ok) {
           const errorData = await questionsResponse.json();
-          console.error('Erro na resposta da API:', errorData);
           setError(errorData.message || 'Erro ao buscar o questionário.');
           return;
         }
@@ -37,7 +35,6 @@ const Survey: React.FC = () => {
         // Busca as sessões
         const sessionsResponse = await fetch('/api/sessions');
         if (!sessionsResponse.ok) {
-          console.error('Erro ao buscar sessões:', sessionsResponse.statusText);
           setError('Erro ao buscar as sessões.');
           return;
         }
@@ -58,11 +55,7 @@ const Survey: React.FC = () => {
         );
 
         // Agrupa as questões por sessão
-        interface SessionMap {
-          [key: string]: Question[];
-        }
-
-        const groupedSessions: SessionMap = validQuestions.reduce((acc: SessionMap, question: Question) => {
+        const groupedSessions: { [key: string]: Question[] } = validQuestions.reduce((acc: { [key: string]: Question[] }, question: Question) => {
           const sessionId = question.session_id;
           if (!acc[sessionId]) {
             acc[sessionId] = [];
@@ -84,8 +77,27 @@ const Survey: React.FC = () => {
     if (token) fetchQuestionsAndSessions();
   }, [token]);
 
-  if (error) return <div className={styles.surveyContainer}>{error}</div>;
-
+  if (error) return (
+    <div className={styles.surveyContainer}>
+      <div
+        style={{
+          textAlign: 'center',
+          marginLeft: 'auto',
+          marginRight: 'auto',
+          padding: '8rem',
+          backgroundColor: '#f8f9fa',
+          borderRadius: '12px',
+          boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)',
+        }}
+      >
+        <Image src="/images/logo.svg" alt="TPACK App" width={65} height={65} style={{ borderRadius: '16px', marginBottom: '2rem' }} />
+        <p style={{ fontSize: '1.25rem', color: '#2d3436', marginBottom: '1rem' }}>
+          {error}
+        </p>
+      </div>
+    </div>
+  )
+  
   const handleAnswerChange = (value: string | string[]) => {
     const questionId = questions[currentQuestionIndex]?._id;
     if (questionId) {
@@ -134,9 +146,6 @@ const Survey: React.FC = () => {
       const data = await response.json();
       console.log('Respostas enviadas com sucesso:', data);
       setIsCompleted(true);
-
-      // Usa o professorEmail retornado pela API
-      const professorEmail = data.professorEmail;
 
       // Envia o e-mail de confirmação
       const requestBody = {
