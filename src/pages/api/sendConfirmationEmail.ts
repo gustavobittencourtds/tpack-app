@@ -1,5 +1,6 @@
-import dotenv from 'dotenv';
+import { NextApiRequest, NextApiResponse } from 'next';
 import nodemailer from 'nodemailer';
+import dotenv from 'dotenv';
 
 dotenv.config();
 
@@ -17,7 +18,23 @@ const transporter = nodemailer.createTransport({
   },
 } as nodemailer.TransportOptions);
 
-export async function sendEmail(to: string, link: string): Promise<void> {
+export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+  console.log('Método da requisição:', req.method);
+  console.log('Corpo da requisição:', req.body);
+
+  if (req.method !== 'POST') {
+    console.log('Método não permitido:', req.method);
+    return res.status(405).json({ message: 'Método não permitido' });
+  }
+
+  const { to, questionnaireId } = req.body;
+
+  if (!to) {
+    console.log('Campo "to" não definido no corpo da requisição');
+    return res.status(400).json({ message: 'Campo "to" é obrigatório' });
+  }
+
+
   try {
     const emailHtml = `
       <!DOCTYPE html>
@@ -25,7 +42,7 @@ export async function sendEmail(to: string, link: string): Promise<void> {
       <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Questionário de Avaliação TPACK</title>
+        <title>Confirmação de Recebimento</title>
         <style>
           body {
             font-family: 'Inter', sans-serif;
@@ -57,21 +74,6 @@ export async function sendEmail(to: string, link: string): Promise<void> {
             line-height: 1.6;
             margin-bottom: 1.5rem;
           }
-          .button {
-            display: inline-block;
-            padding: 0.75rem 1.5rem;
-            background: linear-gradient(135deg, #6c5ce7, #8e7cf3);
-            color: white !important;
-            text-decoration: none;
-            border-radius: 12px;
-            font-weight: 500;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 6px rgba(108, 92, 231, 0.2);
-          }
-          .button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 12px rgba(108, 92, 231, 0.3);
-          }
           .note {
             font-size: 0.9rem;
             color: #636e72;
@@ -102,11 +104,10 @@ export async function sendEmail(to: string, link: string): Promise<void> {
       </head>
       <body>
         <div class="container">
-          <h1>Questionário de Avaliação TPACK</h1>
+          <h1>Confirmação de Recebimento</h1>
           <p>Olá!</p>
-          <p>Você foi convidado(a) para responder ao questionário de avaliação TPACK. Clique no botão abaixo para acessar o questionário:</p>
-          <a href="${link}" class="button">Acessar Questionário</a>
-          <p class="note">Este link expira em 48 horas. Se você não solicitou este questionário, por favor, ignore este e-mail.</p>
+          <p>Recebemos suas respostas para o questionário de avaliação TPACK. Agradecemos por sua participação!</p>
+          <p class="note">Se você tiver alguma dúvida ou precisar de mais informações, sinta-se à vontade para responder a este e-mail.</p>
         </div>
       </body>
       </html>
@@ -115,37 +116,14 @@ export async function sendEmail(to: string, link: string): Promise<void> {
     await transporter.sendMail({
       from: process.env.EMAIL_USER as string,
       to,
-      subject: 'Seu Questionário de Avaliação TPACK',
-      text: 'Você foi convidado(a) para responder ao questionário de avaliação TPACK. Clique no link para acessar o questionário: ' + link,
+      subject: 'Confirmação de Recebimento - Questionário TPACK',
+      text: 'Recebemos suas respostas para o questionário de avaliação TPACK. Agradecemos por sua participação!',
       html: emailHtml,
     });
-    console.log(`E-mail enviado para ${to}`);
-  } catch (error) {
-    console.error('Erro ao enviar e-mail:', error);
-    throw error;
-  }
-}
 
-export async function sendConfirmationEmail(to: string, questionnaireId: string): Promise<void> {
-  try {
-    const response = await fetch('/api/sendConfirmationEmail', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        to,
-        questionnaireId,
-      }),
-    });
-
-    if (!response.ok) {
-      throw new Error('Erro ao enviar e-mail de confirmação');
-    }
-
-    console.log(`E-mail de confirmação enviado para ${to}`);
+    return res.status(200).json({ message: 'E-mail de confirmação enviado com sucesso' });
   } catch (error) {
     console.error('Erro ao enviar e-mail de confirmação:', error);
-    throw error;
+    return res.status(500).json({ message: 'Erro ao enviar e-mail de confirmação' });
   }
 }

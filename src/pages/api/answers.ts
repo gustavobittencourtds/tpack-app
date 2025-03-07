@@ -5,6 +5,7 @@ import dbConnect from '../../utils/dbConnect';
 import mongoose from 'mongoose';
 import Answer from '../../models/Answer';
 import Questionnaire from '../../models/Questionnaire';
+import Professor from '../../models/Professor';
 
 dotenv.config();
 
@@ -51,6 +52,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         return res.status(404).json({ message: 'Questionário não encontrado' });
       }
 
+      const professor = await Professor.findOne({ userId: questionnaire.userId }).lean();
+      if (!professor) {
+        return res.status(404).json({ message: 'Professor não encontrado' });
+      }
+
       const formattedAnswers = Object.entries(answers).map(([questionId, answer]) => ({
         questionnaireId,
         questionId,
@@ -65,7 +71,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       questionnaire.responseDate = new Date();
       await questionnaire.save();
 
-      return res.status(201).json(newAnswers);
+      return res.status(201).json({ ...newAnswers, professorEmail: professor.email });
     } catch (error) {
       console.error('Erro ao enviar respostas:', error);
       return res.status(500).json({ message: 'Erro ao enviar respostas', error: error instanceof Error ? error.message : 'Erro desconhecido' });

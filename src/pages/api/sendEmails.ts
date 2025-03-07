@@ -7,7 +7,7 @@ import Question from '../../models/Question';
 import Professor from '../../models/Professor';
 import Round from '../../models/Round';
 import mongoose from 'mongoose';
-import { sendEmail } from '../../utils/emailUtils';
+import { sendEmail, sendConfirmationEmail } from '../../utils/emailUtils';
 
 dotenv.config();
 
