@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import ProtectedRoute from '../components/ProtectedRoute';
 import dynamic from 'next/dynamic';
 import styles from '../styles/professorsStyles.module.css';
+import { useRouter } from 'next/router';
 
 const FeatherIcon = dynamic(() => import('feather-icons-react'), { ssr: false });
 
@@ -17,6 +18,7 @@ export default function ProfessorsPage() {
   const [selectedProfessors, setSelectedProfessors] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
+  const router = useRouter();
 
   useEffect(() => {
     const fetchProfessors = async () => {
@@ -34,6 +36,11 @@ export default function ProfessorsPage() {
     };
     fetchProfessors();
   }, []);
+
+  const handleViewQuestionnaires = (professorId: string) => {
+    router.push(`/questionnaires?professorId=${professorId}`);
+  };
+
 
   const handleAddProfessor = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -181,6 +188,9 @@ export default function ProfessorsPage() {
                 </button>
                 <button className={styles.deleteButton} onClick={() => handleDeleteProfessor(professor._id)}>
                   <FeatherIcon icon="trash-2" /> Remover
+                </button>
+                <button className={styles.viewButton} onClick={() => handleViewQuestionnaires(professor._id)}>
+                  <FeatherIcon icon="list" /> Ver Questionários
                 </button>
               </div>
             </div>

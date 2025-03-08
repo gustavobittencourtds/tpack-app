@@ -42,6 +42,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       const decoded = jwt.verify(token, process.env.JWT_SECRET as string) as { questionnaireId: string, userId: string };
       const { questionnaireId, userId } = decoded;
 
+      // Verifica se o questionnaireId foi fornecido
+      if (!questionnaireId) {
+        return res.status(400).json({ message: 'ID do questionário é obrigatório' });
+      }
+
       const { answers } = req.body;
       if (!answers || typeof answers !== 'object' || Array.isArray(answers)) {
         return res.status(400).json({ message: 'Respostas são obrigatórias e devem estar no formato correto' });
@@ -57,7 +62,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         return res.status(400).json({ message: 'Este questionário já foi respondido!' });
       }
 
-      const professor = await Professor.findOne({ userId: questionnaire.userId }).lean();
+      const professor = await Professor.findOne({ userId: questionnaire.userId });
       if (!professor) {
         return res.status(404).json({ message: 'Professor não encontrado' });
       }
@@ -71,6 +76,15 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       }));
 
       const newAnswers = await Answer.insertMany(formattedAnswers);
+
+      // Atualiza o campo answeredSurveys do professor
+      professor.answeredSurveys.push({
+        surveyId: questionnaire._id,
+        responses: new Map(Object.entries(answers)),
+        submittedAt: new Date(),
+      });
+
+      await professor.save();
 
       questionnaire.completed = true;
       questionnaire.responseDate = new Date();

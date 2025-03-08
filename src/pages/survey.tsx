@@ -132,7 +132,10 @@ const Survey: React.FC = () => {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`,
         },
-        body: JSON.stringify({ answers }),
+        body: JSON.stringify({
+          questionnaireId: questionnaireId,
+          answers: answers,
+        }),
       });
 
       if (response.status === 401) {
@@ -147,9 +150,12 @@ const Survey: React.FC = () => {
       console.log('Respostas enviadas com sucesso:', data);
       setIsCompleted(true);
 
+      // Usa o professorEmail retornado pela API
+      const professorEmail = data.professorEmail;
+
       // Envia o e-mail de confirmação
       const requestBody = {
-        to: professorEmail, // Usa o professorEmail retornado pela API
+        to: professorEmail,
         questionnaireId,
       };
       console.log('Enviando requisição POST para /api/sendConfirmationEmail com corpo:', requestBody);

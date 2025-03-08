@@ -71,7 +71,7 @@
 }
 
 .backButton {
-  background: #d63031;
+  background: linear-gradient(135deg, #ff568f, #ff8484);
   color: white;
   padding: 0.5rem 1rem;
   border: none;
@@ -84,7 +84,7 @@
 }
 
 .backButton:hover {
-  background: #b71c1c;
+  /* background: #b71c1c; */
 }
 
 .chartContainer {

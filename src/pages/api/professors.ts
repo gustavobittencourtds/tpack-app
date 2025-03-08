@@ -23,7 +23,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const { method, query: { id }, body: { email } } = req;
 
     switch (method) {
-      // No arquivo professors.ts, modifique o case 'GET' para:
       case 'GET':
       try {
         // Se foram passados userIds na query, filtra por eles
