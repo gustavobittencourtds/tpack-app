@@ -32,7 +32,7 @@ const Sidebar = () => {
       <Image src="/images/logo.svg" alt="TPACK App" width={65} height={65} style={{ borderRadius: '16px', marginBottom: '2rem' }} />
       <ul className={styles.sidebarMenu}>
         <li onClick={() => router.push('/admin')} className={`${styles.sidebarMenuItem} ${router.pathname === '/admin' ? styles.sidebarMenuItemActive : ''}`}>
-          <FeatherIcon icon="home" /> Dashboard
+          <FeatherIcon icon="home" /> Rodadas de Avaliação
         </li>
         <li onClick={() => router.push('/professors')} className={`${styles.sidebarMenuItem} ${router.pathname === '/professors' ? styles.sidebarMenuItemActive : ''}`}>
           <FeatherIcon icon="users" /> Professores

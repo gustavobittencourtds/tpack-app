@@ -4,6 +4,7 @@ import ProtectedRoute from '../components/ProtectedRoute';
 import dynamic from 'next/dynamic';
 import styles from '../styles/professorsStyles.module.css';
 import { useRouter } from 'next/router';
+import Breadcrumbs from '../components/Breadcrumbs';
 
 const FeatherIcon = dynamic(() => import('feather-icons-react'), { ssr: false });
 
@@ -144,6 +145,7 @@ export default function ProfessorsPage() {
   return (
     <ProtectedRoute>
       <div className={styles.professorsContainer}>
+        <Breadcrumbs title="Professores" />
         <h1 className={styles.professorsHeader}>Professores</h1>
         <form className={styles.addProfessorForm} onSubmit={handleAddProfessor}>
           <input

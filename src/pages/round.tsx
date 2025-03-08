@@ -5,6 +5,7 @@ import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { CssBaseline } from "@mui/material";
 import styles from "../styles/roundStyles.module.css";
 import ProtectedRoute from "../components/ProtectedRoute";
+import Breadcrumbs from "../components/Breadcrumbs";
 
 interface Answer {
   questionId: string;
@@ -145,6 +146,9 @@ export default function RoundPage() {
       <ThemeProvider theme={theme}>
         <CssBaseline />
         <div className={styles.roundContainer}>
+
+          <Breadcrumbs title="Relatórios" />
+          
           {loading && <p>Carregando...</p>}
 
           <button className={styles.backButton} onClick={() => router.push("/admin")}>Voltar</button>

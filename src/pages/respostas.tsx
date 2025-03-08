@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import styles from '../styles/respostas.module.css';
+import Breadcrumbs from '../components/Breadcrumbs';
 
 interface Answer {
   questionId: string;
@@ -65,6 +66,7 @@ export default function Respostas() {
 
   return (
     <div className={`${styles.respostasContainer} ${styles.fadeIn}`}>
+      <Breadcrumbs title="Respostas" />
       <h1 className={styles.respostasHeader}>{questionnaireTitle}</h1>
 
       <button
