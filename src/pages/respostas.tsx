@@ -17,7 +17,7 @@ export default function Respostas() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
-  const { questionnaireId } = router.query;
+  const { questionnaireId, professorId, roundId } = router.query;
 
   useEffect(() => {
     const fetchAnswers = async () => {
@@ -45,12 +45,43 @@ export default function Respostas() {
     fetchAnswers();
   }, [questionnaireId]);
 
+  const handleBack = () => {
+    // Redireciona para a tela de rodadas com o roundId
+    if (roundId) {
+      router.push(`/round?roundId=${roundId}`); 
+    }
+    // Caso contrário, redireciona para a tela de Questionários com o professorId
+    else if (professorId) {
+      router.push(`/questionnaires?professorId=${professorId}`); // Redireciona para a tela de professores com o professorId
+    }
+    // Se nenhum dos dois estiver presente, redireciona para a tela padrão de professores
+    else {
+      router.push('/professors');
+    }
+  };
+
   if (loading) return <p>Carregando...</p>;
   if (error) return <p>{error}</p>;
 
   return (
     <div className={`${styles.respostasContainer} ${styles.fadeIn}`}>
       <h1 className={styles.respostasHeader}>{questionnaireTitle}</h1>
+
+      <button
+        onClick={handleBack}
+        style={{
+          padding: '0.5rem 1rem',
+          backgroundColor: '#6c5ce7',
+          color: '#fff',
+          border: 'none',
+          borderRadius: '8px',
+          cursor: 'pointer',
+          fontSize: '1rem',
+        }}
+      >
+        Voltar
+      </button>
+
       <p>Professor: {professorEmail}</p>
       {sentDate && <p>Data de envio: {sentDate.toLocaleDateString('pt-BR')}</p>}
       {responseDate && <p>Data de resposta: {responseDate.toLocaleDateString('pt-BR')}</p>}

@@ -42,6 +42,10 @@ export default function ProfessorQuestionnaires() {
     fetchQuestionnaires();
   }, [professorId]);
 
+  const handleBack = () => {
+    router.push('/professors');
+  };
+
   if (loading) return <p>Carregando...</p>;
   if (error) return <p>{error}</p>;
 
@@ -49,6 +53,20 @@ export default function ProfessorQuestionnaires() {
     <ProtectedRoute>
       <div className={styles.respostasContainer}>
         <h1 className={styles.respostasHeader}>Questionários Respondidos</h1>
+        <button
+          onClick={handleBack}
+          style={{
+            padding: '0.5rem 1rem',
+            backgroundColor: '#6c5ce7',
+            color: '#fff',
+            border: 'none',
+            borderRadius: '8px',
+            cursor: 'pointer',
+            fontSize: '1rem',
+          }}
+        >
+          Voltar
+        </button>
         <table className={styles.respostasTable}>
           <thead>
             <tr className={styles.respostasTableRow}>
@@ -63,7 +81,11 @@ export default function ProfessorQuestionnaires() {
                 <td className={styles.respostasTableCell}>{questionnaire.title}</td>
                 <td className={styles.respostasTableCell}>{new Date(questionnaire.responseDate).toLocaleDateString('pt-BR')}</td>
                 <td className={styles.respostasTableCell}>
-                  <button onClick={() => router.push(`/respostas?questionnaireId=${questionnaire._id}`)}>Ver Respostas</button>
+                  <button
+                    onClick={() => router.push(`/respostas?questionnaireId=${questionnaire._id}&professorId=${professorId}`)}
+                  >
+                    Ver Respostas
+                  </button>
                 </td>
               </tr>
             ))}

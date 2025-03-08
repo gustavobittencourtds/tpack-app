@@ -177,7 +177,7 @@ export default function RoundPage() {
                       // Encontre o questionário para este professor usando o userId
                       const questionnaireId = questionnaires.find(q => q.userId === professor.userId)?._id;
                       if (questionnaireId) {
-                        router.push(`/respostas?questionnaireId=${questionnaireId}`);
+                        router.push(`/respostas?questionnaireId=${questionnaireId}&roundId=${roundId}`);
                       } else {
                         alert("Não foi possível encontrar o questionário para este professor.");
                       }
