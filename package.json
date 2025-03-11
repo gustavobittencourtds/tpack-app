@@ -8,7 +8,7 @@
     "build": "tsc",
     "front": "next dev",
     "back": "tsx src/server.ts",
-    "clear-db": "npx tsx src/tasks/clearDatabase.ts",
+    "clear-db": "npx tsx --no-deprecation src/tasks/clearDatabase.ts",
     "send-emails": "npx tsx src/tasks/sendEmails.ts",
     "populate-questions": "npx tsx src/tasks/populateQuestions.ts",
     "populate-users": "npx tsx src/tasks/populateUsers.ts",
