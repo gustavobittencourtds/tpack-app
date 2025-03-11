@@ -1,24 +1,2 @@
-[  
-  { "question_id": 3, "text": "Fundamental A" },
-  { "question_id": 3, "text": "Fundamental B" },
-  { "question_id": 3, "text": "Médio" },
-  { "question_id": 3, "text": "Técnico" },
-  { "question_id": 3, "text": "Superior ou Tecnológico" },
-  { "question_id": 3, "text": "Pós-graduação" },
-  
-  { "question_id": 4, "text": "Fundamental" },
-  { "question_id": 4, "text": "Médio" },
-  { "question_id": 4, "text": "Magistério" },
-  { "question_id": 4, "text": "Técnico" },
-  { "question_id": 4, "text": "Tecnólogo" },
-  { "question_id": 4, "text": "Bacharel" },
-  { "question_id": 4, "text": "Licenciatura" },
-  { "question_id": 4, "text": "Mestre" },
-  { "question_id": 4, "text": "Doutor" },
-  { "question_id": 4, "text": "Pós-doutor" },
-  
-  { "question_id": 40, "text": "Masculino" },
-  { "question_id": 40, "text": "Feminino" },
-  { "question_id": 40, "text": "Outros" },
-  { "question_id": 40, "text": "Prefiro não informar" }
+[    
 ]

@@ -24,10 +24,11 @@
 }
 
 .registerForm h2 {
-  font-size: 1.75rem;
-  color: #333;
+  font-size: 2rem;
+  font-weight: 700;
+  color: #6c5ce7;
   text-align: center;
-  font-weight: 600;
+  margin-bottom: 0.25rem;
 }
 
 .registerInput {
@@ -56,19 +57,18 @@
 }
 
 .registerButton {
-  padding: 0.9rem 1.5rem;
+  padding: 1rem 1.5rem;
   border: none;
   border-radius: 10px;
-  font-weight: 600;
+  font-weight: 500;
   background: linear-gradient(135deg, #00b894, #00cec9);
   color: white;
   cursor: pointer;
   transition: all 0.3s ease;
-  font-size: 1rem;
+  font-size: 1.125rem;
 }
 
 .registerButton:hover {
-  transform: translateY(-2px);
   box-shadow: 0 6px 12px rgba(0, 184, 148, 0.3);
 }
 
@@ -78,6 +78,22 @@
   background: #e0e0e0;
   color: #666;
   box-shadow: none;
+}
+
+.loginButton {
+  padding: 1rem 1.5rem;
+  border: none;
+  border-radius: 10px;
+  font-weight: 500;
+  background: linear-gradient(135deg, #6c5ce7, #8e7cf3);
+  color: white;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 1.125rem;
+}
+
+.loginButton:hover {
+  box-shadow: 0 6px 12px rgba(108, 92, 231, 0.3);
 }
 
 .errorMessage {

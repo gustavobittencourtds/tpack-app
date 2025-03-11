@@ -1,34 +1,22 @@
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(8px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
 .adminContainer {
   padding: 1.5rem 5%;
   background: #FFFFFF;
   border-radius: 16px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-  max-width: 1480px;
-  margin: 0 auto;
+  box-shadow: 4px 0 10px rgba(0, 0, 0, 0.1);
   animation: fadeIn 0.4s ease-out;
 }
 
 .adminHeader {
   font-size: 2rem;
   font-weight: 600;
-  color: #333;
+  color: #6c5ce7;
   text-align: center;
   margin-bottom: 2rem;
 }
 
 .loadingText {
   text-align: center;
+  color: #6c5ce7;
 }
 
 .adminButton {
@@ -45,13 +33,12 @@
 }
 
 .adminButton:hover {
-  transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(108, 92, 231, 0.3);
 }
 
 .roundsGrid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
   gap: 1.5rem;
 }
 
@@ -61,12 +48,17 @@
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
   padding: 1rem;
   animation: fadeIn 0.4s ease-out;
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.roundCard:hover {
+  box-shadow: 0 4px 12px rgba(108, 92, 231, 0.2);
 }
 
 .roundCardHeader {
   font-size: 1.5rem;
   font-weight: 600;
-  color: #333;
+  color: #6c5ce7;
   margin-bottom: 1rem;
 }
 

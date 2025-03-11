@@ -177,23 +177,14 @@ export default function RoundPage() {
                 }}>
                   <span>{professor.email}</span>
                   <button
+                    className={styles.viewAnswersButton}
                     onClick={() => {
-                      // Encontre o questionário para este professor usando o userId
                       const questionnaireId = questionnaires.find(q => q.userId === professor.userId)?._id;
                       if (questionnaireId) {
                         router.push(`/respostas?questionnaireId=${questionnaireId}&roundId=${roundId}`);
                       } else {
                         alert("Não foi possível encontrar o questionário para este professor.");
                       }
-                    }}
-                    style={{
-                      backgroundColor: "#4682B4",
-                      color: "white",
-                      border: "none",
-                      padding: "8px 12px",
-                      borderRadius: "4px",
-                      cursor: "pointer",
-                      fontWeight: "bold"
                     }}
                   >
                     Ver Respostas

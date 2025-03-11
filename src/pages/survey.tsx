@@ -367,7 +367,7 @@ const Survey: React.FC = () => {
                         color: '#fff',
                         padding: '4px 8px',
                         borderRadius: '4px',
-                        fontSize: '0.875rem',
+                        fontSize: '1rem',
                       }}
                     >
                       {answers[currentQuestion._id] || '3'}

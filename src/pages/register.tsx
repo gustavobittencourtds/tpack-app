@@ -41,6 +41,13 @@ const Register: React.FC = () => {
     }
   };
 
+  const handleLoginRedirect = () => {
+    router.push('/login').then(() => {;
+    }).catch((err) => {
+      console.error('Erro ao redirecionar:', err);
+    });
+  };
+
   return (
     <div className={styles.registerContainer}>
       <div>
@@ -64,6 +71,9 @@ const Register: React.FC = () => {
             className={styles.registerInput}
           />
           <button type="submit" className={styles.registerButton}>Registrar</button>
+          <button type="button" className={styles.loginButton} onClick={handleLoginRedirect}>
+            Ir para Login
+          </button>
         </form>
       </div>
     </div>

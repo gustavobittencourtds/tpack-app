@@ -23,9 +23,7 @@
   padding: 1.5rem 5%;
   background: #FFFFFF;
   border-radius: 16px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-  max-width: 1480px;
-  margin: 0 auto;
+  box-shadow: 4px 0 10px rgba(0, 0, 0, 0.1);
   display: flex;
   gap: 2rem;
 }

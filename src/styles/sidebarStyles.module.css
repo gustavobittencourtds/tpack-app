@@ -1,14 +1,18 @@
 .sidebarContainer {
-  width: 260px;
-  background: rgb(102, 116, 130);
-  color: #ecf0f1;
+  background: #FFFFFF;
+  border-radius: 16px;
   padding: 1.5rem;
   box-shadow: 4px 0 10px rgba(0, 0, 0, 0.1);
   display: flex;
   flex-direction: column;
+  position: relative;
+  transition: all 0.3s ease;
+  margin: 20px;
+  min-height: 96vh;
+  max-height: 96vh;
   position: sticky;
-  max-height: 100vh;
-  top: 0;
+  top: 20px;
+  box-sizing: border-box;
 }
 
 .sidebarMenu {
@@ -26,38 +30,44 @@
   cursor: pointer;
   background: transparent;
   border-radius: 8px;
-  transition: background 0.3s;
+  transition: background 0.3s, transform 0.2s;
+  font-size: 1.125rem;
+  color: #6c5ce7;
 }
 
 .sidebarMenuItemActive,
 .sidebarMenuItem:hover {
   background: #6c5ce7;
+  color: white;
 }
 
 .sidebarMenuItem svg {
   margin-right: 12px;
-  width: 20px;
-  height: 20px;
+  width: 26px;
+  height: 26px;
+  transition: fill 0.3s;
 }
 
 .logoutButton {
   width: 100%;
   padding: 0.75rem 1rem;
-  background: linear-gradient(135deg, #ff568f, #ff8484);
+  background: linear-gradient(135deg, #6c5ce7, #8e7cf3);
   color: white;
   border: none;
   border-radius: 8px;
   cursor: pointer;
-  transition: background 0.3s;
   display: flex;
   align-items: center;
   justify-content: center;
+  font-size: 1.125rem;
+  transition: all 0.3s ease;
 }
 
 .logoutButton:hover {
-  /* background: #e84118; */
+  box-shadow: 0 4px 12px rgba(108, 92, 231, 0.3);
 }
 
 .logoutButton svg {
   margin-right: 8px;
+  transition: fill 0.3s;
 }

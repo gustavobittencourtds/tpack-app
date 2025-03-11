@@ -176,7 +176,7 @@ export default function ProfessorsPage() {
         ) : (
           professors.map((professor) => (
             <div key={professor._id} className={styles.professorCard}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+              <div className={styles.professorInfos}>
                 <input
                   type="checkbox"
                   checked={selectedProfessors.includes(professor._id)}
@@ -192,7 +192,7 @@ export default function ProfessorsPage() {
                   <FeatherIcon icon="trash-2" /> Remover
                 </button>
                 <button className={styles.viewButton} onClick={() => handleViewQuestionnaires(professor._id)}>
-                  <FeatherIcon icon="list" /> Ver Questionários
+                  <FeatherIcon icon="list" /> Questionários
                 </button>
               </div>
             </div>

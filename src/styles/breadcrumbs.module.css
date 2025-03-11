@@ -6,9 +6,11 @@
 
 .breadcrumbs a {
   color: #6c5ce7;
+  border-bottom: solid 1px transparent;
   text-decoration: none;
+  transition: border-color 0.3s;
 }
 
 .breadcrumbs a:hover {
-  text-decoration: underline;
+  border-color: #6c5ce7;
 }

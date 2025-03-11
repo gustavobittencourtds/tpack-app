@@ -7,41 +7,6 @@
     "note": null
   },
   {
-    "session_id": 1,
-    "text": "Gênero",
-    "type": "single_choice",
-    "order": 40,
-    "note": null
-  },
-  {
-    "session_id": 1,
-    "text": "Idade (em anos)",
-    "type": "number",
-    "order": 41,
-    "note": "A idade deve estar entre 18 e 100 anos."
-  },
-  {
-    "session_id": 2,
-    "text": "Qual o nível de ensino que você atua?",
-    "type": "multiple_choice",
-    "order": 3,
-    "note": "Nota: você pode marcar mais de uma alternativa"
-  },
-  {
-    "session_id": 2,
-    "text": "Sobre a sua formação, selecione todas as concluídas:",
-    "type": "multiple_choice",
-    "order": 4,
-    "note": "Nota: você pode marcar mais de uma alternativa"
-  },
-  {
-    "session_id": 2,
-    "text": "Qual o ano da sua última formação?",
-    "type": "number",
-    "order": 6,
-    "note": "O ano deve ser maior ou igual a 1970."
-  },
-  {
     "session_id": 3,
     "text": "Posso adaptar minha abordagem de ensino com base no que os estudantes atualmente entendem",
     "type": "scale",

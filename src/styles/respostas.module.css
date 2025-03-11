@@ -11,9 +11,7 @@
   padding: 1.5rem 5%;
   background: #FFFFFF;
   border-radius: 16px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-  max-width: 1480px;
-  margin: 0 auto;
+  box-shadow: 4px 0 10px rgba(0, 0, 0, 0.1);
 }
 
 .respostasContainerDark {
@@ -22,11 +20,11 @@
 }
 
 .respostasHeader {
-  font-size: 1.5rem;
-  font-weight: 500;
-  color: #333;
+  font-size: 2rem;
+  font-weight: 700;
+  color: #6c5ce7;
   text-align: center;
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.25rem;
 }
 
 .respostasHeaderDark {
@@ -101,14 +99,14 @@
 .perguntaHeader {
   background: #6c5ce7;
   color: white;
-  padding: 0.5rem 1rem;
+  padding: 0.75rem 1.5rem;
   font-size: 0.75rem;
   font-weight: 500;
   line-height: 1.4;
 }
 
 .respostaBody {
-  padding: 0.5rem 1rem;
+  padding: 0.75rem 1.5rem;
   background: #fafafa;
   font-size: 0.75rem;
   color: #2d3436;
@@ -132,15 +130,37 @@
 }
 
 .backButton {
-  background-color: #6c5ce7;
+  background: linear-gradient(135deg, #6c5ce7, #8e7cf3);
   color: white;
+  padding: 0.75rem 1.5rem;
   border: none;
-  padding: 0.5rem 1rem;
-  border-radius: 4px;
+  border-radius: 10px;
   cursor: pointer;
+  font-size: 1rem;
+  font-weight: 500;
   margin-bottom: 1rem;
+  transition: all 0.3s ease;
 }
 
 .backButton:hover {
-  background-color: #5a4dbf;
+  box-shadow: 0 4px 12px rgba(108, 92, 231, 0.3);
+}
+
+.viewAnswersButton {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+  background: linear-gradient(135deg, #00b894, #00cec9);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-left: auto;
+}
+
+.viewAnswersButton:hover {
+  box-shadow: 0 4px 12px rgba(0, 184, 148, 0.3);
 }

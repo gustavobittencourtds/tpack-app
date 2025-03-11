@@ -79,19 +79,11 @@ export default function ProfessorQuestionnaires() {
     <ProtectedRoute>
       <div className={styles.respostasContainer}>
         <Breadcrumbs title="Questionários" />
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
+        <div>
           <h1 className={styles.respostasHeader}>Questionários Respondidos</h1>
           <button
             onClick={handleBack}
-            style={{
-              padding: '0.5rem 1rem',
-              backgroundColor: '#6c5ce7',
-              color: '#fff',
-              border: 'none',
-              borderRadius: '8px',
-              cursor: 'pointer',
-              fontSize: '1rem',
-            }}
+            className={styles.backButton}
           >
             Voltar
           </button>
@@ -121,6 +113,7 @@ export default function ProfessorQuestionnaires() {
                 </td>
                 <td className={styles.respostasTableCell}>
                   <button
+                    className={styles.viewAnswersButton}
                     onClick={() => router.push(`/respostas?questionnaireId=${questionnaire._id}&professorId=${professorId}`)}
                   >
                     Ver Respostas
