@@ -236,7 +236,7 @@ const Survey: React.FC = () => {
                         disabled={!questions.slice(0, questions.indexOf(q)).every((_, i) => isQuestionAnswered(i))}
                         title={q.text}
                       >
-                        {q.text.slice(0, 35)}... {/* Trecho da pergunta */}
+                        {q.text}
                       </button>
                     </li>
                   ))}

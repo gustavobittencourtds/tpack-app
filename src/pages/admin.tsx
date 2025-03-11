@@ -83,12 +83,16 @@ export default function AdminDashboard() {
         <h1 className={styles.adminHeader}>Avaliação TPACK</h1>
         {loading ? (
           <p className={styles.loadingText}>Carregando...</p>
-        ) : professors.length === 0 && rounds.length === 0 ? ( // Verifica se não há professores nem rodadas
+        ) : professors.length > 0 && rounds.length === 0 ? ( // Professores cadastrados, mas sem rodadas
           <div className={styles.emptyState}>
-            <p>Nenhum dado cadastrado ainda</p>
-            <p>Comece cadastrando professores e enviando o questionário para avaliá-los com o TPACK</p>
-            <button className={styles.adminButton} style={{ margin: '2rem auto'}} onClick={() => router.push('/professors')}>
-              <FeatherIcon icon="user-plus" /> Cadastrar Professores
+            <p>Nenhuma rodada de aplicação dos questionários foi realizada ainda.</p>
+            <p>Envie o questionário para começar a avaliar os professores com o TPACK.</p>
+            <button
+              className={styles.adminButton}
+              style={{ margin: '2rem auto' }}
+              onClick={() => router.push('/professors')} // Altere para a página correta de criação de rodadas
+            >
+              <FeatherIcon icon="send" /> Enviar Questionário
             </button>
           </div>
         ) : (

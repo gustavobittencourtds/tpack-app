@@ -26,13 +26,7 @@
   box-shadow: 4px 0 10px rgba(0, 0, 0, 0.1);
   display: flex;
   gap: 2rem;
-}
-
-@media (prefers-color-scheme: dark) {
-  .surveyContainer {
-    background: #1e1e1e;
-    color: #f1f1f1;
-  }
+  max-height: 90vh;
 }
 
 /* Intro Container */
@@ -47,35 +41,23 @@
 
 .introContainer h2 {
   font-size: 2rem;
-  color: #2d3436;
+  color: #555;
   margin-bottom: 1rem;
   font-weight: 700;
   letter-spacing: -0.5px;
 }
 
 .introContainer p {
-  font-size: 1.1rem;
-  color: #636e72;
+  font-size: 1.125rem;
+  color: #555;
   line-height: 1.6;
   max-width: 600px;
   margin: 0 auto;
 }
 
-@media (prefers-color-scheme: dark) {
-  .introContainer {
-    background: linear-gradient(135deg, #2d3436, #2b2b2b);
-  }
-  .introContainer h2 {
-    color: #ffffff;
-  }
-  .introContainer p {
-    color: #dfe6e9;
-  }
-}
-
 /* Sidebar Container */
 .sidebarContainer {
-  width: 280px;
+  width: 380px;
   padding: 1.5rem;
   background: rgba(255, 255, 255, 0.9);
   border-radius: 16px;
@@ -100,7 +82,7 @@
 
 .sidebarContainer h4 {
   font-size: 1.25rem;
-  color: #2d3436;
+  color: #555;
   margin-bottom: 1.5rem;
   font-weight: 600;
 }
@@ -114,32 +96,24 @@
   margin-bottom: 0.75rem;
 }
 
-@media (prefers-color-scheme: dark) {
-  .sidebarContainer {
-    background: rgba(40, 40, 40, 0.9);
-    border-color: rgba(255, 255, 255, 0.1);
-  }
-  .sidebarContainer h4 {
-    color: #ffffff;
-  }
-}
-
 /* Sidebar Button */
 .sidebarButton {
   width: 100%;
   padding: 0.75rem;
   background: rgba(0, 0, 0, 0.03);
-  color: #2d3436;
+  color: #555;
   border: none;
   border-radius: 12px;
   font-weight: 500;
   cursor: not-allowed;
   transition: all 0.3s ease;
   text-align: left;
+  font-size: 1rem;
+  min-height: 100px;
 }
 
 .sidebarButton.isActive {
-  background: #6c5ce7;
+  background: #6c5ce7 !important;
   color: #fff;
 }
 
@@ -149,21 +123,7 @@
 }
 
 .sidebarButton:hover {
-  transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-}
-
-@media (prefers-color-scheme: dark) {
-  .sidebarButton {
-    color: #dfe6e9;
-    background: rgba(255, 255, 255, 0.05);
-  }
-  .sidebarButton.isActive {
-    background: #6c5ce7;
-  }
-  .sidebarButton.isAnswered {
-    background: rgba(108, 92, 231, 0.2);
-  }
 }
 
 /* Progress Container */
@@ -210,26 +170,13 @@
   border: 1px solid rgba(0, 0, 0, 0.05);
 }
 
-@media (prefers-color-scheme: dark) {
-  .questionContainer {
-    background: rgba(40, 40, 40, 0.9);
-    border-color: rgba(255, 255, 255, 0.1);
-  }
-}
-
 /* Question Text */
 .questionText {
   font-size: 1.5rem;
-  color: #2d3436;
+  color: #555;
   margin-bottom: 1.5rem;
   font-weight: 700;
   line-height: 1.4;
-}
-
-@media (prefers-color-scheme: dark) {
-  .questionText {
-    color: #ffffff;
-  }
 }
 
 /* Choice Label */
@@ -262,15 +209,6 @@
   accent-color: #6c5ce7;
 }
 
-@media (prefers-color-scheme: dark) {
-  .choiceLabel {
-    background: rgba(255, 255, 255, 0.05);
-  }
-  .choiceLabel.isSelected {
-    background: rgba(108, 92, 231, 0.2);
-  }
-}
-
 /* Input Field */
 .inputField {
   width: calc(100% - 1.7rem);
@@ -278,7 +216,7 @@
   border: 2px solid rgba(0, 0, 0, 0.1);
   border-radius: 12px;
   font-size: 1rem;
-  color: #2d3436;
+  color: #555;
   transition: all 0.3s ease;
 }
 
@@ -288,23 +226,12 @@
   outline: none;
 }
 
-@media (prefers-color-scheme: dark) {
-  .inputField {
-    background: rgba(255, 255, 255, 0.1);
-    border-color: rgba(255, 255, 255, 0.2);
-    color: #dfe6e9;
-  }
-  .inputField:focus {
-    border-color: #6c5ce7;
-  }
-}
-
 /* Navigation Button */
 .navigationButton {
   padding: 0.8rem 1.5rem;
   border: none;
   border-radius: 10px;
-  font-weight: 600;
+  font-weight: 500;
   background: linear-gradient(135deg, #6c5ce7, #8e7cf3);
   color: white;
   cursor: pointer;
@@ -313,6 +240,7 @@
   align-items: center;
   gap: 0.5rem;
   box-shadow: 0 4px 6px rgba(108, 92, 231, 0.2);
+  font-size: 1.125rem;
 }
 
 .navigationButton.backButton {
@@ -334,7 +262,6 @@
 }
 
 .navigationButton:hover {
-  transform: translateY(-2px);
   box-shadow: 0 6px 12px rgba(108, 92, 231, 0.3);
 }
 
@@ -358,17 +285,11 @@
 
 /* Note */
 .note {
-  font-size: 0.9rem;
+  font-size: 1.125rem;
   color: #636e72;
   margin: 1rem 0;
   padding-left: 1rem;
   border-left: 3px solid #6c5ce7;
-}
-
-@media (prefers-color-scheme: dark) {
-  .note {
-    color: #b2bec3;
-  }
 }
 
 /* Range Input */
