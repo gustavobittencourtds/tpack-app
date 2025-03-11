@@ -29,6 +29,7 @@
   cursor: pointer;
   display: flex;
   align-items: center;
+  gap: 0.5rem;
   transition: all 0.3s ease;
 }
 
@@ -70,4 +71,14 @@
 .roundCardFooter {
   margin-top: 1rem;
   text-align: right;
+}
+
+.emptyState {
+  text-align: center;
+  margin-top: 2rem;
+  color: #555;
+}
+
+.emptyState p {
+  margin-bottom: 1rem;
 }

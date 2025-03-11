@@ -2,6 +2,7 @@ import dbConnect from "../../utils/dbConnect";
 import { NextApiRequest, NextApiResponse } from 'next';
 import User from '../../models/User';
 import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken'; // Importe o jwt
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   await dbConnect(); // Conecta ao banco de dados
@@ -33,8 +34,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     console.log('Usuário criado com sucesso:', user);
 
-    // Retorna sucesso
-    res.status(201).json({ message: 'Usuário registrado com sucesso' });
+    // Gera o token de autenticação
+    const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET!, { expiresIn: '78h' });
+
+    // Retorna sucesso com o token
+    res.status(201).json({ message: 'Usuário registrado com sucesso', token });
   } catch (error) {
     console.error('Erro ao registrar usuário:', error);
     res.status(500).json({ message: 'Erro ao registrar usuário', error: (error as Error).message });

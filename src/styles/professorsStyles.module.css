@@ -167,8 +167,23 @@
   cursor: pointer;
   transition: background 0.3s;
   min-width: 200px;
+
+  &:disabled {
+    background: #b2bec3;
+    cursor: not-allowed;
+  }
 }
 
 .selectAllButton:hover {
   background: #2980b9;
+}
+
+.emptyState {
+  text-align: center;
+  margin-top: 2rem;
+  color: #555;
+}
+
+.emptyState p {
+  margin-bottom: 1rem;
 }

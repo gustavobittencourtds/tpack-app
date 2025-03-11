@@ -36,7 +36,7 @@ export default function AdminDashboard() {
 
         const professorRes = await fetch('/api/professors', { headers: { Authorization: `Bearer ${token}` } });
         const professorData = await professorRes.json();
-        setProfessors(professorData.professors);
+        setProfessors(professorData.professors || []);
 
         const roundsRes = await fetch('/api/rounds', { headers: { Authorization: `Bearer ${token}` } });
         const roundsData = await roundsRes.json();
@@ -50,6 +50,8 @@ export default function AdminDashboard() {
         setParticipants(participantsData);
       } catch (err) {
         console.error('Erro ao buscar dados:', err);
+        setProfessors([]);
+        setRounds([]);
       } finally {
         setLoading(false);
       }
@@ -81,11 +83,12 @@ export default function AdminDashboard() {
         <h1 className={styles.adminHeader}>Avaliação TPACK</h1>
         {loading ? (
           <p className={styles.loadingText}>Carregando...</p>
-        ) : !professors.length ? (
-          <div style={{ textAlign: 'center' }}>
-            <p>Nenhum professor cadastrado ainda.</p>
-            <button className={styles.adminButton} onClick={() => router.push('/professors')}>
-              <FeatherIcon icon="user-plus" /> Cadastrar Professor
+        ) : professors.length === 0 && rounds.length === 0 ? ( // Verifica se não há professores nem rodadas
+          <div className={styles.emptyState}>
+            <p>Nenhum dado cadastrado ainda</p>
+            <p>Comece cadastrando professores e enviando o questionário para avaliá-los com o TPACK</p>
+            <button className={styles.adminButton} style={{ margin: '2rem auto'}} onClick={() => router.push('/professors')}>
+              <FeatherIcon icon="user-plus" /> Cadastrar Professores
             </button>
           </div>
         ) : (

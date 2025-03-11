@@ -1,4 +1,3 @@
-// ProfessorsPage.tsx
 import { useState, useEffect } from 'react';
 import ProtectedRoute from '../components/ProtectedRoute';
 import dynamic from 'next/dynamic';
@@ -28,9 +27,10 @@ export default function ProfessorsPage() {
         const token = localStorage.getItem('token');
         const res = await fetch('/api/professors', { headers: { Authorization: `Bearer ${token}` } });
         const data = await res.json();
-        setProfessors(data.professors);
+        setProfessors(data.professors || []); // Garante que seja um array
       } catch (error) {
         console.error('Erro ao buscar professores:', error);
+        setProfessors([]); // Define como array vazio em caso de erro
       } finally {
         setLoading(false);
       }
@@ -41,7 +41,6 @@ export default function ProfessorsPage() {
   const handleViewQuestionnaires = (professorId: string) => {
     router.push(`/questionnaires?professorId=${professorId}`);
   };
-
 
   const handleAddProfessor = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -161,18 +160,35 @@ export default function ProfessorsPage() {
         </form>
         {message && <p style={{ color: message.includes('Erro') ? '#e74c3c' : '#00b894', textAlign: 'center' }}>{message}</p>}
         <div style={{ display: 'flex', gap: '1rem', marginBottom: '1.5rem' }}>
-          <button className={styles.selectAllButton} onClick={handleSelectAll}>
+          <button
+            className={styles.selectAllButton}
+            onClick={handleSelectAll}
+            disabled={professors.length === 0} // Desabilita o botão se não houver professores
+          >
             {selectedProfessors.length === professors.length ? 'Desmarcar Todos' : 'Selecionar Todos'}
           </button>
-          <button className={styles.sendButton} onClick={() => handleSendQuestionnaires(false)}>
+          <button
+            className={styles.sendButton}
+            onClick={() => handleSendQuestionnaires(false)}
+            disabled={professors.length === 0} // Desabilita o botão se não houver professores
+          >
             Enviar para Todos
           </button>
-          <button className={styles.sendButton} onClick={() => handleSendQuestionnaires(true)} disabled={selectedProfessors.length === 0}>
+          <button
+            className={styles.sendButton}
+            onClick={() => handleSendQuestionnaires(true)}
+            disabled={selectedProfessors.length === 0} // Desabilita o botão se nenhum professor estiver selecionado
+          >
             Enviar para Selecionados
           </button>
         </div>
         {loading ? (
           <p style={{ textAlign: 'center', color: '#636e72' }}>Carregando...</p>
+        ) : professors.length === 0 ? ( // Verifica se não há professores
+          <div className={styles.emptyState}>
+            <p>Nenhum professor cadastrado ainda.</p>
+            <p>Comece adicionando professores para enviar questionários.</p>
+          </div>
         ) : (
           professors.map((professor) => (
             <div key={professor._id} className={styles.professorCard}>
