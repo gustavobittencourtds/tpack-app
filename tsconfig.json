@@ -29,8 +29,7 @@
     "src/**/*.ts",
     "src/**/*.tsx",
     "src/types/**/*.d.ts",
-    "src/styles/*",
-    "next-env.d.ts", "auth0.js",
+    "src/styles/*"
   ],
   "exclude": [
     "node_modules"
