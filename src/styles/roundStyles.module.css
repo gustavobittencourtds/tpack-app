@@ -32,12 +32,15 @@
 .table {
   width: 100%;
   border-collapse: collapse;
-  background: #fcfcfc;
-  margin-top: 2rem;
+  background-color: #fff;
 }
 
 .tableRow:nth-child(even) {
   background: #f8f8f8;
+}
+
+.tableRow {
+  border-bottom: 1px solid #eee;
 }
 
 .tableHeader {
@@ -47,15 +50,21 @@
   text-align: left;
   font-size: 1rem;
   font-weight: 400;
+  text-align: center;
 }
 
-.tableHeader:first-child {
-  border-right: solid 1px #FFF;
+.tableHeader:first-of-type {
+  text-align: left;
 }
 
 .tableCell {
-  padding: 0.8rem;
+  padding: 1rem;
   font-size: 1rem;
+  text-align: center;
+}
+
+.tableCell:first-of-type {
+  text-align: left;
 }
 
 .viewAnswersButton {
@@ -70,10 +79,17 @@
   border-radius: 10px;
   cursor: pointer;
   transition: all 0.3s ease;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .viewAnswersButton:hover {
   box-shadow: 0 4px 12px rgba(0, 184, 148, 0.3);
+}
+
+.viewAnswersButton:disabled {
+  background: #ccc;
+  cursor: not-allowed;
 }
 
 .backButton {
@@ -152,11 +168,13 @@
   font-weight: bold;
 }
 
-.professorsListContainer {
-  margin-top: 1.5rem;
-  padding: 1rem;
-  background: #f9f9f9;
+.professorListContainer {
+  width: 100%;
+  margin-top: 2rem;
+  margin-bottom: 2rem;
+  overflow-x: auto;
   border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .professorItem {

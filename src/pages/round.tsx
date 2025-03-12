@@ -165,43 +165,61 @@ export default function RoundPage() {
                 </div>
               </div>
 
-              {professors.map((professor) => {
-                console.log(`🔍 Verificando professor: ${professor.email} (professorId: ${professor._id}, userId: ${professor.userId})`);
+              <div className={styles.professorListContainer}>
+                <table className={styles.table}>
+                  <thead>
+                    <tr className={styles.tableRow}>
+                      <th className={styles.tableHeader}>Professor</th>
+                      <th className={styles.tableHeader}>Enviado em</th>
+                      <th className={styles.tableHeader}>Respondido em</th>
+                      <th className={styles.tableHeader}>Ações</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {professors.map((professor) => {
+                      console.log(`🔍 Verificando professor: ${professor.email} (professorId: ${professor._id}, userId: ${professor.userId})`);
 
-                // Filtra o questionário pelo professorId e roundId
-                const professorQuestionnaire = questionnaires.find(
-                  (q) => q.professorId === professor._id && q.roundId === roundId
-                );
+                      // Filtra o questionário pelo professorId e roundId
+                      const professorQuestionnaire = questionnaires.find(
+                        (q) => q.professorId === professor._id && q.roundId === roundId
+                      );
 
-                return (
-                  <div key={professor._id} style={{
-                    padding: "10px",
-                    margin: "5px 0",
-                    display: "flex",
-                    justifyContent: "space-between",
-                    alignItems: "center",
-                    borderBottom: "1px solid #eee"
-                  }}>
-                    <span>{professor.email}</span>
-                    <button
-                      className={styles.viewAnswersButton}
-                      onClick={() => {
-                        if (!professorQuestionnaire) {
-                          console.log(`Não foi possivel encontrar questionário encontrado para o professor ${professor.email} nesta rodada.`);
-                          return;
-                        }
-                        router.push(`/respostas?questionnaireId=${professorQuestionnaire._id}&professorId=${professor._id}&roundId=${roundId}`);
-                      }}
-                    >
-                      Ver Respostas
-                    </button>
-                  </div>
-                );
-              })}
+                      return (
+                        <tr key={professor._id} className={styles.tableRow}>
+                          <td className={styles.tableCell}>{professor.email}</td>
+                          <td className={styles.tableCell}>
+                            {professorQuestionnaire ? new Date(professorQuestionnaire.sentDate).toLocaleDateString("pt-BR") : "N/A"}
+                          </td>
+                          <td className={styles.tableCell}>
+                            {professorQuestionnaire?.responseDate
+                              ? new Date(professorQuestionnaire.responseDate).toLocaleDateString("pt-BR")
+                              : "Pendente"}
+                          </td>
+                          <td className={styles.tableCell}>
+                            <button
+                              className={styles.viewAnswersButton}
+                              onClick={() => {
+                                if (!professorQuestionnaire) {
+                                  console.log(`Não foi possível encontrar questionário para o professor ${professor.email} nesta rodada.`);
+                                  return;
+                                }
+                                router.push(`/respostas?questionnaireId=${professorQuestionnaire._id}&professorId=${professor._id}&roundId=${roundId}`);
+                              }}
+                              disabled={!professorQuestionnaire || !professorQuestionnaire.responseDate}
+                            >
+                              Ver Respostas
+                            </button>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
             </>
           )}
 
-          <div className={styles.tableContainer}>
+          {/* <div className={styles.tableContainer}>
             <table className={styles.table}>
               <thead>
                 <tr className={styles.tableRow}>
@@ -222,7 +240,7 @@ export default function RoundPage() {
                 ))}
               </tbody>
             </table>
-          </div>
+          </div> */}
 
           {sessionAverages.length > 0 && sessions.length > 0 && (
             sessionAverages.map(({ sessionId, questionAverages }) => {
