@@ -68,9 +68,8 @@ export default function AdminDashboard() {
       const data = await res.json();
       if (!Array.isArray(data.data)) return 0;
 
-      const tokenPayload = JSON.parse(atob(token.split('.')[1]));
-      const userId = tokenPayload.userId;
-      const uniqueProfessorIds = new Set(data.data.filter((q: any) => q.userId === userId).map((q: any) => q.userId));
+      // Conta os professores únicos que responderam aos questionários da rodada
+      const uniqueProfessorIds = new Set(data.data.map((q: any) => q.professorId));
       return uniqueProfessorIds.size;
     } catch {
       return 0;
@@ -81,19 +80,21 @@ export default function AdminDashboard() {
     <ProtectedRoute>
       <div className={styles.adminContainer}>
         <h1 className={styles.adminHeader}>Avaliação TPACK</h1>
+
+        <button
+          className={styles.adminButton}
+          style={{ margin: '2rem auto' }}
+          onClick={() => router.push('/professors')}
+        >
+          <FeatherIcon icon="send" /> Nova rodada de aplicação
+        </button>
+
         {loading ? (
           <p className={styles.loadingText}>Carregando...</p>
         ) : professors.length > 0 && rounds.length === 0 ? ( // Professores cadastrados, mas sem rodadas
           <div className={styles.emptyState}>
             <p>Nenhuma rodada de aplicação dos questionários foi realizada ainda.</p>
             <p>Envie o questionário para começar a avaliar os professores com o TPACK.</p>
-            <button
-              className={styles.adminButton}
-              style={{ margin: '2rem auto' }}
-              onClick={() => router.push('/professors')} // Altere para a página correta de criação de rodadas
-            >
-              <FeatherIcon icon="send" /> Enviar Questionário
-            </button>
           </div>
         ) : (
           <div className={styles.roundsGrid}>

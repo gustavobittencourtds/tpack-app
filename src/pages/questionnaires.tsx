@@ -25,45 +25,56 @@ export default function ProfessorQuestionnaires() {
 
   useEffect(() => {
     const fetchQuestionnaires = async () => {
-      if (!professorId) return;
-
       try {
         const token = localStorage.getItem('token');
+        if (!token) {
+          console.error('Token não encontrado, redirecionando para login...');
+          router.push('/login');
+          return;
+        }
 
-        // Busca as informações do professor
+        console.log('Buscando professor pelo ID:', professorId);
+
         const professorResponse = await fetch(`/api/professors?id=${professorId}`, {
           headers: { Authorization: `Bearer ${token}` },
         });
+
         const professorData = await professorResponse.json();
 
-        if (!professorResponse.ok) throw new Error(professorData.message || 'Erro ao buscar informações do professor');
+        if (!professorResponse.ok || !professorData.professors) {
+          throw new Error('Erro ao buscar professor');
+        }
 
-        // Acessa o primeiro professor do array
-        const professor = professorData.professors[0];
-        setProfessor(professor);
+        // Agora buscamos o professor correto pelo ID específico
+        const selectedProfessor = professorData.professors.find((p: Professor) => p._id === professorId);
+        if (!selectedProfessor) {
+          throw new Error('Professor não encontrado na resposta da API');
+        }
 
-        // Busca os questionários respondidos pelo professor
+        console.log('Professor correto selecionado:', selectedProfessor);
+        setProfessor(selectedProfessor);
+
+        console.log('Buscando questionários do professor:', professorId);
         const questionnairesResponse = await fetch(`/api/get-questionnaires?professorId=${professorId}`, {
           headers: { Authorization: `Bearer ${token}` },
         });
+
         const questionnairesData = await questionnairesResponse.json();
 
-        if (!questionnairesResponse.ok) throw new Error(questionnairesData.message || 'Erro ao buscar questionários');
+        if (!questionnairesResponse.ok) {
+          throw new Error('Erro ao buscar questionários');
+        }
 
-        // Ordena os questionários pela data de resposta (do mais recente para o mais antigo)
-        const sortedQuestionnaires = questionnairesData.questionnaires.sort(
-          (a: Questionnaire, b: Questionnaire) =>
-            new Date(b.responseDate).getTime() - new Date(a.responseDate).getTime()
-        );
-
-        setQuestionnaires(sortedQuestionnaires);
+        console.log('Questionários carregados:', questionnairesData.questionnaires);
+        setQuestionnaires(questionnairesData.questionnaires);
       } catch (error) {
-        console.error('Erro ao buscar dados:', error);
+        console.error(error);
         setError('Erro ao buscar dados. Tente novamente mais tarde.');
       } finally {
         setLoading(false);
       }
     };
+
 
     fetchQuestionnaires();
   }, [professorId]);

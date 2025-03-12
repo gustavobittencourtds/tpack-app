@@ -4,6 +4,7 @@ interface IQuestionnaire extends Document {
   title: string;
   description: string;
   userId: Types.ObjectId; // Referência ao usuário que criou o questionário
+  professorId: Types.ObjectId; // Referência ao professor que recebeu o questionário
   questions: Types.ObjectId[]; // Lista de questões
   completed: boolean;
   sentDate: Date;
@@ -15,6 +16,7 @@ const questionnaireSchema = new Schema<IQuestionnaire>({
   title: { type: String, required: true },
   description: { type: String },
   userId: { type: Schema.Types.ObjectId, ref: 'User', required: true },
+  professorId: { type: Schema.Types.ObjectId, ref: 'Professor', required: true }, // Novo campo
   questions: [{ type: Schema.Types.ObjectId, ref: 'Question', required: true }],
   completed: { type: Boolean, default: false },
   sentDate: { type: Date },

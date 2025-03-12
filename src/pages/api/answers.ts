@@ -22,7 +22,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       const idsArray = questionnaireIds.split(',').map((id) => new mongoose.Types.ObjectId(id));
 
       // Contar quantos professores distintos receberam os questionários
-      const professorCount = await Questionnaire.distinct("userId", { _id: { $in: idsArray } });
+      const professorCount = await Questionnaire.distinct("professorId", { _id: { $in: idsArray } });
 
       return res.status(200).json({ professorCount: professorCount.length });
     } catch (error) {
@@ -30,7 +30,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       return res.status(500).json({ message: 'Erro ao buscar quantidade de professores', error: error instanceof Error ? error.message : 'Erro desconhecido' });
     }
   }
-
 
   if (req.method === 'POST') {
     const token = req.headers.authorization?.split(' ')[1];
@@ -62,13 +61,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         return res.status(400).json({ message: 'Este questionário já foi respondido!' });
       }
 
-      const professor = await Professor.findOne({ userId: questionnaire.userId });
+      const professor = await Professor.findOne({ _id: questionnaire.professorId }); // Busca o professor correto
       if (!professor) {
         return res.status(404).json({ message: 'Professor não encontrado' });
       }
 
       const formattedAnswers = Object.entries(answers).map(([questionId, answer]) => ({
         questionnaireId,
+        professorId: professor._id, // Vincula as respostas ao professor correto
         questionId,
         userId,
         answer,
@@ -95,7 +95,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       console.error('Erro ao enviar respostas:', error);
       return res.status(500).json({ message: 'Erro ao enviar respostas', error: error instanceof Error ? error.message : 'Erro desconhecido' });
     }
-
   }
 
   return res.status(405).json({ message: `Método ${req.method} não permitido` });

@@ -8,10 +8,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
   if (req.method === 'GET') {
     try {
-      const { userId, roundId } = req.query;
+      const { userId, roundId, professorId } = req.query;
 
-      if (!userId && !roundId) {
-        return res.status(400).json({ message: 'É necessário fornecer userId ou roundId' });
+      if (!userId && !roundId && !professorId) {
+        return res.status(400).json({ message: 'É necessário fornecer userId, roundId ou professorId' });
       }
 
       let filter: any = {};
@@ -27,6 +27,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           return res.status(400).json({ message: 'roundId inválido' });
         }
         filter.round = new mongoose.Types.ObjectId(roundId as string);
+      }
+
+      if (professorId) {
+        if (!mongoose.Types.ObjectId.isValid(professorId as string)) {
+          return res.status(400).json({ message: 'professorId inválido' });
+        }
+        filter.professorId = new mongoose.Types.ObjectId(professorId as string);
       }
 
       const questionnaires = await Questionnaire.find(filter)
@@ -46,9 +53,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
   if (req.method === 'POST') {
     try {
-      const { title, description, userId, questions, round } = req.body;
+      const { title, description, userId, questions, round, professorId } = req.body;
 
-      if (!title || !userId || !questions || !Array.isArray(questions) || !round) {
+      if (!title || !userId || !questions || !Array.isArray(questions) || !round || !professorId) {
         return res.status(400).json({ message: 'Dados inválidos' });
       }
 
@@ -58,7 +65,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         userId,
         questions,
         sentDate: new Date(),
-        round: new mongoose.Types.ObjectId(round), // Garante que roundId é um ObjectId
+        round: new mongoose.Types.ObjectId(round),
+        professorId: new mongoose.Types.ObjectId(professorId), // Adicionado professorId
       });
 
       return res.status(201).json({ message: 'Questionário criado com sucesso', data: newQuestionnaire });

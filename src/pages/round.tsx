@@ -21,6 +21,7 @@ interface Questionnaire {
   responseDate?: string;
   userId: string;
   roundId: string;
+  professorId: string; // Adicionado professorId
 }
 
 interface Round {
@@ -105,7 +106,6 @@ export default function RoundPage() {
           const userIds = [...new Set(data.questionnaires.map((q: { userId: string }) => q.userId))];
 
           if (userIds.length > 0) {
-            // Aqui buscamos professores pela propriedade userId, não pelo _id
             const profRes = await fetch(`/api/professors?userIds=${userIds.join(",")}`, {
               headers: { Authorization: `Bearer ${token}` },
             });
@@ -131,10 +131,8 @@ export default function RoundPage() {
       console.log("Questionários:", questionnaires);
       console.log("Professores:", professors);
 
-      // Verifique se os IDs estão corretamente associados
       questionnaires.forEach(q => {
         console.log(`Questionário ${q._id} associado ao usuário: ${q.userId}`);
-        // Aqui buscamos o professor pelo userId do questionário
         const professorMatch = professors.find(p => p.userId === q.userId);
         console.log("Professor correspondente:", professorMatch);
       });
@@ -146,9 +144,8 @@ export default function RoundPage() {
       <ThemeProvider theme={theme}>
         <CssBaseline />
         <div className={styles.roundContainer}>
-
           <Breadcrumbs title="Relatórios" />
-          
+
           {loading && <p>Carregando...</p>}
 
           <button className={styles.backButton} onClick={() => router.push("/admin")}>Voltar</button>
@@ -166,31 +163,39 @@ export default function RoundPage() {
                 </div>
               </div>
 
-              {professors.map((professor) => (
-                <div key={professor._id} style={{
-                  padding: "10px",
-                  margin: "5px 0",
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                  borderBottom: "1px solid #eee"
-                }}>
-                  <span>{professor.email}</span>
-                  <button
-                    className={styles.viewAnswersButton}
-                    onClick={() => {
-                      const questionnaireId = questionnaires.find(q => q.userId === professor.userId)?._id;
-                      if (questionnaireId) {
-                        router.push(`/respostas?questionnaireId=${questionnaireId}&roundId=${roundId}`);
-                      } else {
-                        alert("Não foi possível encontrar o questionário para este professor.");
-                      }
-                    }}
-                  >
-                    Ver Respostas
-                  </button>
-                </div>
-              ))}
+              {professors.map((professor) => {
+                console.log(`🔍 Verificando professor: ${professor.email} (professorId: ${professor._id}, userId: ${professor.userId})`);
+
+                // Filtra o questionário pelo professorId e roundId
+                const professorQuestionnaire = questionnaires.find(
+                  (q) => q.professorId === professor._id && q.roundId === roundId
+                );
+
+                return (
+                  <div key={professor._id} style={{
+                    padding: "10px",
+                    margin: "5px 0",
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    borderBottom: "1px solid #eee"
+                  }}>
+                    <span>{professor.email}</span>
+                    <button
+                      className={styles.viewAnswersButton}
+                      onClick={() => {
+                        if (!professorQuestionnaire) {
+                          console.log(`Não foi possivel encontrar questionário encontrado para o professor ${professor.email} nesta rodada.`);
+                          return;
+                        }
+                        router.push(`/respostas?questionnaireId=${professorQuestionnaire._id}&professorId=${professor._id}&roundId=${roundId}`);
+                      }}
+                    >
+                      Ver Respostas
+                    </button>
+                  </div>
+                );
+              })}
             </>
           )}
 

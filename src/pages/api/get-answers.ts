@@ -13,9 +13,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     return res.status(405).json({ message: `Método ${req.method} não permitido` });
   }
 
-  const { questionnaireId } = req.query;
-  if (!questionnaireId || typeof questionnaireId !== 'string') {
-    return res.status(400).json({ message: 'ID do questionário é obrigatório' });
+  const { questionnaireId, professorId } = req.query;
+  if (!questionnaireId || typeof questionnaireId !== 'string' || !professorId || typeof professorId !== 'string') {
+    return res.status(400).json({ message: 'ID do questionário e do professor são obrigatórios' });
   }
 
   try {
@@ -24,10 +24,17 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       return res.status(404).json({ message: 'Questionário não encontrado' });
     }
 
-    // Busca o professor associado ao questionário (se houver)
-    const professor = await Professor.findOne({ userId: questionnaire.userId }).lean();
+    // Busca o professor associado ao questionário
+    const professor = await Professor.findById(professorId).lean();
+    if (!professor) {
+      return res.status(404).json({ message: 'Professor não encontrado' });
+    }
 
-    const answers = await Answer.find({ questionnaireId: new mongoose.Types.ObjectId(questionnaireId as string) })
+    // Busca as respostas do questionário e professor específicos
+    const answers = await Answer.find({
+      questionnaireId: new mongoose.Types.ObjectId(questionnaireId),
+      professorId: new mongoose.Types.ObjectId(professorId),
+    })
       .populate('questionId', 'text')
       .lean();
 

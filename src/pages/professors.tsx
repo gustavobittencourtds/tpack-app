@@ -159,7 +159,7 @@ export default function ProfessorsPage() {
           </button>
         </form>
         {message && <p style={{ color: message.includes('Erro') ? '#e74c3c' : '#00b894', textAlign: 'center' }}>{message}</p>}
-        <div style={{ display: 'flex', gap: '1rem', marginBottom: '1.5rem' }}>
+        <div style={{ display: 'flex', gap: '1rem', marginBottom: '4rem' }}>
           <button
             className={styles.selectAllButton}
             onClick={handleSelectAll}
@@ -179,6 +179,7 @@ export default function ProfessorsPage() {
             onClick={() => handleSendQuestionnaires(true)}
             disabled={selectedProfessors.length === 0} // Desabilita o botão se nenhum professor estiver selecionado
           >
+            <FeatherIcon icon="send" />
             Enviar para Selecionados
           </button>
         </div>
@@ -191,6 +192,7 @@ export default function ProfessorsPage() {
           </div>
         ) : (
           professors.map((professor) => (
+            console.log(professor),
             <div key={professor._id} className={styles.professorCard}>
               <div className={styles.professorInfos}>
                 <input

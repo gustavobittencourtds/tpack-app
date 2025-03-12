@@ -20,7 +20,7 @@ async function createNewRound(userId: mongoose.Types.ObjectId): Promise<mongoose
     sentDate: new Date(),
     status: 'open',
     description: `Rodada de envio ${nextRoundNumber}`,
-    userId, // Inclui o userId na nova rodada
+    userId,
   });
 
   return newRound._id;
@@ -64,6 +64,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         title: 'Avaliação TPACK',
         description: 'Questionário para avaliar o uso de tecnologia em práticas pedagógicas.',
         userId,
+        professorId: professor._id, // Vincula o questionário ao professor
         questions: questionIds,
         completed: false,
         sentDate: new Date(),
