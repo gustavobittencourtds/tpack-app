@@ -26,13 +26,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       case 'GET':
       try {
         // Se foram passados userIds na query, filtra por eles
-        if (req.query.userIds) {
-          const userIds = Array.isArray(req.query.userIds)
-            ? req.query.userIds
-            : (req.query.userIds as string).split(',');
+        if (req.query.professorIds) {
+          const professorIds = Array.isArray(req.query.professorIds)
+            ? req.query.professorIds
+            : (req.query.professorIds as string).split(',');
 
           const professors = await Professor.find({
-            userId: { $in: userIds }
+            _id: { $in: professorIds },
+            userId  // Still filter by userId for security
           }).select('_id email userId').lean();
 
           if (!professors || professors.length === 0) {

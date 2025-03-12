@@ -71,6 +71,7 @@ export default function RoundPage() {
   const [professors, setProfessors] = useState<Professor[]>([]);
   const [loading, setLoading] = useState(false);
 
+  // Instead of fetching professors by userIds:
   useEffect(() => {
     if (!roundId) return;
 
@@ -101,12 +102,13 @@ export default function RoundPage() {
         setSessionAverages(data.sessionAverages || []);
         setRound(data.round || null);
 
-        // Buscar professores pelos userIds dos questionários
+        // Get only the professors who have a questionnaire in this specific round
         if (data.questionnaires && data.questionnaires.length > 0) {
-          const userIds = [...new Set(data.questionnaires.map((q: { userId: string }) => q.userId))];
+          // Get unique professorIds from the questionnaires of this round
+          const professorIds = [...new Set(data.questionnaires.map((q: { professorId: string }) => q.professorId))];
 
-          if (userIds.length > 0) {
-            const profRes = await fetch(`/api/professors?userIds=${userIds.join(",")}`, {
+          if (professorIds.length > 0) {
+            const profRes = await fetch(`/api/professors?professorIds=${professorIds.join(",")}`, {
               headers: { Authorization: `Bearer ${token}` },
             });
             const profData = await profRes.json();

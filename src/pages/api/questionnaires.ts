@@ -2,6 +2,7 @@ import { NextApiRequest, NextApiResponse } from 'next';
 import dbConnect from '../../utils/dbConnect';
 import mongoose from 'mongoose';
 import Questionnaire from '../../models/Questionnaire';
+import jwt from 'jsonwebtoken';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   await dbConnect();
@@ -9,24 +10,40 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   if (req.method === 'GET') {
     try {
       const { userId, roundId, professorId } = req.query;
+      const token = req.headers.authorization?.split(' ')[1];
 
-      if (!userId && !roundId && !professorId) {
-        return res.status(400).json({ message: 'É necessário fornecer userId, roundId ou professorId' });
+      if (token) {
+        try {
+          const decoded = jwt.verify(token, process.env.JWT_SECRET as string) as { userId: string };
+          // Se não foi passado userId explicitamente, use o do token
+          if (!userId) {
+            const userIdFromToken = decoded.userId;
+            if (userIdFromToken) {
+              req.query.userId = userIdFromToken;
+            }
+          }
+        } catch (error) {
+          console.error('Erro ao verificar token:', error);
+          // Prossegue sem usar o userId do token
+        }
       }
 
       let filter: any = {};
-      if (userId) {
-        if (!mongoose.Types.ObjectId.isValid(userId as string)) {
+
+      if (req.query.userId) {
+        if (!mongoose.Types.ObjectId.isValid(req.query.userId as string)) {
           return res.status(400).json({ message: 'userId inválido' });
         }
-        filter.userId = new mongoose.Types.ObjectId(userId as string);
+        filter.userId = new mongoose.Types.ObjectId(req.query.userId as string);
       }
 
+      // Ajuste para verificar tanto roundId quanto round
       if (roundId) {
         if (!mongoose.Types.ObjectId.isValid(roundId as string)) {
           return res.status(400).json({ message: 'roundId inválido' });
         }
-        filter.round = new mongoose.Types.ObjectId(roundId as string);
+        // Verifica se o campo no banco é roundId ou round
+        filter.roundId = new mongoose.Types.ObjectId(roundId as string);
       }
 
       if (professorId) {
@@ -41,10 +58,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         .lean();
 
       if (!questionnaires.length) {
-        return res.status(404).json({ message: 'Nenhum questionário encontrado' });
+        return res.status(200).json({ questionnaires: [] }); // Retorna array vazio em vez de 404
       }
 
-      return res.status(200).json({ message: 'Questionários encontrados', data: questionnaires });
+      // Retorna os dados no formato esperado pelo getParticipatingProfessorsCount
+      return res.status(200).json({
+        questionnaires: questionnaires,
+        count: questionnaires.length
+      });
     } catch (error) {
       console.error('Erro ao buscar questionários:', error);
       return res.status(500).json({ message: 'Erro ao buscar questionários', error });
@@ -65,8 +86,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         userId,
         questions,
         sentDate: new Date(),
-        round: new mongoose.Types.ObjectId(round),
-        professorId: new mongoose.Types.ObjectId(professorId), // Adicionado professorId
+        roundId: new mongoose.Types.ObjectId(round), // Ajustado para roundId para manter consistência
+        professorId: new mongoose.Types.ObjectId(professorId),
       });
 
       return res.status(201).json({ message: 'Questionário criado com sucesso', data: newQuestionnaire });

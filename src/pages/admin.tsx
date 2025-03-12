@@ -3,6 +3,7 @@ import { useRouter } from 'next/router';
 import dynamic from 'next/dynamic';
 import ProtectedRoute from '../components/ProtectedRoute';
 import styles from '../styles/Admin.module.css';
+import { jwtDecode } from 'jwt-decode'; // Importe jwtDecode
 
 const FeatherIcon = dynamic(() => import('feather-icons-react'), { ssr: false });
 
@@ -62,16 +63,37 @@ export default function AdminDashboard() {
 
   const getParticipatingProfessorsCount = async (roundId: string, token: string): Promise<number> => {
     try {
+      // Busca os questionários desta rodada específica
       const res = await fetch(`/api/questionnaires?roundId=${roundId}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
-      const data = await res.json();
-      if (!Array.isArray(data.data)) return 0;
 
-      // Conta os professores únicos que responderam aos questionários da rodada
-      const uniqueProfessorIds = new Set(data.data.map((q: any) => q.professorId));
+      if (!res.ok) {
+        console.error(`Erro na requisição: ${res.status} ${res.statusText}`);
+        return 0;
+      }
+
+      const data = await res.json();
+
+      // Verifica o formato da resposta e extrai os questionários
+      const questionnaires = data.questionnaires || data.data || [];
+
+      if (!Array.isArray(questionnaires)) {
+        console.error('Formato de resposta inesperado:', data);
+        return 0;
+      }
+
+      // Verifica se há questionários
+      if (questionnaires.length === 0) {
+        return 0;
+      }
+
+      // Conta professores únicos para esta rodada
+      const uniqueProfessorIds = new Set(questionnaires.map((q: any) => q.professorId));
+      console.log(`Rodada ${roundId}: encontrados ${uniqueProfessorIds.size} professores participantes`);
       return uniqueProfessorIds.size;
-    } catch {
+    } catch (error) {
+      console.error('Erro ao buscar contagem de professores:', error);
       return 0;
     }
   };
