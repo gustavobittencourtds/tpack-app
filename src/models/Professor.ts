@@ -24,7 +24,6 @@ const ProfessorSchema = new Schema<IProfessor>({
   answeredSurveys: [AnsweredSurveySchema],
 });
 
-// Garantir que a combinação de email e userId seja única
-ProfessorSchema.index({ email: 1, userId: 1 }, { unique: true });
-
-export default mongoose.models.Professor || mongoose.model<IProfessor>('Professor', ProfessorSchema);
+// Certifique-se de que o modelo não seja recompilado se já estiver registrado
+const Professor = mongoose.models.Professor || mongoose.model<IProfessor>('Professor', ProfessorSchema);
+export default Professor;

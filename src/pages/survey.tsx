@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useRouter } from 'next/router';
 import jwt from 'jsonwebtoken';
 import styles from '../styles/surveyStyles.module.css';
@@ -17,8 +17,34 @@ const Survey: React.FC = () => {
   const router = useRouter();
   const { token, professorEmail } = router.query;
 
+  // Referência para a questão atual no conteúdo principal
+  const currentQuestionRef = useRef<HTMLDivElement | null>(null);
+
+  // Referência para o botão ativo na sidebar
+  const activeSidebarButtonRef = useRef<HTMLButtonElement | null>(null);
+
   const decodedToken = token ? jwt.decode(token as string) as { userId: string; questionnaireId: string } : null;
   const questionnaireId = decodedToken?.questionnaireId;
+
+  // Efeito para rolar automaticamente para a questão atual no conteúdo principal
+  useEffect(() => {
+    if (currentQuestionRef.current) {
+      currentQuestionRef.current.scrollIntoView({
+        behavior: 'smooth',
+        block: 'center',
+      });
+    }
+  }, [currentQuestionIndex]);
+
+  // Efeito para rolar automaticamente para o botão ativo na sidebar
+  useEffect(() => {
+    if (activeSidebarButtonRef.current) {
+      activeSidebarButtonRef.current.scrollIntoView({
+        behavior: 'smooth',
+        block: 'center',
+      });
+    }
+  }, [currentQuestionIndex]);
 
   useEffect(() => {
     const fetchQuestionsAndSessions = async () => {
@@ -96,8 +122,8 @@ const Survey: React.FC = () => {
         </p>
       </div>
     </div>
-  )
-  
+  );
+
   const handleAnswerChange = (value: string | string[]) => {
     const questionId = questions[currentQuestionIndex]?._id;
     if (questionId) {
@@ -228,18 +254,22 @@ const Survey: React.FC = () => {
                   {sessionTitles[sessionId] || `Sessão ${sessionId}`}
                 </h5>
                 <ul>
-                  {sessionQuestions.map((q, index) => (
-                    <li key={q._id}>
-                      <button
-                        className={`${styles.sidebarButton} ${questions.indexOf(q) === currentQuestionIndex ? styles.isActive : ''} ${isQuestionAnswered(questions.indexOf(q)) ? styles.isAnswered : ''}`}
-                        onClick={() => handleQuestionSelect(questions.indexOf(q))}
-                        disabled={!questions.slice(0, questions.indexOf(q)).every((_, i) => isQuestionAnswered(i))}
-                        title={q.text}
-                      >
-                        {q.text}
-                      </button>
-                    </li>
-                  ))}
+                  {sessionQuestions.map((q, index) => {
+                    const isActive = questions.indexOf(q) === currentQuestionIndex;
+                    return (
+                      <li key={q._id}>
+                        <button
+                          ref={isActive ? activeSidebarButtonRef : null}
+                          className={`${styles.sidebarButton} ${isActive ? styles.isActive : ''} ${isQuestionAnswered(questions.indexOf(q)) ? styles.isAnswered : ''}`}
+                          onClick={() => handleQuestionSelect(questions.indexOf(q))}
+                          disabled={!questions.slice(0, questions.indexOf(q)).every((_, i) => isQuestionAnswered(i))}
+                          title={q.text}
+                        >
+                          {q.text}
+                        </button>
+                      </li>
+                    );
+                  })}
                 </ul>
               </div>
             ))}
@@ -263,7 +293,7 @@ const Survey: React.FC = () => {
             )}
 
             {currentQuestion && (
-              <div className={styles.questionContainer}>
+              <div ref={currentQuestionRef} className={styles.questionContainer}>
                 <h3 className={styles.questionText}>{currentQuestion.text}</h3>
                 {currentQuestion.note && <p className={styles.note}>{currentQuestion.note}</p>}
 

@@ -14,4 +14,6 @@ const UserSchema = new Schema<IUser>({
   rounds: [{ type: Schema.Types.ObjectId, ref: 'Round' }],
 });
 
-export default mongoose.models.User || mongoose.model<IUser>('User', UserSchema);
+// Certifique-se de que o modelo não seja recompilado se já estiver registrado
+const User = mongoose.models.User || mongoose.model<IUser>('User', UserSchema);
+export default User;

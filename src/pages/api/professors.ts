@@ -64,13 +64,15 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             return res.status(400).json({ message: 'Email já cadastrado para este usuário' });
           }
 
+          // Criar o professor, mesmo que já exista para outro usuário
           const newProfessor = await Professor.create({ email, userId });
+          
           return res.status(201).json(newProfessor);
         } catch (error) {
           console.error('Erro ao adicionar professor:', error);
 
-          // Captura o erro de duplicidade e retorna uma mensagem amigável
-          if ((error as any).code === 11000) {
+          // Verificamos explicitamente se é um erro de duplicidade para o mesmo usuário e email
+          if ((error as any).code === 11000 && (error as any).keyPattern && ((error as any).keyPattern.email && (error as any).keyPattern.userId)) {
             return res.status(400).json({ message: 'Email já cadastrado para este usuário' });
           }
 
