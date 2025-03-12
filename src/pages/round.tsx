@@ -219,29 +219,6 @@ export default function RoundPage() {
             </>
           )}
 
-          {/* <div className={styles.tableContainer}>
-            <table className={styles.table}>
-              <thead>
-                <tr className={styles.tableRow}>
-                  <th className={styles.tableHeader}>Questionário</th>
-                  <th className={styles.tableHeader}>Enviado em</th>
-                  <th className={styles.tableHeader}>Respondido em</th>
-                </tr>
-              </thead>
-              <tbody>
-                {questionnaires.map((q) => (
-                  <tr key={q._id} className={styles.tableRow}>
-                    <td className={styles.tableCell}>{q.title}</td>
-                    <td className={styles.tableCell}>{new Date(q.sentDate).toLocaleDateString("pt-BR")}</td>
-                    <td className={styles.tableCell}>
-                      {q.responseDate ? new Date(q.responseDate).toLocaleDateString("pt-BR") : "Pendente"}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div> */}
-
           {sessionAverages.length > 0 && sessions.length > 0 && (
             sessionAverages.map(({ sessionId, questionAverages }) => {
               const sessionTitle = sessions.find(s => s._id === sessionId)?.title || "Sessão desconhecida";
@@ -260,12 +237,18 @@ export default function RoundPage() {
                   />
                   <div className={styles.legendContainer}>
                     <h3 className={styles.chartTitle}>{sessionTitle}</h3>
-                    {pieChartData.map((item, index) => (
-                      <div key={index} className={styles.legendItem}>
-                        <div className={styles.legendColor} style={{ backgroundColor: `hsl(${index * 30}, 70%, 50%)` }} />
-                        <span className={styles.legendText}>{item.label}: <strong>{item.value.toFixed(2)}</strong></span>
-                      </div>
-                    ))}
+                    {pieChartData.map((item, index) => {
+                      // Defina as cores fixas para as legendas
+                      const colors = ["#02B2AF", "#2E96FF", "#B800D8", "#60009B"];
+                      const color = colors[index % colors.length]; // Use o índice para selecionar a cor correta
+
+                      return (
+                        <div key={index} className={styles.legendItem}>
+                          <div className={styles.legendColor} style={{ backgroundColor: color }} />
+                          <span className={styles.legendText}>{item.label}: <strong>{item.value.toFixed(2)}</strong></span>
+                        </div>
+                      );
+                    })}
                   </div>
                 </div>
               );
