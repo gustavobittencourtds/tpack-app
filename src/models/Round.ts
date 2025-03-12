@@ -9,11 +9,14 @@ interface IRound extends Document {
 }
 
 const RoundSchema = new Schema<IRound>({
-  roundNumber: { type: Number, required: true, unique: true },
+  roundNumber: { type: Number, required: true }, // Removido unique: true
   sentDate: { type: Date, required: true, default: Date.now },
   status: { type: String, enum: ['open', 'closed', 'finalized'], default: 'open' },
   description: { type: String },
   userId: { type: Schema.Types.ObjectId, ref: 'User', required: true },
 });
+
+// Adiciona índice composto para userId e roundNumber
+RoundSchema.index({ userId: 1, roundNumber: 1 }, { unique: true });
 
 export default mongoose.models.Round || mongoose.model<IRound>('Round', RoundSchema);

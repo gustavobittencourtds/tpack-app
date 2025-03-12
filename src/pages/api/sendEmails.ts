@@ -12,18 +12,24 @@ import { sendEmail, sendConfirmationEmail } from '../../utils/emailUtils';
 dotenv.config();
 
 async function createNewRound(userId: mongoose.Types.ObjectId): Promise<mongoose.Types.ObjectId> {
-  const lastRound = await Round.findOne().sort({ roundNumber: -1 }).lean();
-  const nextRoundNumber = lastRound ? lastRound.roundNumber + 1 : 1;
+  try {
+    // Busca a última rodada específica do usuário
+    const lastRound = await Round.findOne({ userId }).sort({ roundNumber: -1 }).lean();
+    const nextRoundNumber = lastRound ? lastRound.roundNumber + 1 : 1;
 
-  const newRound = await Round.create({
-    roundNumber: nextRoundNumber,
-    sentDate: new Date(),
-    status: 'open',
-    description: `Rodada de envio ${nextRoundNumber}`,
-    userId,
-  });
+    const newRound = await Round.create({
+      roundNumber: nextRoundNumber,
+      sentDate: new Date(),
+      status: 'open',
+      description: `Rodada de envio ${nextRoundNumber}`,
+      userId,
+    });
 
-  return newRound._id;
+    return newRound._id;
+  } catch (error) {
+    console.error('Erro ao criar nova rodada:', error);
+    throw new Error('Não foi possível criar uma nova rodada');
+  }
 }
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
