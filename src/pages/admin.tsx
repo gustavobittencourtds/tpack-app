@@ -112,7 +112,7 @@ export default function AdminDashboard() {
         </button>
 
         {loading ? (
-          <p className={styles.loadingText}>Carregando...</p>
+          <p className={styles.loadingText}>Carregando dados...</p>
         ) : professors.length > 0 && rounds.length === 0 ? ( // Professores cadastrados, mas sem rodadas
           <div className={styles.emptyState}>
             <p>Nenhuma rodada de aplicação dos questionários foi realizada ainda.</p>

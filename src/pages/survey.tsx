@@ -370,37 +370,13 @@ const Survey: React.FC = () => {
                   </div>
                 )}
 
-                {['text', 'number'].includes(currentQuestion.type) && (
-                  <input
+                {currentQuestion.type === 'text' ? (
+                  <textarea
                     className={styles.inputField}
-                    type={currentQuestion.type}
                     value={answers[currentQuestion._id] || ''}
                     onChange={(e) => handleAnswerChange(e.target.value)}
-                    style={
-                      currentQuestion.type === 'number' && currentQuestion.text.includes('idade')
-                        ? { width: '100px' }
-                        : currentQuestion.type === 'number' && currentQuestion.text.includes('ano')
-                          ? { width: '120px' }
-                          : {}
-                    }
-                    min={
-                      currentQuestion.type === 'number' && currentQuestion.text.includes('idade')
-                        ? 18
-                        : currentQuestion.type === 'number' && currentQuestion.text.includes('ano')
-                          ? 1970
-                          : undefined
-                    }
-                    max={
-                      currentQuestion.type === 'number' && currentQuestion.text.includes('idade')
-                        ? 100
-                        : currentQuestion.type === 'number' && currentQuestion.text.includes('ano')
-                          ? new Date().getFullYear()
-                          : undefined
-                    }
                   />
-                )}
-
-                {currentQuestion.type === 'scale' && (
+                ) : currentQuestion.type === 'scale' && (
                   <div style={{ position: 'relative' }}>
                     <input
                       className={styles.rangeInput}

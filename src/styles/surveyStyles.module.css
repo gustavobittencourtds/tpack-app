@@ -155,7 +155,7 @@
 }
 
 .sidebarButton.isAnswered:not(:disabled) {
-  background: rgba(108, 92, 231, 0.1);
+  background: rgba(108, 92, 231, 0.2);
   cursor: pointer;
 }
 
@@ -266,13 +266,15 @@
 
 /* Input Field */
 .inputField {
-  width: calc(100% - 1.7rem);
+  width: 100%; /* Bloqueia a largura */
+  resize: vertical; /* Permite apenas a alteração na altura */
   padding: 0.75rem;
   border: 2px solid rgba(0, 0, 0, 0.1);
   border-radius: 12px;
   font-size: 1rem;
   color: #555;
   transition: all 0.3s ease;
+  min-height: 8rem;
 }
 
 .inputField:focus {

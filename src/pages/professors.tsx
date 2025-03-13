@@ -192,7 +192,6 @@ export default function ProfessorsPage() {
           </div>
         ) : (
           professors.map((professor) => (
-            console.log(professor),
             <div key={professor._id} className={styles.professorCard}>
               <div className={styles.professorInfos}>
                 <input

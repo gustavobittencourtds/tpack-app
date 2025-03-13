@@ -1,20 +1,40 @@
 import mongoose from 'mongoose';
-import '../models/Choice'; // Certifique-se de importar o modelo aqui
-import '../models/Question'; // Certifique-se de importar o modelo aqui
+import '../models/Choice';
+import '../models/Question';
 
-let isConnected = false;
+const MONGODB_URI = process.env.DB_URI;
+
+if (!MONGODB_URI) {
+  throw new Error('Defina a variável de ambiente DB_URI');
+}
+
+let cached = global.mongoose;
+
+if (!cached) {
+  cached = global.mongoose = { conn: null, promise: null };
+}
 
 export default async function dbConnect() {
-  if (isConnected) {
-    return;
+  if (cached.conn) {
+    return cached.conn;
   }
 
-  try {
-    console.log('Tentando conectar ao MongoDB...');
-    const db = await mongoose.connect(process.env.DB_URI as string);
-    isConnected = db.connections[0].readyState === 1;
-    console.log('Conectado ao MongoDB');
-  } catch (error) {
-    console.error('Erro ao conectar ao MongoDB:', error);
+  if (!cached.promise) {
+    const opts = {
+      bufferCommands: false,
+    };
+
+    cached.promise = mongoose.connect(MONGODB_URI as string, opts)
+      .then(mongoose => {
+        console.log('Conectado ao MongoDB');
+        return mongoose;
+      })
+      .catch(error => {
+        console.error('Erro ao conectar ao MongoDB:', error);
+        throw error;
+      });
   }
+
+  cached.conn = await cached.promise;
+  return cached.conn;
 }
