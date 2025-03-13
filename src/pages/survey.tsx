@@ -14,6 +14,8 @@ const Survey: React.FC = () => {
   const [answers, setAnswers] = useState<{ [questionId: string]: string | string[] }>({});
   const [error, setError] = useState<string | null>(null);
   const [isCompleted, setIsCompleted] = useState(false);
+  const [activelyAnswered, setActivelyAnswered] = useState<{ [questionId: string]: boolean }>({});
+  const [highestVisitedIndex, setHighestVisitedIndex] = useState(-1); // Começa na introdução
   const router = useRouter();
   const { token, professorEmail } = router.query;
 
@@ -25,6 +27,7 @@ const Survey: React.FC = () => {
 
   const decodedToken = token ? jwt.decode(token as string) as { userId: string; questionnaireId: string } : null;
   const questionnaireId = decodedToken?.questionnaireId;
+  
 
   // Efeito para rolar automaticamente para a questão atual no conteúdo principal
   useEffect(() => {
@@ -80,6 +83,14 @@ const Survey: React.FC = () => {
             (q.type !== 'multiple_choice' || (q.choices && q.choices.length > 0))
         );
 
+        // Inicializa o estado answers com o valor padrão 3 para questões do tipo scale
+        const initialAnswers = validQuestions.reduce((acc: { [key: string]: string | string[] }, question: Question) => {
+          if (question.type === 'scale') {
+            acc[question._id] = '3';
+          }
+          return acc;
+        }, {});
+
         // Agrupa as questões por sessão
         const groupedSessions: { [key: string]: Question[] } = validQuestions.reduce((acc: { [key: string]: Question[] }, question: Question) => {
           const sessionId = question.session_id;
@@ -94,6 +105,7 @@ const Survey: React.FC = () => {
         setQuestions(validQuestions);
         setSessions(groupedSessions);
         setSessionTitles(titlesMap);
+        setAnswers(initialAnswers);
       } catch (err) {
         console.error('Erro ao buscar dados:', err);
         setError('Erro ao buscar o questionário. Tente novamente mais tarde.');
@@ -128,20 +140,29 @@ const Survey: React.FC = () => {
     const questionId = questions[currentQuestionIndex]?._id;
     if (questionId) {
       setAnswers((prev) => ({ ...prev, [questionId]: value }));
+      setActivelyAnswered((prev) => ({ ...prev, [questionId]: true }));
     }
   };
 
   const isQuestionAnswered = (index: number) => {
     const questionId = questions[index]?._id;
-    if (questions[index].text.includes("comentário")) {
+    if (!questionId) return false;
+
+    const question = questions[index];
+    if (question.text.includes("comentário")) {
       return true; // Não é obrigatória
     }
-    return questionId && answers[questionId] && answers[questionId].length > 0;
+
+    return answers[questionId] && answers[questionId].length > 0;
   };
 
   const handleNext = () => {
     if (isQuestionAnswered(currentQuestionIndex)) {
-      setCurrentQuestionIndex((prev) => prev + 1);
+      setCurrentQuestionIndex((prev) => {
+        const newIndex = prev + 1;
+        setHighestVisitedIndex((prevHighest) => Math.max(prevHighest, newIndex));
+        return newIndex;
+      });
     }
   };
 
@@ -208,11 +229,7 @@ const Survey: React.FC = () => {
   const progress = currentQuestionIndex >= 0 ? ((currentQuestionIndex + 1) / questions.length) * 100 : 0;
 
   const handleQuestionSelect = (index: number) => {
-    const allPreviousAnswered = questions
-      .slice(0, index)
-      .every((_, i) => isQuestionAnswered(i));
-
-    if (allPreviousAnswered) {
+    if (index <= highestVisitedIndex) {
       setCurrentQuestionIndex(index);
     }
   };
@@ -262,7 +279,7 @@ const Survey: React.FC = () => {
                           ref={isActive ? activeSidebarButtonRef : null}
                           className={`${styles.sidebarButton} ${isActive ? styles.isActive : ''} ${isQuestionAnswered(questions.indexOf(q)) ? styles.isAnswered : ''}`}
                           onClick={() => handleQuestionSelect(questions.indexOf(q))}
-                          disabled={!questions.slice(0, questions.indexOf(q)).every((_, i) => isQuestionAnswered(i))}
+                          disabled={questions.indexOf(q) > highestVisitedIndex}
                           title={q.text}
                         >
                           {q.text}
@@ -286,9 +303,15 @@ const Survey: React.FC = () => {
                 <h2>Bem-vindo ao Questionário</h2>
                 <p dangerouslySetInnerHTML={{ __html: intro.text.replace(/<br \/>/g, '<br />') }} />
                 {intro.note && <p className={styles.note}>{intro.note}</p>}
-                <button className={`${styles.navigationButton} ${styles.startButton}`} onClick={() => setCurrentQuestionIndex(0)}>
-                  Começar
-                </button>
+                  <button
+                    className={`${styles.navigationButton} ${styles.startButton}`}
+                    onClick={() => {
+                      setCurrentQuestionIndex(0);
+                      setHighestVisitedIndex(0);
+                    }}
+                  >
+                    Começar
+                  </button>
               </div>
             )}
 

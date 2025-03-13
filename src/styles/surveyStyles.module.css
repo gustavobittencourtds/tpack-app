@@ -143,12 +143,18 @@
   }
 }
 
+.sidebarButton:disabled {
+  background: #f8f9fa;
+  color: #555;
+  cursor: not-allowed;
+}
+
 .sidebarButton.isActive {
   background: #6c5ce7 !important;
   color: #fff;
 }
 
-.sidebarButton.isAnswered {
+.sidebarButton.isAnswered:not(:disabled) {
   background: rgba(108, 92, 231, 0.1);
   cursor: pointer;
 }
@@ -331,7 +337,7 @@
   opacity: 0.6;
   cursor: not-allowed;
   background: #e0e0e0;
-  color: #666;
+  color: #555;
   box-shadow: none;
 }
 
