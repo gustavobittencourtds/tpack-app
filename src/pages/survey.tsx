@@ -389,15 +389,9 @@ const Survey: React.FC = () => {
                       onChange={(e) => handleAnswerChange(e.target.value)}
                     />
                     <div
+                      className={styles.scaleValue}
                       style={{
-                        position: 'absolute',
-                        top: '-4px',
                         left: `calc(${(Number(answers[currentQuestion._id]) || 3) - 1} / 4 * 100% - 10px)`,
-                        backgroundColor: '#6c5ce7',
-                        color: '#fff',
-                        padding: '4px 8px',
-                        borderRadius: '4px',
-                        fontSize: '1rem',
                       }}
                     >
                       {answers[currentQuestion._id] || '3'}
@@ -408,7 +402,7 @@ const Survey: React.FC = () => {
             )}
 
             {!isCompleted && currentQuestionIndex !== -1 && (
-              <div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '2rem' }}>
                 <button
                   className={`${styles.navigationButton} ${styles.backButton}`}
                   onClick={handleBack}

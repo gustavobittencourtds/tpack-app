@@ -21,7 +21,7 @@ interface Questionnaire {
   responseDate?: string;
   userId: string;
   roundId: string;
-  professorId: string; // Adicionado professorId
+  professorId: string;
 }
 
 interface Round {

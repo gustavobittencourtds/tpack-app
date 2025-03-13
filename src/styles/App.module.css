@@ -5,6 +5,10 @@
 
 .contentContainer {
   flex: 1;
-  padding: 20px;
+  padding: 0.5rem;
   overflow-y: auto;
+
+  @media (min-width: 768px) {
+    padding: 20px;
+  }
 }
