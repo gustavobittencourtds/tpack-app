@@ -13,7 +13,7 @@ const HomePage: NextPage = () => {
 
   return (
     <div style={{ textAlign: 'center', padding: '20px' }}>
-      <Image src="/images/logo.svg" alt="Tpack App Logo" width={150} height={150} />
+      <Image src="/images/logo.svg" alt="Tpack App Logo" width={150} height={150} style={{ borderRadius: '16px' }}/>
       <h1 style={{ fontSize: '2rem', margin: '20px 0' }}>Tpack App</h1>
       <p style={{ fontSize: '1.25rem' }}>
         Bem-vindo ao TPACK App!
