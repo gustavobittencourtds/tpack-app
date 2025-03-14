@@ -5,9 +5,10 @@
   "type": "module",
   "license": "MIT",
   "scripts": {
-    "build": "tsc",
+    "build": "next build",
+    "start": "next start",
+    "dev": "next dev",
     "front": "next dev",
-    "back": "tsx src/server.ts",
     "clear-db": "npx tsx --no-deprecation src/tasks/clearDatabase.ts",
     "populate-questions": "npx tsx src/tasks/populateQuestions.ts",
     "populate-users": "npx tsx src/tasks/populateUsers.ts",
@@ -16,7 +17,6 @@
   },
   "_comments": {
     "front": "Este comando inicia o frontend",
-    "back": "Este comando inicia o backend",
     "clear-db": "Este comando limpa o banco de dados",
     "populate-questions": "Este comando popula o banco de dados com questões",
     "populate-users": "Este comando popula o banco de dados com usuários",

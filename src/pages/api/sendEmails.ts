@@ -88,7 +88,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         { expiresIn: '48h' }
       );
 
-      const link = `http://localhost:3000/survey?token=${token}`;
+      const link = process.env.FRONTEND_URL + `/survey?token=${token}`;
 
       await sendEmail(professor.email, link);
       console.log(`E-mail enviado para ${professor.email}`);
