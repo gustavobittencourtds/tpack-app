@@ -117,17 +117,7 @@ const Survey: React.FC = () => {
 
   if (error) return (
     <div className={styles.surveyContainer}>
-      <div
-        style={{
-          textAlign: 'center',
-          marginLeft: 'auto',
-          marginRight: 'auto',
-          padding: '8rem',
-          backgroundColor: '#f8f9fa',
-          borderRadius: '12px',
-          boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)',
-        }}
-      >
+      <div className={styles.surveyWarning}>
         <Image src="/images/logo.svg" alt="TPACK App" width={65} height={65} style={{ borderRadius: '16px', marginBottom: '2rem' }} />
         <p style={{ fontSize: '1.25rem', color: '#2d3436', marginBottom: '1rem' }}>
           {error}
@@ -239,16 +229,7 @@ const Survey: React.FC = () => {
       {isCompleted ? (
         // Exibe apenas a mensagem de conclusão
         <div
-          style={{
-            textAlign: 'center',
-            marginLeft: 'auto',
-            marginRight: 'auto',
-            padding: '8rem',
-            backgroundColor: '#f8f9fa',
-            borderRadius: '12px',
-            boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)',
-          }}
-        >
+          className={styles.surveyWarning} >
           <Image src="/images/logo.svg" alt="TPACK App" width={65} height={65} style={{ borderRadius: '16px', marginBottom: '2rem' }} />
           <p style={{ fontSize: '1.25rem', color: '#2d3436', marginBottom: '1rem' }}>
             Questionário enviado com sucesso!
@@ -293,6 +274,7 @@ const Survey: React.FC = () => {
           </div>
 
           <div style={{ flex: 1 }}>
+            <Image src="/images/logo.svg" alt="Tpack App Logo" width={60} height={60} style={{ display: 'block', borderRadius: '16px', margin: '0 auto 2rem' }}/>
             <div className={styles.progressContainer}>
               <div className={styles.progressBar} style={{ '--progress': `${progress}%` } as React.CSSProperties} />
               <p>{`Progresso: ${currentQuestionIndex + 1}/${questions.length}`}</p>

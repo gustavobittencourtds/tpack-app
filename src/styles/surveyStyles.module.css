@@ -18,6 +18,19 @@
   100% { transform: scale(0.95); }
 }
 
+.surveyWarning {
+  text-align: center;
+  margin-left: auto;
+  margin-right: auto;
+  padding: 8rem 2rem;
+
+  @media (min-width: 1024px) {
+    padding: 8rem;
+    background: #f8f9fa;
+    border-radius: 16rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+}
 /* Survey Container */
 .surveyContainer {
   padding: 1.5rem 2.5%;
@@ -165,7 +178,11 @@
 
 /* Progress Container */
 .progressContainer {
-  margin-bottom: 2rem;
+  margin-bottom: 1rem;
+
+  @media (min-width: 1024px) {
+    margin-bottom: 2rem;
+  }
 }
 
 .progressContainer p {
@@ -210,6 +227,8 @@
   margin-bottom: 1.5rem;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
   border: 1px solid rgba(0, 0, 0, 0.05);
+  display: flex;
+  flex-direction: column;
 
   @media (min-width: 1024px) {
     padding: 2rem;
@@ -266,7 +285,6 @@
 
 /* Input Field */
 .inputField {
-  width: 100%; /* Bloqueia a largura */
   resize: vertical; /* Permite apenas a alteração na altura */
   padding: 0.75rem;
   border: 2px solid rgba(0, 0, 0, 0.1);
@@ -274,7 +292,11 @@
   font-size: 1rem;
   color: #555;
   transition: all 0.3s ease;
-  min-height: 8rem;
+  min-height: 6rem;
+
+  @media (min-width: 1024px) {
+    min-height: 8rem;
+  }
 }
 
 .inputField:focus {
