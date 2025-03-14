@@ -113,10 +113,10 @@ export default function AdminDashboard() {
 
         {loading ? (
           <p className={styles.loadingText}>Carregando dados...</p>
-        ) : professors.length > 0 && rounds.length === 0 ? ( // Professores cadastrados, mas sem rodadas
+        ) : rounds.length === 0 ? ( // Professores cadastrados, mas sem rodadas
           <div className={styles.emptyState}>
             <p>Nenhuma rodada de aplicação dos questionários foi realizada ainda.</p>
-            <p>Envie o questionário para começar a avaliar os professores com o TPACK.</p>
+            <p>Aplique o questionário para começar a avaliar os professores com o TPACK.</p>
           </div>
         ) : (
           <div className={styles.roundsGrid}>

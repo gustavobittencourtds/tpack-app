@@ -75,10 +75,11 @@
 
 .emptyState {
   text-align: center;
-  margin-top: 2rem;
+  margin-top: 4rem;
   color: #555;
 }
 
 .emptyState p {
   margin-bottom: 1rem;
+  font-size: 1.125rem;
 }

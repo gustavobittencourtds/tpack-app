@@ -19,7 +19,7 @@ const HomePage: NextPage = () => {
         Bem-vindo ao TPACK App!
       </p>
       <p style={{ fontSize: '1.125rem', marginBottom: '2rem' }}>
-        Avalie seus professores com facilidade e eficiência através do nosso sistema.
+        Aplique o questionário para começar a avaliar os professores com o TPACK.
       </p>
       <div style={{ marginTop: '4rem' }}>
         <button onClick={() => navigateTo('/admin')} className={styles.navigationButton} style={{ marginRight: '4rem' }}>
