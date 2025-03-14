@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import { useRouter } from 'next/router';
 import styles from '../styles/login.module.css';
+import Image from 'next/image';
 
 const Login: React.FC = () => {
   const [email, setEmail] = useState('');
@@ -43,6 +44,8 @@ const Login: React.FC = () => {
     <div className={styles.loginContainer}>
       <div>
         <form className={styles.loginForm} onSubmit={handleLogin}>
+          <Image src="/images/logo.svg" alt="Tpack App Logo" width={150} height={150} style={{ borderRadius: '16px', margin: '0 auto' }}/>
+
           <h2>Login</h2>
           {error && <p className={styles.errorMessage}>{error}</p>}
           <input

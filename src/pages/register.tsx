@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import styles from '../styles/register.module.css';
+import Image from 'next/image';
 
 const Register: React.FC = () => {
   const [email, setEmail] = useState('');
@@ -52,6 +53,7 @@ const Register: React.FC = () => {
     <div className={styles.registerContainer}>
       <div>
         <form className={styles.registerForm} onSubmit={handleRegister}>
+          <Image src="/images/logo.svg" alt="Tpack App Logo" width={150} height={150} style={{ borderRadius: '16px', margin: '0 auto' }}/>
           <h2>Registro</h2>
           {error && <p className={styles.errorMessage}>{error}</p>}
           <input
