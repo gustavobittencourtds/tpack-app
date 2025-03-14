@@ -7,13 +7,12 @@ import Question from '../../models/Question';
 import Professor from '../../models/Professor';
 import Round from '../../models/Round';
 import mongoose from 'mongoose';
-import { sendEmail, sendConfirmationEmail } from '../../utils/emailUtils';
+import { sendEmail } from '../../utils/emailUtils';
 
 dotenv.config();
 
 async function createNewRound(userId: mongoose.Types.ObjectId): Promise<mongoose.Types.ObjectId> {
   try {
-    // Busca a última rodada específica do usuário
     const lastRound = await Round.findOne({ userId }).sort({ roundNumber: -1 }).lean();
     const nextRoundNumber = lastRound ? lastRound.roundNumber + 1 : 1;
 
@@ -70,7 +69,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         title: 'Avaliação TPACK',
         description: 'Questionário para avaliar o uso de tecnologia em práticas pedagógicas.',
         userId,
-        professorId: professor._id, // Vincula o questionário ao professor
+        professorId: professor._id,
         questions: questionIds,
         completed: false,
         sentDate: new Date(),
@@ -88,7 +87,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         { expiresIn: '48h' }
       );
 
-      const link = process.env.FRONTEND_URL + `/survey?token=${token}`;
+      // Usa FRONTEND_URL com fallback para evitar erros
+      const baseUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
+      const link = `${baseUrl}/survey?token=${token}`;
 
       await sendEmail(professor.email, link);
       console.log(`E-mail enviado para ${professor.email}`);
