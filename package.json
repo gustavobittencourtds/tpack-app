@@ -11,17 +11,13 @@
     "front": "next dev",
     "clear-db": "npx tsx --no-deprecation src/tasks/clearDatabase.ts",
     "populate-questions": "npx tsx src/tasks/populateQuestions.ts",
-    "populate-users": "npx tsx src/tasks/populateUsers.ts",
-    "validate-questions": "npx tsx src/tasks/validateQuestions.ts",
-    "validate-answers": "npx tsx src/tasks/fetchUserAnswers.ts"
+    "populate-users": "npx tsx src/tasks/populateUsers.ts"
   },
   "_comments": {
     "front": "Este comando inicia o frontend",
     "clear-db": "Este comando limpa o banco de dados",
     "populate-questions": "Este comando popula o banco de dados com questões",
-    "populate-users": "Este comando popula o banco de dados com usuários",
-    "validate-questions": "Este comando valida o questionário, com suas sessões, questões e alternativas",
-    "validate-answers": "Este comando valida as respostas dos usuários"
+    "populate-users": "Este comando popula o banco de dados com usuários"
   },
   "dependencies": {
     "@emotion/react": "^11.14.0",

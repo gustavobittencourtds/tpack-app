@@ -18,6 +18,8 @@ export default function ProfessorsPage() {
   const [selectedProfessors, setSelectedProfessors] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
+  const [visibleActions, setVisibleActions] = useState<string | null>(null); // Controla ações visíveis
+  const [isMenuOpen, setIsMenuOpen] = useState(false); // Controla o menu flutuante no mobile
   const router = useRouter();
 
   useEffect(() => {
@@ -27,10 +29,10 @@ export default function ProfessorsPage() {
         const token = localStorage.getItem('token');
         const res = await fetch('/api/professors', { headers: { Authorization: `Bearer ${token}` } });
         const data = await res.json();
-        setProfessors(data.professors || []); // Garante que seja um array
+        setProfessors(data.professors || []);
       } catch (error) {
         console.error('Erro ao buscar professores:', error);
-        setProfessors([]); // Define como array vazio em caso de erro
+        setProfessors([]);
       } finally {
         setLoading(false);
       }
@@ -141,6 +143,19 @@ export default function ProfessorsPage() {
     }
   };
 
+  const handleToggleActions = (professorId: string) => {
+    setVisibleActions(visibleActions === professorId ? null : professorId);
+  };
+
+  const scrollToAddForm = () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    setIsMenuOpen(false); // Fecha o menu ao rolar
+  };
+
+  const toggleMenu = () => {
+    setIsMenuOpen(!isMenuOpen);
+  };
+
   return (
     <ProtectedRoute>
       <div className={styles.professorsContainer}>
@@ -155,44 +170,50 @@ export default function ProfessorsPage() {
             className={styles.addProfessorInput}
           />
           <button type="submit" className={styles.addProfessorButton}>
-            <FeatherIcon icon="plus" /> Adicionar
+            <FeatherIcon icon="plus" size={25} />
           </button>
         </form>
-        {message && <p style={{ color: message.includes('Erro') ? '#e74c3c' : '#00b894', textAlign: 'center' }}>{message}</p>}
-        <div style={{ display: 'flex', gap: '1rem', marginBottom: '4rem' }}>
+        {message && (
+          <p style={{ color: message.includes('Erro') ? '#e74c3c' : '#00b894', textAlign: 'center', marginBottom: '1rem' }}>
+            {message}
+          </p>
+        )}
+        <div className={styles.actionBar}>
           <button
             className={styles.selectAllButton}
             onClick={handleSelectAll}
-            disabled={professors.length === 0} // Desabilita o botão se não houver professores
+            disabled={professors.length === 0}
           >
-            {selectedProfessors.length === professors.length ? 'Desmarcar Todos' : 'Selecionar Todos'}
+            <FeatherIcon icon="check-square" size={22} />
+            {selectedProfessors.length === professors.length ? 'Desmarcar todos' : 'Selecionar todos'}
           </button>
           <button
             className={styles.sendButton}
             onClick={() => handleSendQuestionnaires(false)}
-            disabled={professors.length === 0} // Desabilita o botão se não houver professores
+            disabled={professors.length === 0}
           >
-            Enviar para Todos
+            <FeatherIcon icon="mail" size={22} />
+
+            Enviar para todos
           </button>
           <button
             className={styles.sendButton}
             onClick={() => handleSendQuestionnaires(true)}
-            disabled={selectedProfessors.length === 0} // Desabilita o botão se nenhum professor estiver selecionado
+            disabled={selectedProfessors.length === 0}
           >
-            <FeatherIcon icon="send" />
-            Enviar para Selecionados
+            <FeatherIcon icon="send" size={20} /> Enviar para selecionados
           </button>
         </div>
         {loading ? (
           <p style={{ textAlign: 'center', color: '#636e72' }}>Carregando...</p>
-        ) : professors.length === 0 ? ( // Verifica se não há professores
+        ) : professors.length === 0 ? (
           <div className={styles.emptyState}>
             <p>Nenhum professor cadastrado ainda.</p>
             <p>Comece adicionando professores para enviar questionários.</p>
           </div>
         ) : (
           professors.map((professor) => (
-            <div key={professor._id} className={styles.professorCard}>
+            <div key={professor._id} className={styles.professorCard} style={{ position: 'relative' }}>
               <div className={styles.professorInfos}>
                 <input
                   type="checkbox"
@@ -200,21 +221,66 @@ export default function ProfessorsPage() {
                   onChange={() => handleSelectProfessor(professor._id)}
                 />
                 <span>{professor.email}</span>
+                <button
+                  className={styles.toggleActions}
+                  onClick={() => handleToggleActions(professor._id)}
+                >
+                  <FeatherIcon icon="more-vertical" size={18} />
+                </button>
               </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+              <div className={`${styles.actions} ${visibleActions === professor._id ? styles.visible : ''}`}>
                 <button className={styles.editButton} onClick={() => handleEditProfessor(professor)}>
-                  <FeatherIcon icon="edit" /> Editar
+                  <FeatherIcon icon="edit" size={18} /> Editar
                 </button>
                 <button className={styles.deleteButton} onClick={() => handleDeleteProfessor(professor._id)}>
-                  <FeatherIcon icon="trash-2" /> Remover
+                  <FeatherIcon icon="trash-2" size={18} /> Remover
                 </button>
                 <button className={styles.viewButton} onClick={() => handleViewQuestionnaires(professor._id)}>
-                  <FeatherIcon icon="list" /> Questionários
+                  <FeatherIcon icon="list" size={18} /> Questionários
                 </button>
               </div>
             </div>
           ))
         )}
+      </div>
+      <button className={styles.floatingButton} onClick={toggleMenu}>
+        <FeatherIcon icon={isMenuOpen ? 'x' : 'menu'} size={24} />
+      </button>
+      <div className={`${styles.floatingMenu} ${isMenuOpen ? styles.visible : ''}`}>
+        <button
+          className={styles.selectAllButton}
+          onClick={() => {
+            handleSelectAll();
+            setIsMenuOpen(false);
+          }}
+          disabled={professors.length === 0}
+        >
+          <FeatherIcon icon="check-square" size={22} />
+          {selectedProfessors.length === professors.length ? 'Desmarcar todos' : 'Selecionar todos'}
+        </button>
+        <button
+          className={styles.sendButton}
+          onClick={() => {
+            handleSendQuestionnaires(true);
+            setIsMenuOpen(false);
+          }}
+          disabled={selectedProfessors.length === 0}
+        >
+          <FeatherIcon icon="send" size={22} /> Enviar para selecionados
+        </button>
+        <button
+          className={styles.sendButton}
+          onClick={() => {
+            handleSendQuestionnaires(false);
+            setIsMenuOpen(false);
+          }}
+          disabled={professors.length === 0}
+        >
+          <FeatherIcon icon="mail" size={22} /> Enviar para todos
+        </button>
+        <button className={styles.addProfessorButton} onClick={scrollToAddForm}>
+          <FeatherIcon icon="plus" size={22} /> Adicionar professor
+        </button>
       </div>
     </ProtectedRoute>
   );

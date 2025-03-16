@@ -1,69 +1,52 @@
 .professorsContainer {
-  padding: 1.5rem 5%;
+  padding: 1rem 1rem 5rem;
   background: #FFFFFF;
-  border-radius: 16px;
-  box-shadow: 4px 0 10px rgba(0, 0, 0, 0.1);
-  animation: fadeIn 0.4s ease-out;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  max-width: 1200px;
   margin: 0 auto;
+
+  @media (min-width: 767px) {
+    padding: 1rem;
+  }
 }
 
 .professorsHeader {
-  font-size: 2rem;
+  font-size: clamp(1.5rem, 5vw, 2rem);
   font-weight: 600;
   color: #6c5ce7;
   text-align: center;
-  margin-bottom: 2rem;
-}
-
-.professorCard {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 1rem;
-  margin-bottom: 1rem;
-  background: #f9fafb;
-  border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-  animation: fadeIn 0.3s ease-out;
-  transition: transform 0.3s, box-shadow 0.3s;
-}
-
-.professorCard:hover {
-  box-shadow: 0 4px 12px rgba(108, 92, 231, 0.2);
-}
-
-.professorInfos {
-  display: flex;
-  align-items: flex-end;
-}
-
-.professorInfos input {
-  width: 20px;
-  height: 20px;
-  margin-right: 1rem;
-  margin-bottom: 0;
-}
-
-.professorInfos span {
-  font-size: 1.125rem;
-  font-weight: 500;
-  color: #555;
+  margin-bottom: 1.5rem;
 }
 
 .addProfessorForm {
   display: flex;
-  justify-content: center;
-  gap: 1rem;
+  flex-direction: row;
+  gap: 0.5rem;
   margin-bottom: 2rem;
+  align-items: center;
+  justify-content: center;
+  scroll-margin-top: 5rem; /* Espaço ao rolar para o topo */
+
+  @media (min-width: 767px) {
+    gap: 1rem;
+  }
 }
 
 .addProfessorInput {
   padding: 0.75rem;
-  font-size: 1rem;
+  font-size: 0.875rem;
   border: 2px solid rgba(0, 0, 0, 0.1);
-  border-radius: 10px;
-  width: 300px;
+  border-radius: 8px;
+  width: 100%;
+  height: 40px;
+  box-sizing: border-box;
+  max-width: 400px;
   transition: border-color 0.3s;
+
+  @media (min-width: 767px) {
+    font-size: 1rem;
+  }
 }
 
 .addProfessorInput:focus {
@@ -71,41 +54,118 @@
   outline: none;
 }
 
-.addProfessorButton {
-  padding: 0.75rem 1.5rem;
-  font-size: 1rem;
-  background: linear-gradient(135deg, #6c5ce7, #8e7cf3);
-  color: white;
+.addProfessorButton,
+.editButton,
+.deleteButton,
+.sendButton,
+.viewButton,
+.selectAllButton {
+  padding: 0.75rem;
+  font-size: 0.75rem;
   border: none;
-  border-radius: 10px;
+  border-radius: 8px;
   cursor: pointer;
+  transition: all 0.3s ease;
   display: flex;
   align-items: center;
+  justify-content: flex-start;
   gap: 0.5rem;
-  transition: all 0.3s ease;
-  font-size: 1rem;
-  padding: 0.75rem 1.5rem;
+
+  @media (min-width: 767px) {
+    font-size: 1rem;
+  }
+}
+
+.addProfessorButton {
+  background: linear-gradient(135deg, #6c5ce7, #8e7cf3);
+  color: white;
+  min-width: 40px;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  justify-content: center;
 }
 
 .addProfessorButton:hover {
   box-shadow: 0 4px 12px rgba(108, 92, 231, 0.3);
 }
 
-.editButton {
+.professorCard {
+  padding: 0.5rem;
+  margin-bottom: 1rem;
+  background: #f9fafb;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+
+  @media (min-width: 767px) {
+    padding: 1rem;
+  }
+}
+
+.professorInfos {
   display: flex;
   align-items: center;
+  justify-content: space-between;
+}
+
+.professorInfos input {
+  width: 16px;
+  height: 16px;
+  margin-right: 0.5rem;
+
+  @media (min-width: 767px) {
+   width: 20px;
+  height: 20px;
+  margin-right: 1rem;
+  }
+}
+
+.professorInfos span {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #555;
+  word-break: break-word;
+  flex-grow: 1;
+  margin-bottom: 4px;
+
+  @media (min-width: 767px) {
+    font-size: 1rem;
+    margin-bottom: 0;
+  }
+}
+
+.toggleActions {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+
+  @media (min-width: 767px) {
+    padding: 0.5rem;
+  }
+}
+
+.actions {
+  position: absolute;
+  right: 1rem;
+  top: 80%;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  display: none;
+  flex-direction: column;
   gap: 0.5rem;
-  padding: 0.75rem 1.5rem;
+  padding: 0.5rem;
+  z-index: 1001;
+}
+
+.actions.visible {
+  display: flex;
+}
+
+.editButton {
   background: #3498db;
   color: white;
-  border: none;
-  border-radius: 10px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  transition: background 0.3s;
-  font-size: 1rem;
-  padding: 0.75rem 1.5rem;
 }
 
 .editButton:hover {
@@ -113,82 +173,121 @@
 }
 
 .deleteButton {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.75rem 1.5rem;
   background: #e74c3c;
   color: white;
-  border: none;
-  border-radius: 10px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  transition: background 0.3s;
-  font-size: 1rem;
-  padding: 0.75rem 1.5rem;
 }
 
 .deleteButton:hover {
   background: #c0392b;
 }
 
-.sendButton,
 .viewButton {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.75rem 1.5rem;
-  font-size: 1rem;
   background: linear-gradient(135deg, #00b894, #00cec9);
   color: white;
-  border: none;
-  border-radius: 10px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-
-  &:disabled {
-    background: #b2bec3;
-    cursor: not-allowed;
-  }
 }
 
-.sendButton:hover:not(:disabled),
 .viewButton:hover {
   box-shadow: 0 4px 12px rgba(0, 184, 148, 0.3);
 }
 
-.sendButton:last-of-type {
-  margin-left: auto;
+.actionBar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  justify-content: center;
 }
 
+.sendButton,
 .selectAllButton {
-  padding: 0.75rem 1.5rem;
-  font-size: 1rem;
-  background: #3498db;
+  background: linear-gradient(135deg, #00b894, #00cec9);
   color: white;
-  border: none;
-  border-radius: 10px;
-  cursor: pointer;
-  transition: background 0.3s;
-  min-width: 200px;
-
-  &:disabled {
-    background: #b2bec3;
-    cursor: not-allowed;
-  }
+  width: 100%;
+  max-width: 280px;
 }
 
-.selectAllButton:hover {
-  background: #2980b9;
+.sendButton:hover:not(:disabled),
+.selectAllButton:hover:not(:disabled) {
+  box-shadow: 0 4px 12px rgba(0, 184, 148, 0.3);
+}
+
+.sendButton:disabled,
+.selectAllButton:disabled {
+  background: #b2bec3;
+  cursor: not-allowed;
 }
 
 .emptyState {
   text-align: center;
-  margin-top: 2rem;
+  padding: 2rem;
   color: #555;
 }
 
-.emptyState p {
-  margin-bottom: 1rem;
+/* Botão flutuante e menu */
+.floatingButton {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background: linear-gradient(135deg, #6c5ce7, #8e7cf3);
+  color: white;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  border: none;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  cursor: pointer;
+  z-index: 1000;
+  transition: transform 0.3s;
+}
+
+.floatingMenu {
+  position: fixed;
+  bottom: 90px;
+  right: 20px;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  display: none;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 1rem;
+  z-index: 1000;
+}
+
+.floatingMenu.visible {
+  display: flex;
+}
+
+.floatingMenu button {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  justify-content: flex-start;
+}
+
+/* Media Queries */
+@media (max-width: 767px) {
+  .actionBar {
+    display: none; /* Oculta os botões do topo no mobile */
+  }
+
+  .floatingButton {
+    display: flex; /* Mostra o botão flutuante no mobile */
+  }
+}
+
+@media (min-width: 768px) {
+  .professorsContainer {
+    padding: 2rem;
+  }
+
+  .actionBar {
+    display: flex; /* Mostra os botões do topo em desktop */
+  }
+
+  .floatingButton {
+    display: none; /* Esconde o botão flutuante em desktop */
+  }
 }
