@@ -21,7 +21,7 @@ function MyApp({ Component, pageProps }: AppProps) {
       </Head>
 
       <div className={styles.appContainer}>
-        {/* {!isPublicRoute && <Sidebar />} */}
+        {!isPublicRoute && <Sidebar />}
         <div className={styles.contentContainer}>
           <Component {...pageProps} />
         </div>

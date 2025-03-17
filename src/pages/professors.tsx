@@ -244,7 +244,7 @@ export default function ProfessorsPage() {
         )}
       </div>
       <button className={styles.floatingButton} onClick={toggleMenu}>
-        <FeatherIcon icon={isMenuOpen ? 'x' : 'menu'} size={24} />
+        <FeatherIcon icon={isMenuOpen ? 'x' : 'grid'} size={24} />
       </button>
       <div className={`${styles.floatingMenu} ${isMenuOpen ? styles.visible : ''}`}>
         <button

@@ -10,10 +10,14 @@
   width: 100%;
   margin: auto;
   max-width: 420px;
-  padding: 2.5rem;
+  padding: 2.5rem 1rem;
   background: #fff;
   border-radius: 16px;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+
+  @media (min-width: 768px) {
+    padding: 2.5rem;
+  }
 }
 
 .loginForm {

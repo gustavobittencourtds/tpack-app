@@ -1,3 +1,4 @@
+/* sidebarStyles.module.css */
 .sidebarContainer {
   background: #FFFFFF;
   border-radius: 16px;
@@ -13,6 +14,8 @@
   position: sticky;
   top: 20px;
   box-sizing: border-box;
+  z-index: 1002;
+  transition: left 0.3s ease;
 }
 
 .sidebarMenu {
@@ -31,8 +34,16 @@
   background: transparent;
   border-radius: 8px;
   transition: background 0.3s, transform 0.2s;
-  font-size: 1.125rem;
+  font-size: 1rem;
   color: #6c5ce7;
+  min-height: 64px;
+  box-sizing: border-box;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+
+  @media (min-width: 767px) {
+    font-size: 1.125rem;
+    min-height: 50px;
+  }
 }
 
 .sidebarMenuItemActive,
@@ -59,8 +70,12 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.125rem;
+  font-size: 1rem;
   transition: all 0.3s ease;
+
+  @media (min-width: 767px) {
+    font-size: 1.125rem;
+  }
 }
 
 .logoutButton:hover {
@@ -70,4 +85,69 @@
 .logoutButton svg {
   margin-right: 8px;
   transition: fill 0.3s;
+}
+
+/* Estilos para o botão hamburger e responsividade */
+.hamburgerButton {
+  display: none;
+  position: absolute;
+  top: 20px;
+  right: 1.2rem;
+  z-index: 1003;
+  background: linear-gradient(135deg, #6c5ce7, #8e7cf3);
+  color: white;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  border: none;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  cursor: pointer;
+  transition: transform 0.3s, left 0.3s, right 0.3s;
+}
+
+.hamburgerButton:hover {
+  transform: scale(1.05);
+}
+
+.mobileOverlay {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 1002;
+}
+
+/* Media Queries para responsividade */
+@media (max-width: 767px) {
+  .sidebarContainer {
+    position: fixed;
+    left: -100%;
+    top: 0;
+    margin: 0;
+    border-radius: 0;
+    width: 80%;
+    max-width: 300px;
+    height: 100vh;
+    max-height: 100vh;
+    transition: left 0.3s ease;
+    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.2);
+    overflow-y: auto;
+  }
+
+  .sidebarContainer.mobileMenuOpen {
+    left: 0;
+  }
+
+  .hamburgerButton {
+    display: flex;
+  }
+
+  .mobileOverlay {
+    display: block;
+  }
 }
