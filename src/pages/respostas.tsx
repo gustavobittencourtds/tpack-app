@@ -103,15 +103,15 @@ export default function Respostas() {
   return (
     <div className={`${styles.respostasContainer} ${styles.fadeIn}`}>
       <Breadcrumbs title="Respostas" />
-      <h1 className={styles.respostasHeader}>{questionnaireTitle}</h1>
-
       <button onClick={handleBack} className={styles.backButton}>
         Voltar
       </button>
 
-      {professor && <p>Professor: {professor.email}</p>}
-      {sentDate && <p>Data de envio: {sentDate.toLocaleDateString('pt-BR')}</p>}
-      {responseDate && <p>Data de resposta: {responseDate.toLocaleDateString('pt-BR')}</p>}
+      <h1 className={styles.respostasHeader}>{questionnaireTitle}</h1>
+
+      {professor && <p className={styles.Paragraph}>Professor: {professor.email}</p>}
+      {sentDate && <p className={styles.Paragraph}>Data de envio: {sentDate.toLocaleDateString('pt-BR')}</p>}
+      {responseDate && <p className={styles.Paragraph}>Data de resposta: {responseDate.toLocaleDateString('pt-BR')}</p>}
 
       <table className={styles.respostasTable}>
         <thead>

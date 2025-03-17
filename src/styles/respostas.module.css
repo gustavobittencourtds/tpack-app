@@ -24,21 +24,32 @@
 }
 
 .respostasHeader {
-  font-size: 2rem;
+  font-size: clamp(1.5rem, 5vw, 2rem);
   font-weight: 700;
   color: #6c5ce7;
   text-align: center;
-  margin-bottom: 0.25rem;
+  margin-bottom: 0.5rem;
 }
 
 .respostasHeaderDark {
   color: #f1f1f1;
 }
 
+.Paragraph {
+  font-size: 0.875rem;
+
+  @media (min-width: 768px) {
+    font-size: 1rem;
+  }
+}
+
 .respostasTable {
   width: 100%;
   border-collapse: collapse;
   margin-top: 1rem;
+  border-top-right-radius: 16px;
+  border-top-left-radius: 16px;
+  overflow: hidden;
 }
 
 .respostasTableRow:nth-child(even) {
@@ -58,6 +69,11 @@
   padding: 0.75rem;
   text-align: left;
   border-bottom: 2px solid #ddd;
+  font-size: 0.875rem;
+
+  @media (min-width: 768px) {
+    font-size: 1rem;
+  }
 }
 
 .respostasTableHeaderDark {
@@ -67,6 +83,17 @@
 .respostasTableCell {
   padding: 0.75rem;
   border-bottom: 1px solid #ddd;
+  font-size: 0.875rem;
+
+  @media (min-width: 768px) {
+    font-size: 1rem;
+  }
+}
+
+.respostasTableCell:last-of-type {
+  text-align: center;
+  font-weight: 600;
+  font-size: 1rem;
 }
 
 .respostasTableCellDark {
@@ -139,14 +166,18 @@
 .backButton {
   background: linear-gradient(135deg, #6c5ce7, #8e7cf3);
   color: white;
-  padding: 0.75rem 1.5rem;
+  padding: 0.5rem 1rem;
   border: none;
   border-radius: 10px;
   cursor: pointer;
-  font-size: 1rem;
+  font-size: 0.75rem;
   font-weight: 500;
-  margin-bottom: 1rem;
   transition: all 0.3s ease;
+  
+  @media (min-width: 768px) {
+    padding: 0.75rem 1.5rem;
+    font-size: 1rem;
+  }
 }
 
 .backButton:hover {
