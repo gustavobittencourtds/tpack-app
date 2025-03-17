@@ -4,6 +4,9 @@ import jwt from 'jsonwebtoken';
 import styles from '../styles/surveyStyles.module.css';
 import { Question } from '../types';
 import Image from 'next/image';
+import dynamic from 'next/dynamic';
+
+const FeatherIcon = dynamic(() => import('feather-icons-react'), { ssr: false });
 
 const Survey: React.FC = () => {
   const [questions, setQuestions] = useState<Question[]>([]);
@@ -15,21 +18,18 @@ const Survey: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [isCompleted, setIsCompleted] = useState(false);
   const [activelyAnswered, setActivelyAnswered] = useState<{ [questionId: string]: boolean }>({});
-  const [highestVisitedIndex, setHighestVisitedIndex] = useState(-1); // Começa na introdução
+  const [highestVisitedIndex, setHighestVisitedIndex] = useState(-1);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false); // Estado para controlar a visibilidade da sidebar
+
   const router = useRouter();
   const { token, professorEmail } = router.query;
 
-  // Referência para a questão atual no conteúdo principal
   const currentQuestionRef = useRef<HTMLDivElement | null>(null);
-
-  // Referência para o botão ativo na sidebar
   const activeSidebarButtonRef = useRef<HTMLButtonElement | null>(null);
 
   const decodedToken = token ? jwt.decode(token as string) as { userId: string; questionnaireId: string } : null;
   const questionnaireId = decodedToken?.questionnaireId;
-  
 
-  // Efeito para rolar automaticamente para a questão atual no conteúdo principal
   useEffect(() => {
     if (currentQuestionRef.current) {
       currentQuestionRef.current.scrollIntoView({
@@ -39,7 +39,6 @@ const Survey: React.FC = () => {
     }
   }, [currentQuestionIndex]);
 
-  // Efeito para rolar automaticamente para o botão ativo na sidebar
   useEffect(() => {
     if (activeSidebarButtonRef.current) {
       activeSidebarButtonRef.current.scrollIntoView({
@@ -52,7 +51,6 @@ const Survey: React.FC = () => {
   useEffect(() => {
     const fetchQuestionsAndSessions = async () => {
       try {
-        // Verifica se o token é válido e se o questionário já foi respondido
         const questionsResponse = await fetch(`/api/questions?token=${token}`);
         if (!questionsResponse.ok) {
           const errorData = await questionsResponse.json();
@@ -61,7 +59,6 @@ const Survey: React.FC = () => {
         }
         const questionsData = await questionsResponse.json();
 
-        // Busca as sessões
         const sessionsResponse = await fetch('/api/sessions');
         if (!sessionsResponse.ok) {
           setError('Erro ao buscar as sessões.');
@@ -69,13 +66,11 @@ const Survey: React.FC = () => {
         }
         const sessionsData = await sessionsResponse.json();
 
-        // Mapeia os IDs das sessões para seus títulos
         const titlesMap = sessionsData.reduce((acc: { [key: string]: string }, session: any) => {
           acc[session._id] = session.title;
           return acc;
         }, {});
 
-        // Processa as perguntas
         const introQuestion = questionsData.find((q: any) => q.type === 'intro') || null;
         const validQuestions = questionsData.filter(
           (q: any) =>
@@ -83,7 +78,6 @@ const Survey: React.FC = () => {
             (q.type !== 'multiple_choice' || (q.choices && q.choices.length > 0))
         );
 
-        // Inicializa o estado answers com o valor padrão 3 para questões do tipo scale
         const initialAnswers = validQuestions.reduce((acc: { [key: string]: string | string[] }, question: Question) => {
           if (question.type === 'scale') {
             acc[question._id] = '3';
@@ -91,7 +85,6 @@ const Survey: React.FC = () => {
           return acc;
         }, {});
 
-        // Agrupa as questões por sessão
         const groupedSessions: { [key: string]: Question[] } = validQuestions.reduce((acc: { [key: string]: Question[] }, question: Question) => {
           const sessionId = question.session_id;
           if (!acc[sessionId]) {
@@ -115,17 +108,6 @@ const Survey: React.FC = () => {
     if (token) fetchQuestionsAndSessions();
   }, [token]);
 
-  if (error) return (
-    <div className={styles.surveyContainer}>
-      <div className={styles.surveyWarning}>
-        <Image src="/images/logo.svg" alt="TPACK App" width={65} height={65} style={{ borderRadius: '16px', marginBottom: '2rem' }} />
-        <p style={{ fontSize: '1.25rem', color: '#2d3436', marginBottom: '1rem' }}>
-          {error}
-        </p>
-      </div>
-    </div>
-  );
-
   const handleAnswerChange = (value: string | string[]) => {
     const questionId = questions[currentQuestionIndex]?._id;
     if (questionId) {
@@ -140,7 +122,7 @@ const Survey: React.FC = () => {
 
     const question = questions[index];
     if (question.text.includes("comentário")) {
-      return true; // Não é obrigatória
+      return true;
     }
 
     return answers[questionId] && answers[questionId].length > 0;
@@ -162,7 +144,6 @@ const Survey: React.FC = () => {
 
   const handleSubmit = async () => {
     try {
-      // Envia as respostas do questionário
       const response = await fetch('/api/answers', {
         method: 'POST',
         headers: {
@@ -187,10 +168,8 @@ const Survey: React.FC = () => {
       console.log('Respostas enviadas com sucesso:', data);
       setIsCompleted(true);
 
-      // Usa o professorEmail retornado pela API
       const professorEmail = data.professorEmail;
 
-      // Envia o e-mail de confirmação
       const requestBody = {
         to: professorEmail,
         questionnaireId,
@@ -224,12 +203,14 @@ const Survey: React.FC = () => {
     }
   };
 
+  const toggleSidebar = () => {
+    setIsSidebarOpen(!isSidebarOpen);
+  };
+
   return (
     <div className={styles.surveyContainer}>
       {isCompleted ? (
-        // Exibe apenas a mensagem de conclusão
-        <div
-          className={styles.surveyWarning} >
+        <div className={styles.surveyWarning}>
           <Image src="/images/logo.svg" alt="TPACK App" width={65} height={65} style={{ borderRadius: '16px', marginBottom: '2rem' }} />
           <p style={{ fontSize: '1.25rem', color: '#2d3436', marginBottom: '1rem' }}>
             Questionário enviado com sucesso!
@@ -242,9 +223,23 @@ const Survey: React.FC = () => {
           </p>
         </div>
       ) : (
-        // Renderiza o questionário normalmente
         <>
-          <div className={styles.sidebarContainer}>
+          {/* Botão flutuante para abrir/fechar a sidebar */}
+          <button
+            className={styles.hamburgerButton}
+            onClick={toggleSidebar}
+            aria-label="Menu"
+          >
+            <FeatherIcon icon={isSidebarOpen ? "x" : "menu"} size={24} />
+          </button>
+
+          {/* Overlay para fechar a sidebar ao clicar fora */}
+          {isSidebarOpen && (
+            <div className={styles.mobileOverlay} onClick={toggleSidebar} />
+          )}
+
+          {/* Sidebar - condicionalmente renderizada com base no estado isSidebarOpen */}
+          <div className={`${styles.sidebarContainer} ${isSidebarOpen ? styles.mobileMenuOpen : ''}`}>
             <h4>Navegação</h4>
             {Object.entries(sessions).map(([sessionId, sessionQuestions]) => (
               <div key={sessionId}>
@@ -274,7 +269,7 @@ const Survey: React.FC = () => {
           </div>
 
           <div style={{ flex: 1 }}>
-            <Image src="/images/logo.svg" alt="Tpack App Logo" width={60} height={60} style={{ display: 'block', borderRadius: '16px', margin: '0 auto 2rem' }}/>
+            <Image src="/images/logo.svg" alt="Tpack App Logo" width={60} height={60} style={{ display: 'block', borderRadius: '16px', margin: '0 auto 2rem' }} />
             <div className={styles.progressContainer}>
               <div className={styles.progressBar} style={{ '--progress': `${progress}%` } as React.CSSProperties} />
               <p>{`Progresso: ${currentQuestionIndex + 1}/${questions.length}`}</p>
@@ -285,15 +280,15 @@ const Survey: React.FC = () => {
                 <h2>Bem-vindo ao Questionário</h2>
                 <p dangerouslySetInnerHTML={{ __html: intro.text.replace(/<br \/>/g, '<br />') }} />
                 {intro.note && <p className={styles.note}>{intro.note}</p>}
-                  <button
-                    className={`${styles.navigationButton} ${styles.startButton}`}
-                    onClick={() => {
-                      setCurrentQuestionIndex(0);
-                      setHighestVisitedIndex(0);
-                    }}
-                  >
-                    Começar
-                  </button>
+                <button
+                  className={`${styles.navigationButton} ${styles.startButton}`}
+                  onClick={() => {
+                    setCurrentQuestionIndex(0);
+                    setHighestVisitedIndex(0);
+                  }}
+                >
+                  Começar
+                </button>
               </div>
             )}
 

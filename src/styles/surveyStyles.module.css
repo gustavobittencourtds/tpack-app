@@ -27,7 +27,7 @@
   @media (min-width: 1024px) {
     padding: 8rem;
     background: #f8f9fa;
-    border-radius: 16rem;
+    border-radius: 16px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   }
 }
@@ -87,7 +87,7 @@
 .sidebarContainer {
   width: 280px;
   padding: 1.5rem;
-  background: rgba(255, 255, 255, 0.9);
+  background: rgba(255, 255, 255);
   border-radius: 16px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
   border: 1px solid rgba(0, 0, 0, 0.05);
@@ -101,10 +101,10 @@
   @media (min-width: 1440px) {
     width: 380px;
   }
+}
 
-  @media (max-width: 1024px) {
-    display: none;
-  }
+.sidebarContainer > div:last-of-type {
+  margin-bottom: 4rem;
 }
 
 .sidebarContainer::-webkit-scrollbar {
@@ -222,7 +222,7 @@
 .questionContainer {
   flex: 1;
   padding: 1rem;
-  background: rgba(255, 255, 255, 0.9);
+  background: rgba(255, 255, 255);
   border-radius: 16px;
   margin-bottom: 1.5rem;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
@@ -438,5 +438,72 @@
 
   @media (min-width: 768px) {
     font-size: 1rem;
+  }
+}
+
+/* Estilos para o botão flutuante */
+.hamburgerButton {
+  display: none; /* Escondido por padrão */
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 1003;
+  background: linear-gradient(135deg, #6c5ce7, #8e7cf3);
+  color: white;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  border: none;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  cursor: pointer;
+  transition: transform 0.3s, left 0.3s, right 0.3s;
+}
+
+.hamburgerButton:hover {
+  transform: scale(1.05);
+}
+
+/* Overlay para fechar a sidebar ao clicar fora */
+.mobileOverlay {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 1002;
+}
+
+/* Estilos para a sidebar móvel */
+@media (max-width: 1024px) {
+  .hamburgerButton {
+    display: flex; /* Mostrar o botão em dispositivos móveis */
+  }
+
+  .mobileOverlay {
+    display: block; /* Mostrar o overlay em dispositivos móveis */
+  }
+
+  .sidebarContainer {
+    position: fixed;
+    left: -100%;
+    top: 0;
+    margin: 0;
+    border-radius: 0;
+    width: 80%;
+    max-width: 300px;
+    height: 100vh;
+    max-height: 100vh;
+    transition: left 0.3s ease;
+    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.2);
+    overflow-y: auto;
+    z-index: 1002;
+  }
+
+  .sidebarContainer.mobileMenuOpen {
+    left: 0;
   }
 }
