@@ -6,6 +6,9 @@ import { CssBaseline } from "@mui/material";
 import styles from "../styles/roundStyles.module.css";
 import ProtectedRoute from "../components/ProtectedRoute";
 import Breadcrumbs from "../components/Breadcrumbs";
+import dynamic from "next/dynamic";
+
+const FeatherIcon = dynamic(() => import("feather-icons-react"), { ssr: false });
 
 interface Answer {
   questionId: string;
@@ -70,8 +73,8 @@ export default function RoundPage() {
   const [sessionAverages, setSessionAverages] = useState<SessionAverage[]>([]);
   const [professors, setProfessors] = useState<Professor[]>([]);
   const [loading, setLoading] = useState(false);
+  const [visibleActions, setVisibleActions] = useState<string | null>(null); // Controla a box flutuante
 
-  // Instead of fetching professors by userIds:
   useEffect(() => {
     if (!roundId) return;
 
@@ -102,11 +105,8 @@ export default function RoundPage() {
         setSessionAverages(data.sessionAverages || []);
         setRound(data.round || null);
 
-        // Get only the professors who have a questionnaire in this specific round
         if (data.questionnaires && data.questionnaires.length > 0) {
-          // Get unique professorIds from the questionnaires of this round
           const professorIds = [...new Set(data.questionnaires.map((q: { professorId: string }) => q.professorId))];
-
           if (professorIds.length > 0) {
             const profRes = await fetch(`/api/professors?professorIds=${professorIds.join(",")}`, {
               headers: { Authorization: `Bearer ${token}` },
@@ -115,8 +115,6 @@ export default function RoundPage() {
             setProfessors(profData.professors || []);
           }
         }
-
-        console.log("Dados da rodada:", data);
       } catch (error) {
         console.error("Erro ao buscar dados da rodada:", error);
       } finally {
@@ -127,19 +125,9 @@ export default function RoundPage() {
     fetchRoundData();
   }, [roundId]);
 
-  useEffect(() => {
-    if (questionnaires.length > 0 && professors.length > 0) {
-      console.log("Dados carregados:");
-      console.log("Questionários:", questionnaires);
-      console.log("Professores:", professors);
-
-      questionnaires.forEach(q => {
-        console.log(`Questionário ${q._id} associado ao usuário: ${q.userId}`);
-        const professorMatch = professors.find(p => p.userId === q.userId);
-        console.log("Professor correspondente:", professorMatch);
-      });
-    }
-  }, [questionnaires, professors]);
+  const handleToggleActions = (professorId: string) => {
+    setVisibleActions(visibleActions === professorId ? null : professorId);
+  };
 
   return (
     <ProtectedRoute>
@@ -150,7 +138,9 @@ export default function RoundPage() {
 
           {loading && <p>Carregando...</p>}
 
-          <button className={styles.backButton} onClick={() => router.push("/admin")}>Voltar</button>
+          <button className={styles.backButton} onClick={() => router.push("/admin")}>
+            Voltar
+          </button>
 
           {round && (
             <>
@@ -166,20 +156,58 @@ export default function RoundPage() {
               </div>
 
               <div className={styles.professorListContainer}>
+                {/* Lista para Mobile */}
+                {professors.map((professor) => {
+                  const professorQuestionnaire = questionnaires.find(
+                    (q) => q.professorId === professor._id && q.roundId === roundId
+                  );
+
+                  return (
+                    <div key={professor._id} className={styles.professorItem}>
+                      <span className={styles.professorEmail}>{professor.email}</span>
+                      <button
+                        className={styles.toggleActions}
+                        onClick={() => handleToggleActions(professor._id)}
+                      >
+                        <FeatherIcon icon="more-vertical" size={18} />
+                      </button>
+                      <div
+                        className={`${styles.actionsBox} ${visibleActions === professor._id ? styles.visible : ''}`}
+                      >
+                        <span className={styles.actionText}>
+                          <strong>Data de Resposta:</strong>{" "}
+                          {professorQuestionnaire?.responseDate
+                            ? new Date(professorQuestionnaire.responseDate).toLocaleDateString("pt-BR")
+                            : "Pendente"}
+                        </span>
+                        <button
+                          className={styles.viewAnswersButton}
+                          onClick={() => {
+                            if (!professorQuestionnaire) return;
+                            router.push(
+                              `/respostas?questionnaireId=${professorQuestionnaire._id}&professorId=${professor._id}&roundId=${roundId}`
+                            );
+                          }}
+                          disabled={!professorQuestionnaire || !professorQuestionnaire.responseDate}
+                        >
+                          Ver Respostas
+                        </button>
+                      </div>
+                    </div>
+                  );
+                })}
+
+                {/* Tabela para Desktop */}
                 <table className={styles.table}>
                   <thead>
                     <tr className={styles.tableRow}>
                       <th className={styles.tableHeader}>Professor</th>
-                      <th className={styles.tableHeader}>Enviado em</th>
                       <th className={styles.tableHeader}>Respondido em</th>
                       <th className={styles.tableHeader}>Ações</th>
                     </tr>
                   </thead>
                   <tbody>
                     {professors.map((professor) => {
-                      console.log(`🔍 Verificando professor: ${professor.email} (professorId: ${professor._id}, userId: ${professor.userId})`);
-
-                      // Filtra o questionário pelo professorId e roundId
                       const professorQuestionnaire = questionnaires.find(
                         (q) => q.professorId === professor._id && q.roundId === roundId
                       );
@@ -187,9 +215,6 @@ export default function RoundPage() {
                       return (
                         <tr key={professor._id} className={styles.tableRow}>
                           <td className={styles.tableCell}>{professor.email}</td>
-                          <td className={styles.tableCell}>
-                            {professorQuestionnaire ? new Date(professorQuestionnaire.sentDate).toLocaleDateString("pt-BR") : "N/A"}
-                          </td>
                           <td className={styles.tableCell}>
                             {professorQuestionnaire?.responseDate
                               ? new Date(professorQuestionnaire.responseDate).toLocaleDateString("pt-BR")
@@ -199,11 +224,10 @@ export default function RoundPage() {
                             <button
                               className={styles.viewAnswersButton}
                               onClick={() => {
-                                if (!professorQuestionnaire) {
-                                  console.log(`Não foi possível encontrar questionário para o professor ${professor.email} nesta rodada.`);
-                                  return;
-                                }
-                                router.push(`/respostas?questionnaireId=${professorQuestionnaire._id}&professorId=${professor._id}&roundId=${roundId}`);
+                                if (!professorQuestionnaire) return;
+                                router.push(
+                                  `/respostas?questionnaireId=${professorQuestionnaire._id}&professorId=${professor._id}&roundId=${roundId}`
+                                );
                               }}
                               disabled={!professorQuestionnaire || !professorQuestionnaire.responseDate}
                             >
@@ -221,7 +245,7 @@ export default function RoundPage() {
 
           {sessionAverages.length > 0 && sessions.length > 0 && (
             sessionAverages.map(({ sessionId, questionAverages }) => {
-              const sessionTitle = sessions.find(s => s._id === sessionId)?.title || "Sessão desconhecida";
+              const sessionTitle = sessions.find((s) => s._id === sessionId)?.title || "Sessão desconhecida";
               const pieChartData = questionAverages.map((qa, index) => ({
                 id: qa.questionId,
                 value: qa.average,
@@ -233,19 +257,21 @@ export default function RoundPage() {
                   <PieChart
                     series={[{ data: pieChartData, innerRadius: 40 }]}
                     height={320}
+                    margin={{ top: 0, right: 0, bottom: 0, left: 0 }}
                     slotProps={{ legend: { hidden: true } }}
                   />
                   <div className={styles.legendContainer}>
                     <h3 className={styles.chartTitle}>{sessionTitle}</h3>
                     {pieChartData.map((item, index) => {
-                      // Defina as cores fixas para as legendas
                       const colors = ["#02B2AF", "#2E96FF", "#B800D8", "#60009B"];
-                      const color = colors[index % colors.length]; // Use o índice para selecionar a cor correta
+                      const color = colors[index % colors.length];
 
                       return (
                         <div key={index} className={styles.legendItem}>
                           <div className={styles.legendColor} style={{ backgroundColor: color }} />
-                          <span className={styles.legendText}>{item.label}: <strong>{item.value.toFixed(2)}</strong></span>
+                          <span className={styles.legendText}>
+                            {item.label}: <strong>{item.value.toFixed(2)}</strong>
+                          </span>
                         </div>
                       );
                     })}
