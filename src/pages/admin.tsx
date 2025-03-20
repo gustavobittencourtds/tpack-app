@@ -90,7 +90,7 @@ export default function AdminDashboard() {
 
       // Conta professores únicos para esta rodada
       const uniqueProfessorIds = new Set(questionnaires.map((q: any) => q.professorId));
-      console.log(`Rodada ${roundId}: encontrados ${uniqueProfessorIds.size} professores participantes`);
+      // console.log(`Rodada ${roundId}: encontrados ${uniqueProfessorIds.size} professores participantes`);
       return uniqueProfessorIds.size;
     } catch (error) {
       console.error('Erro ao buscar contagem de professores:', error);

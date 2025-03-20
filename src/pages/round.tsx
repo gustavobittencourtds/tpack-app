@@ -52,7 +52,7 @@ interface Professor {
 
 interface SessionAverage {
   sessionId: string;
-  questionAverages: { questionId: string; average: number }[];
+  questionAverages: { questionId: string; average: number; stdDeviation: number }[];
 }
 
 const theme = createTheme({
@@ -255,23 +255,56 @@ export default function RoundPage() {
               return (
                 <div key={sessionId} className={styles.chartContainer}>
                   <PieChart
-                    series={[{ data: pieChartData, innerRadius: 40 }]}
+                    series={[
+                      {
+                        data: pieChartData,
+                        innerRadius: 40,
+                        arcLabel: (item) => `${item.value.toFixed(2)}`,
+                      },
+                    ]}
                     height={320}
                     margin={{ top: 0, right: 0, bottom: 0, left: 0 }}
-                    slotProps={{ legend: { hidden: true } }}
+                    slotProps={{
+                      legend: {
+                        hidden: true,
+                      },
+                      popper: {
+                        sx: {
+                          fontSize: '0.875rem',
+                          maxWidth: '48rem',
+                          '& .MuiChartsTooltip-mark': {
+                            width: '1rem',
+                            height: '1rem',
+                            marginRight: '0.5rem',
+                          },
+                          '& .MuiChartsTooltip-cell:last-of-type': {
+                            fontSize: '1rem',
+                            fontWeight: 700,
+                          },
+                        }
+                      },
+                    }}
+                    sx={{ 
+                      "& .MuiPieArcLabel-root": { fill: '#FFFFFF', fontSize: '16px', fontWeight: 'bold' },
+                     }}
                   />
                   <div className={styles.legendContainer}>
                     <h3 className={styles.chartTitle}>{sessionTitle}</h3>
                     {pieChartData.map((item, index) => {
                       const colors = ["#02B2AF", "#2E96FF", "#B800D8", "#60009B"];
                       const color = colors[index % colors.length];
+                      const questionAverage = questionAverages.find((qa) => qa.questionId === item.id);
 
                       return (
                         <div key={index} className={styles.legendItem}>
                           <div className={styles.legendColor} style={{ backgroundColor: color }} />
-                          <span className={styles.legendText}>
-                            {item.label}: <strong>{item.value.toFixed(2)}</strong>
-                          </span>
+                          <div className={styles.legendText}>
+                            <p className={styles.question}>{item.label}:</p>
+                            <p className={styles.average}>Média: <strong>{item.value.toFixed(2)}</strong></p>
+                            <p className={styles.stdDeviation}>
+                              Desvio Padrão: <strong>{questionAverage?.stdDeviation.toFixed(2)}</strong>
+                            </p>
+                          </div>
                         </div>
                       );
                     })}

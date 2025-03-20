@@ -79,7 +79,7 @@
   margin: 0 auto;
 
   @media (min-width: 1024px) {
-    font-size: 1.125rem;
+    font-size: 1rem;
   }
 }
 

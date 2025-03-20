@@ -187,15 +187,7 @@ export default function ProfessorsPage() {
             <FeatherIcon icon="check-square" size={22} />
             {selectedProfessors.length === professors.length ? 'Desmarcar todos' : 'Selecionar todos'}
           </button>
-          <button
-            className={styles.sendButton}
-            onClick={() => handleSendQuestionnaires(false)}
-            disabled={professors.length === 0}
-          >
-            <FeatherIcon icon="mail" size={22} />
-
-            Enviar para todos
-          </button>
+          
           <button
             className={styles.sendButton}
             onClick={() => handleSendQuestionnaires(true)}

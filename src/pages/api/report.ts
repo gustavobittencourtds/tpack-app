@@ -7,6 +7,18 @@ import Session from '../../models/Session';
 import Round from '../../models/Round';
 import jwt from 'jsonwebtoken';
 
+// Função para calcular média e desvio padrão
+function calculateStats(values: number[]): { average: number; stdDeviation: number } {
+  const n = values.length;
+  if (n === 0) return { average: 0, stdDeviation: 0 };
+
+  const average = values.reduce((acc, val) => acc + val, 0) / n;
+  const variance = values.reduce((acc, val) => acc + Math.pow(val - average, 2), 0) / n;
+  const stdDeviation = Math.sqrt(variance);
+
+  return { average, stdDeviation };
+}
+
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   await dbConnect();
 
@@ -56,14 +68,20 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       },
     }).lean();
 
-    // Calcula a média das respostas dos professores para cada questão dentro de cada sessão
+    // Calcula a média e desvio padrão das respostas dos professores para cada questão dentro de cada sessão
     const sessionAverages = sessions.map((session) => {
       const sessionQuestions = questions.filter((question) => question.session_id.toString() === session._id.toString());
       const questionAverages = sessionQuestions.map((question) => {
         const questionAnswers = answers.filter((answer) => answer.questionId.toString() === question._id.toString());
-        const total = questionAnswers.reduce((sum, answer) => sum + parseFloat(answer.answer), 0);
-        const average = questionAnswers.length > 0 ? total / questionAnswers.length : 0;
-        return { questionId: question._id, average };
+
+        // Extrai os valores das respostas e converte para números
+        const answerValues = questionAnswers.map((answer) => {
+          const numericValue = parseFloat(answer.answer);
+          return isNaN(numericValue) ? 0 : numericValue; // Trata valores inválidos
+        });
+
+        const { average, stdDeviation } = calculateStats(answerValues);
+        return { questionId: question._id, average, stdDeviation };
       });
 
       return { sessionId: session._id, questionAverages };

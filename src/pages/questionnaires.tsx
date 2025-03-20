@@ -33,8 +33,6 @@ export default function ProfessorQuestionnaires() {
           return;
         }
 
-        console.log('Buscando professor pelo ID:', professorId);
-
         const professorResponse = await fetch(`/api/professors?id=${professorId}`, {
           headers: { Authorization: `Bearer ${token}` },
         });
@@ -51,10 +49,8 @@ export default function ProfessorQuestionnaires() {
           throw new Error('Professor não encontrado na resposta da API');
         }
 
-        console.log('Professor correto selecionado:', selectedProfessor);
         setProfessor(selectedProfessor);
 
-        console.log('Buscando questionários do professor:', professorId);
         const questionnairesResponse = await fetch(`/api/get-questionnaires?professorId=${professorId}`, {
           headers: { Authorization: `Bearer ${token}` },
         });
@@ -64,8 +60,7 @@ export default function ProfessorQuestionnaires() {
         if (!questionnairesResponse.ok) {
           throw new Error('Erro ao buscar questionários');
         }
-
-        console.log('Questionários carregados:', questionnairesData.questionnaires);
+        
         setQuestionnaires(questionnairesData.questionnaires);
       } catch (error) {
         console.error(error);

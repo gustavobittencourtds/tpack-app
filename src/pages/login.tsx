@@ -32,7 +32,6 @@ const Login: React.FC = () => {
   };
 
   const handleRegisterRedirect = () => {
-    console.log('Clicou em Cadastre-se'); // Para depuração
     router.push('/register').then(() => {
       console.log('Redirecionamento para /register concluído');
     }).catch((err) => {
