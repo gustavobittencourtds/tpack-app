@@ -252,23 +252,22 @@
     overflow: hidden;
   }
 
-  .chartContainer {
-    grid-template-columns: 1fr 1fr;
-    padding: 20px;
-  }
-
   .legendContainer {
     margin-left: 20px;
   }
 }
 
-@media (max-width: 767px) {
+@media (max-width: 1024px) {
   .table {
     display: none; /* Esconde a tabela no mobile */
   }
 
   .professorListContainer {
     box-shadow: none; /* Remove sombra extra no mobile */
+  }
+
+  .professorItem {
+    display: flex; /* Mostra a lista no mobile */
   }
 }
 
@@ -282,6 +281,23 @@
   .tableCell,
   .legendText {
     font-size: 1rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .chartContainer {
+    grid-template-columns: 1fr 1fr;
+    padding: 20px;
+  }
+}
+
+@media (max-width: 767px) {
+  .table {
+    display: none; /* Esconde a tabela no mobile */
+  }
+
+  .professorListContainer {
+    box-shadow: none; /* Remove sombra extra no mobile */
   }
 }
 
