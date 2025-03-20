@@ -260,16 +260,6 @@ export default function ProfessorsPage() {
         >
           <FeatherIcon icon="send" size={22} /> Enviar para selecionados
         </button>
-        <button
-          className={styles.sendButton}
-          onClick={() => {
-            handleSendQuestionnaires(false);
-            setIsMenuOpen(false);
-          }}
-          disabled={professors.length === 0}
-        >
-          <FeatherIcon icon="mail" size={22} /> Enviar para todos
-        </button>
         <button className={styles.addProfessorButton} onClick={scrollToAddForm}>
           <FeatherIcon icon="plus" size={22} /> Adicionar professor
         </button>

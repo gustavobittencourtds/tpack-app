@@ -73,7 +73,9 @@ export default function RoundPage() {
   const [sessionAverages, setSessionAverages] = useState<SessionAverage[]>([]);
   const [professors, setProfessors] = useState<Professor[]>([]);
   const [loading, setLoading] = useState(false);
-  const [visibleActions, setVisibleActions] = useState<string | null>(null); // Controla a box flutuante
+  const [visibleActions, setVisibleActions] = useState<string | null>(null);
+  const [message, setMessage] = useState<string | null>(null);
+
 
   useEffect(() => {
     if (!roundId) return;
@@ -98,6 +100,9 @@ export default function RoundPage() {
         }
 
         const data = await res.json();
+        
+        console.log("Dados da rodada:", data);
+
         setQuestionnaires(data.questionnaires || []);
         setAnswers(data.answers || []);
         setQuestions(data.questions || []);
@@ -129,6 +134,59 @@ export default function RoundPage() {
     setVisibleActions(visibleActions === professorId ? null : professorId);
   };
 
+  const handleResendQuestionnaire = async (professorId: string, questionnaireId?: string) => {
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        throw new Error("Token não encontrado");
+      }
+
+      const res = await fetch("/api/resendQuestionnaire", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          professorId,
+          roundId,
+          questionnaireId,
+        }),
+      });
+
+      if (!res.ok) {
+        throw new Error(`Erro ao reenviar questionário: ${res.statusText}`);
+      }
+
+      const data = await res.json();
+
+      // Atualiza o estado local para refletir o novo questionário
+      if (questionnaireId) {
+        // Remove o questionário antigo
+        setQuestionnaires((prev) => prev.filter((q) => q._id !== questionnaireId));
+      }
+
+      // Adiciona o novo questionário ao estado
+      setQuestionnaires((prev) => [...prev, data.newQuestionnaire]);
+
+      setMessage("Questionário reenviado com sucesso!");
+    } catch (error) {
+      console.error("Erro ao reenviar questionário:", error);
+      setMessage("Erro ao reenviar questionário.");
+    }
+  };
+
+  // Efeito para remover a mensagem após 3 segundos
+  useEffect(() => {
+    if (message) {
+      const timer = setTimeout(() => {
+        setMessage(null);
+      }, 3000);
+
+      return () => clearTimeout(timer);
+    }
+  }, [message]);
+
   return (
     <ProtectedRoute>
       <ThemeProvider theme={theme}>
@@ -148,12 +206,24 @@ export default function RoundPage() {
 
               <div className={styles.roundInfoContainer}>
                 <div className={styles.roundInfoItem}>
-                  <strong>Data de Envio:</strong> {new Date(round.sentDate).toLocaleDateString("pt-BR")}
+                  <strong>Criação da rodada:</strong> {new Date(round.sentDate).toLocaleDateString("pt-BR")}
                 </div>
                 <div className={styles.roundInfoItem}>
-                  <strong>Professores Respondentes:</strong> {professors.length}
+                  <strong>Professores participantes:</strong> {professors.length}
                 </div>
               </div>
+
+              {message && (
+                <p
+                  style={{
+                    color: message.includes('Erro') ? '#e74c3c' : '#00b894',
+                    textAlign: 'center',
+                    marginBottom: '1rem',
+                  }}
+                >
+                  {message}
+                </p>
+              )}
 
               <div className={styles.professorListContainer}>
                 {/* Lista para Mobile */}
@@ -190,7 +260,18 @@ export default function RoundPage() {
                           }}
                           disabled={!professorQuestionnaire || !professorQuestionnaire.responseDate}
                         >
-                          Ver Respostas
+                          <FeatherIcon icon="file-text" size={20} />
+                          Respostas
+                        </button>
+
+                        <button
+                          aria-label="Reenviar Questionário"
+                          className={styles.resendButton}
+                          onClick={() => handleResendQuestionnaire(professor._id, professorQuestionnaire?._id)}
+                        >
+                          <FeatherIcon icon="rotate-cw" size={18} />
+
+                          Reenviar
                         </button>
                       </div>
                     </div>
@@ -231,7 +312,17 @@ export default function RoundPage() {
                               }}
                               disabled={!professorQuestionnaire || !professorQuestionnaire.responseDate}
                             >
-                              Ver Respostas
+                              <FeatherIcon icon="file-text" size={20} />
+                              Respostas
+                            </button>
+
+                            <button
+                              className={styles.resendButton}
+                              onClick={() => handleResendQuestionnaire(professor._id, professorQuestionnaire?._id)}
+                            >
+                              <FeatherIcon icon="rotate-cw" size={18} />
+
+                              Reenviar
                             </button>
                           </td>
                         </tr>
