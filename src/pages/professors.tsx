@@ -147,6 +147,17 @@ export default function ProfessorsPage() {
     setVisibleActions(visibleActions === professorId ? null : professorId);
   };
 
+  // Efeito para remover a mensagem após 3 segundos
+  useEffect(() => {
+    if (message) {
+      const timer = setTimeout(() => {
+        setMessage(null);
+      }, 3000);
+
+      return () => clearTimeout(timer);
+    }
+  }, [message]);
+
   const scrollToAddForm = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
     setIsMenuOpen(false); // Fecha o menu ao rolar

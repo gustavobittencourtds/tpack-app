@@ -52,7 +52,7 @@ interface Professor {
 
 interface SessionAverage {
   sessionId: string;
-  questionAverages: { questionId: string; average: number; stdDeviation: number }[];
+  questionAverages: { questionId: string; average: number; stdDeviation: number; median: number; mode: number; range: number; cv: number }[];
 }
 
 const theme = createTheme({
@@ -75,6 +75,7 @@ export default function RoundPage() {
   const [loading, setLoading] = useState(false);
   const [visibleActions, setVisibleActions] = useState<string | null>(null);
   const [message, setMessage] = useState<string | null>(null);
+  const [expandedQuestionId, setExpandedQuestionId] = useState<string | null>(null);
 
 
   useEffect(() => {
@@ -335,74 +336,195 @@ export default function RoundPage() {
           )}
 
           {sessionAverages.length > 0 && sessions.length > 0 && (
-            sessionAverages.map(({ sessionId, questionAverages }) => {
-              const sessionTitle = sessions.find((s) => s._id === sessionId)?.title || "Sessão desconhecida";
-              const pieChartData = questionAverages.map((qa, index) => ({
-                id: qa.questionId,
-                value: qa.average,
-                label: questions.find((q) => q._id === qa.questionId)?.text || "Questão desconhecida",
-              }));
+            <>
+              {sessionAverages.every(({ questionAverages }) => questionAverages.every((qa) => qa.average === 0)) ? (
+                <p className={styles.noDataMessage}>Aguardando respostas</p>
+              ) : (
+                sessionAverages.map(({ sessionId, questionAverages }) => {
+                  const sessionTitle = sessions.find((s) => s._id === sessionId)?.title || "Sessão desconhecida";
+                  const pieChartData = questionAverages.map((qa, index) => ({
+                    id: qa.questionId,
+                    value: qa.average,
+                    label: questions.find((q) => q._id === qa.questionId)?.text || "Questão desconhecida",
+                  }));
 
-              return (
-                <div key={sessionId} className={styles.chartContainer}>
-                  <PieChart
-                    series={[
-                      {
-                        data: pieChartData,
-                        innerRadius: 40,
-                        arcLabel: (item) => `${item.value.toFixed(2)}`,
-                      },
-                    ]}
-                    height={320}
-                    margin={{ top: 0, right: 0, bottom: 0, left: 0 }}
-                    slotProps={{
-                      legend: {
-                        hidden: true,
-                      },
-                      popper: {
-                        sx: {
-                          fontSize: '0.875rem',
-                          maxWidth: '48rem',
-                          '& .MuiChartsTooltip-mark': {
-                            width: '1rem',
-                            height: '1rem',
-                            marginRight: '0.5rem',
+                  return (
+                    <div key={sessionId} className={styles.chartContainer}>
+                      <PieChart
+                        series={[
+                          {
+                            data: pieChartData,
+                            innerRadius: 40,
+                            arcLabel: (item) => `${item.value.toFixed(2)}`,
                           },
-                          '& .MuiChartsTooltip-cell:last-of-type': {
-                            fontSize: '1rem',
-                            fontWeight: 700,
+                        ]}
+                        height={320}
+                        margin={{ top: 0, right: 0, bottom: 0, left: 0 }}
+                        slotProps={{
+                          legend: {
+                            hidden: true,
                           },
-                        }
-                      },
-                    }}
-                    sx={{ 
-                      "& .MuiPieArcLabel-root": { fill: '#FFFFFF', fontSize: '16px', fontWeight: 'bold' },
-                     }}
-                  />
-                  <div className={styles.legendContainer}>
-                    <h3 className={styles.chartTitle}>{sessionTitle}</h3>
-                    {pieChartData.map((item, index) => {
-                      const colors = ["#02B2AF", "#2E96FF", "#B800D8", "#60009B"];
-                      const color = colors[index % colors.length];
-                      const questionAverage = questionAverages.find((qa) => qa.questionId === item.id);
+                          popper: {
+                            sx: {
+                              fontSize: '0.875rem',
+                              maxWidth: '48rem',
+                              '& .MuiChartsTooltip-mark': {
+                                width: '1rem',
+                                height: '1rem',
+                                marginRight: '0.5rem',
+                              },
+                              '& .MuiChartsTooltip-cell:last-of-type': {
+                                fontSize: '1rem',
+                                fontWeight: 700,
+                              },
+                            }
+                          },
+                        }}
+                        sx={{ 
+                          "& .MuiPieArcLabel-root": { fill: '#FFFFFF', fontSize: '16px', fontWeight: 'bold' },
+                        }}
+                      />
+                      <div className={styles.legendContainer}>
+                        <h3 className={styles.chartTitle}>{sessionTitle}</h3>
+                        {pieChartData.map((item, index) => {
+                          const colors = ["#02B2AF", "#2E96FF", "#B800D8", "#60009B"];
+                          const color = colors[index % colors.length];
+                          const questionAverage = questionAverages.find((qa) => qa.questionId === item.id);
 
-                      return (
-                        <div key={index} className={styles.legendItem}>
-                          <div className={styles.legendColor} style={{ backgroundColor: color }} />
-                          <div className={styles.legendText}>
-                            <p className={styles.question}>{item.label}:</p>
-                            <p className={styles.average}>Média: <strong>{item.value.toFixed(2)}</strong></p>
-                            <p className={styles.stdDeviation}>
-                              Desvio Padrão: <strong>{questionAverage?.stdDeviation.toFixed(2)}</strong>
-                            </p>
-                          </div>
-                        </div>
-                      );
-                    })}
-                  </div>
-                </div>
-              );
-            })
+                          return (
+                            <div key={index} className={styles.legendItem}>
+                              <div className={styles.legendColor} style={{ backgroundColor: color }} />
+                              <div className={styles.legendText}>
+                                <p className={styles.question}>{item.label}:</p>
+                                <p className={styles.statisticalData}>Média: <strong>{item.value.toFixed(2)}</strong></p>
+                                <button
+                                  className={styles.moreStatsButton}
+                                  onClick={() => setExpandedQuestionId(item.id)}
+                                >
+                                  Ver mais dados estatísticos
+                                </button>
+                              </div>
+
+                              {expandedQuestionId === item.id && (
+                                <div
+                                  className={styles.statsPopup}
+                                  onClick={() => setExpandedQuestionId(null)} // Fecha o popup ao clicar no fundo
+                                >
+                                  <div
+                                    className={styles.statsPopupContent}
+                                    onClick={(e) => e.stopPropagation()} // Impede que o clique no conteúdo feche o popup
+                                  >
+                                    <button
+                                      className={styles.closePopupButton}
+                                      onClick={() => setExpandedQuestionId(null)}
+                                    >
+                                      &times; {/* Botão "X" */}
+                                    </button>
+                                    <h4>Dados Estatísticos</h4>
+                                    <p className={styles.statisticalData}>
+                                      <strong>Questão:</strong> {item.label}<br /><br />
+                                      <strong>Média:</strong> {item.value.toFixed(2)}<br />
+                                      <span className={styles.legend}>
+                                        <strong>Definição:</strong> Este é o valor médio das respostas.<br /><br />
+                                        <strong>Interpretação:</strong>{" "}
+                                        {item.value < 3.5
+                                          ? "Uma média baixa indica que o grupo não se sente confiante."
+                                          : "Uma média alta mostra segurança na prática."}
+                                        <br /><br />
+                                        <strong>Sugestão:</strong>{" "}
+                                        {item.value < 3.5
+                                          ? "Considere oferecer treinamentos ou suporte para fortalecer essa prática entre os professores."
+                                          : "Continue incentivando e aprimorando essa prática, pois está bem consolidada."}
+                                      </span>
+                                    </p>
+                                    <p className={styles.statisticalData}>
+                                      <strong>Desvio Padrão:</strong> {questionAverage?.stdDeviation?.toFixed(2) || 'N/A'}<br />
+                                      <span className={styles.legend}>
+                                        <strong>Definição:</strong> Mostra o quanto as respostas variaram.<br /><br />
+                                        <strong>Interpretação:</strong>{" "}
+                                        {questionAverage?.stdDeviation && questionAverage.stdDeviation > 1
+                                          ? "Se for alto, significa que há muitas opiniões diferentes."
+                                          : "Se for baixo, todos responderam de forma parecida."}
+                                        <br /><br />
+                                        <strong>Sugestão:</strong>{" "}
+                                        {questionAverage?.stdDeviation && questionAverage.stdDeviation > 1
+                                          ? "Promova discussões para alinhar as percepções."
+                                          : "O grupo está alinhado; aproveite para consolidar essa prática."}
+                                      </span>
+                                    </p>
+                                    <p className={styles.statisticalData}>
+                                      <strong>Mediana:</strong> {questionAverage?.median?.toFixed(2) || 'N/A'}<br />
+                                      <span className={styles.legend}>
+                                        <strong>Definição:</strong> Representa a resposta do “meio”.<br /><br />
+                                        <strong>Interpretação:</strong>{" "}
+                                        {questionAverage?.median && Math.abs(questionAverage.median - item.value) > 0.5
+                                          ? "Se for muito diferente da média, pode haver algumas respostas muito altas ou muito baixas."
+                                          : "A maioria das respostas está próxima da média, indicando consistência."}
+                                        <br /><br />
+                                        <strong>Sugestão:</strong>{" "}
+                                        {questionAverage?.median && Math.abs(questionAverage.median - item.value) > 0.5
+                                          ? "Analise os extremos (respostas muito altas ou muito baixas) para entender as divergências."
+                                          : "A consistência das respostas sugere que o grupo está alinhado."}
+                                      </span>
+                                    </p>
+                                    <p className={styles.statisticalData}>
+                                      <strong>Moda:</strong> {Array.isArray(questionAverage?.mode) ? questionAverage.mode.join(' e ') : questionAverage?.mode}<br />
+                                      <span className={styles.legend}>
+                                        <strong>Definição:</strong> É a resposta mais comum.<br /><br />
+                                        <strong>Interpretação:</strong>{" "}
+                                        {questionAverage?.mode && Math.abs(questionAverage.mode - item.value) > 0.5
+                                          ? "Quando está longe da média, indica que a resposta mais escolhida não representa o grupo todo."
+                                          : "A resposta mais comum reflete bem a opinião do grupo."}
+                                        <br /><br />
+                                        <strong>Sugestão:</strong>{" "}
+                                        {questionAverage?.mode && Math.abs(questionAverage.mode - item.value) > 0.5
+                                          ? "Identifique os motivos pelos quais a resposta mais comum não reflete o grupo."
+                                          : "A resposta mais comum é representativa; use-a como base para decisões."}
+                                      </span>
+                                    </p>
+                                    <p className={styles.statisticalData}>
+                                      <strong>Amplitude:</strong> {questionAverage?.range?.toFixed(2) || 'N/A'}<br />
+                                      <span className={styles.legend}>
+                                        <strong>Definição:</strong> Diferença entre a menor e a maior resposta.<br /><br />
+                                        <strong>Interpretação:</strong>{" "}
+                                        {questionAverage?.range && questionAverage.range > 2
+                                          ? "Uma amplitude grande mostra que as percepções são muito variadas."
+                                          : "As respostas estão próximas, mostrando que o grupo pensa de forma semelhante."}
+                                        <br /><br />
+                                        <strong>Sugestão:</strong>{" "}
+                                        {questionAverage?.range && questionAverage.range > 2
+                                          ? "Promova discussões para entender as diferentes percepções e buscar consenso."
+                                          : "O grupo está alinhado; aproveite para fortalecer essa prática."}
+                                      </span>
+                                    </p>
+                                    <p className={styles.statisticalData}>
+                                      <strong>Coeficiente de Variação:</strong> {questionAverage?.cv?.toFixed(2) || 'N/A'}%<br />
+                                      <span className={styles.legend}>
+                                        <strong>Definição:</strong> Indica a variação proporcional.<br /><br />
+                                        <strong>Interpretação:</strong>{" "}
+                                        {questionAverage?.cv && questionAverage.cv > 20
+                                          ? "Quanto maior o CV, mais diferentes são as respostas."
+                                          : "Um valor baixo mostra que o grupo pensa parecido."}
+                                        <br /><br />
+                                        <strong>Sugestão:</strong>{" "}
+                                        {questionAverage?.cv && questionAverage.cv > 20
+                                          ? "Identifique as causas da divergência e promova ações para alinhar as percepções."
+                                          : "O grupo está alinhado; consolide essa prática."}
+                                      </span>
+                                    </p>
+                                  </div>
+                                </div>
+                              )}
+
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  );
+                })
+              )}
+            </>
           )}
         </div>
       </ThemeProvider>

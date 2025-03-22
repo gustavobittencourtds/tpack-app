@@ -7,16 +7,55 @@ import Session from '../../models/Session';
 import Round from '../../models/Round';
 import jwt from 'jsonwebtoken';
 
-// Função para calcular média e desvio padrão
-function calculateStats(values: number[]): { average: number; stdDeviation: number } {
-  const n = values.length;
-  if (n === 0) return { average: 0, stdDeviation: 0 };
 
+// Função para calcular a moda
+function calculateMode(values: number[]): number[] {
+  const frequencyMap = values.reduce((acc, val) => {
+    acc[val] = (acc[val] || 0) + 1;
+    return acc;
+  }, {} as { [key: string]: number });
+
+  const maxFrequency = Math.max(...Object.values(frequencyMap));
+  const modes = Object.keys(frequencyMap)
+    .filter((key) => frequencyMap[key] === maxFrequency)
+    .map((key) => parseFloat(key));
+
+  return modes;
+}
+
+// Função para calcular média, desvio padrão, mediana, moda, amplitude e coeficiente de variação
+function calculateStats(values: number[]): {
+  average: number;
+  stdDeviation: number;
+  median: number;
+  mode: number[]; // Agora a moda é um array
+  range: number;
+  cv: number;
+} {
+  const n = values.length;
+  if (n === 0) return { average: 0, stdDeviation: 0, median: 0, mode: [], range: 0, cv: 0 };
+
+  // Média
   const average = values.reduce((acc, val) => acc + val, 0) / n;
+
+  // Desvio Padrão
   const variance = values.reduce((acc, val) => acc + Math.pow(val - average, 2), 0) / n;
   const stdDeviation = Math.sqrt(variance);
 
-  return { average, stdDeviation };
+  // Mediana
+  const sortedValues = [...values].sort((a, b) => a - b);
+  const median = sortedValues[Math.floor(n / 2)];
+
+  // Moda (agora retorna um array)
+  const mode = calculateMode(values);
+
+  // Amplitude
+  const range = Math.max(...values) - Math.min(...values);
+
+  // Coeficiente de Variação (CV)
+  const cv = (stdDeviation / average) * 100;
+
+  return { average, stdDeviation, median, mode, range, cv };
 }
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
@@ -68,7 +107,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       },
     }).lean();
 
-    // Calcula a média e desvio padrão das respostas dos professores para cada questão dentro de cada sessão
+    // Calcula a média, desvio padrão, mediana, moda, amplitude e coeficiente de variação das respostas dos professores para cada questão dentro de cada sessão
     const sessionAverages = sessions.map((session) => {
       const sessionQuestions = questions.filter((question) => question.session_id.toString() === session._id.toString());
       const questionAverages = sessionQuestions.map((question) => {
@@ -80,8 +119,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           return isNaN(numericValue) ? 0 : numericValue; // Trata valores inválidos
         });
 
-        const { average, stdDeviation } = calculateStats(answerValues);
-        return { questionId: question._id, average, stdDeviation };
+        // Calcula todas as métricas
+        const { average, stdDeviation, median, mode, range, cv } = calculateStats(answerValues);
+        return { questionId: question._id, average, stdDeviation, median, mode, range, cv };
       });
 
       return { sessionId: session._id, questionAverages };
