@@ -408,17 +408,17 @@ export default function RoundPage() {
                               {expandedQuestionId === item.id && (
                                 <div
                                   className={styles.statsPopup}
-                                  onClick={() => setExpandedQuestionId(null)} // Fecha o popup ao clicar no fundo
+                                  onClick={() => setExpandedQuestionId(null)}
                                 >
                                   <div
                                     className={styles.statsPopupContent}
-                                    onClick={(e) => e.stopPropagation()} // Impede que o clique no conteúdo feche o popup
+                                    onClick={(e) => e.stopPropagation()}
                                   >
                                     <button
                                       className={styles.closePopupButton}
                                       onClick={() => setExpandedQuestionId(null)}
                                     >
-                                      &times; {/* Botão "X" */}
+                                      ×
                                     </button>
                                     <h4>Dados Estatísticos</h4>
                                     <p className={styles.statisticalData}>
@@ -438,76 +438,80 @@ export default function RoundPage() {
                                       </span>
                                     </p>
                                     <p className={styles.statisticalData}>
-                                      <strong>Desvio Padrão:</strong> {questionAverage?.stdDeviation?.toFixed(2) || 'N/A'}<br />
+                                      <strong>Desvio Padrão:</strong> {questionAverage?.stdDeviation?.toFixed(2) ?? "N/A"}<br />
                                       <span className={styles.legend}>
                                         <strong>Definição:</strong> Mostra o quanto as respostas variaram.<br /><br />
                                         <strong>Interpretação:</strong>{" "}
-                                        {questionAverage?.stdDeviation && questionAverage.stdDeviation > 1
+                                        {questionAverage && questionAverage.stdDeviation && questionAverage.stdDeviation > 1
                                           ? "Se for alto, significa que há muitas opiniões diferentes."
                                           : "Se for baixo, todos responderam de forma parecida."}
                                         <br /><br />
                                         <strong>Sugestão:</strong>{" "}
-                                        {questionAverage?.stdDeviation && questionAverage.stdDeviation > 1
+                                        {questionAverage && questionAverage.stdDeviation && questionAverage.stdDeviation > 1
                                           ? "Promova discussões para alinhar as percepções."
                                           : "O grupo está alinhado; aproveite para consolidar essa prática."}
                                       </span>
                                     </p>
                                     <p className={styles.statisticalData}>
-                                      <strong>Mediana:</strong> {questionAverage?.median?.toFixed(2) || 'N/A'}<br />
+                                      <strong>Mediana:</strong> {questionAverage?.median?.toFixed(2) ?? "N/A"}<br />
                                       <span className={styles.legend}>
                                         <strong>Definição:</strong> Representa a resposta do “meio”.<br /><br />
                                         <strong>Interpretação:</strong>{" "}
-                                        {questionAverage?.median && Math.abs(questionAverage.median - item.value) > 0.5
+                                        {questionAverage && questionAverage.median && Math.abs(questionAverage.median - item.value) > 0.5
                                           ? "Se for muito diferente da média, pode haver algumas respostas muito altas ou muito baixas."
                                           : "A maioria das respostas está próxima da média, indicando consistência."}
                                         <br /><br />
                                         <strong>Sugestão:</strong>{" "}
-                                        {questionAverage?.median && Math.abs(questionAverage.median - item.value) > 0.5
+                                        {questionAverage && questionAverage.median && Math.abs(questionAverage.median - item.value) > 0.5
                                           ? "Analise os extremos (respostas muito altas ou muito baixas) para entender as divergências."
                                           : "A consistência das respostas sugere que o grupo está alinhado."}
                                       </span>
                                     </p>
                                     <p className={styles.statisticalData}>
-                                      <strong>Moda:</strong> {Array.isArray(questionAverage?.mode) ? questionAverage.mode.join(' e ') : questionAverage?.mode}<br />
+                                      <strong>Moda:</strong>{" "}
+                                      {questionAverage && Array.isArray(questionAverage.mode)
+                                        ? questionAverage.mode.join(" e ")
+                                        : questionAverage?.mode ?? "N/A"}
+                                      <br />
                                       <span className={styles.legend}>
                                         <strong>Definição:</strong> É a resposta mais comum.<br /><br />
                                         <strong>Interpretação:</strong>{" "}
-                                        {questionAverage?.mode && Math.abs(questionAverage.mode - item.value) > 0.5
+                                        {questionAverage && questionAverage.mode && Math.abs(questionAverage.mode - item.value) > 0.5
                                           ? "Quando está longe da média, indica que a resposta mais escolhida não representa o grupo todo."
                                           : "A resposta mais comum reflete bem a opinião do grupo."}
                                         <br /><br />
                                         <strong>Sugestão:</strong>{" "}
-                                        {questionAverage?.mode && Math.abs(questionAverage.mode - item.value) > 0.5
+                                        {questionAverage && questionAverage.mode && Math.abs(questionAverage.mode - item.value) > 0.5
                                           ? "Identifique os motivos pelos quais a resposta mais comum não reflete o grupo."
                                           : "A resposta mais comum é representativa; use-a como base para decisões."}
                                       </span>
                                     </p>
                                     <p className={styles.statisticalData}>
-                                      <strong>Amplitude:</strong> {questionAverage?.range?.toFixed(2) || 'N/A'}<br />
+                                      <strong>Amplitude:</strong> {questionAverage?.range?.toFixed(2) ?? "N/A"}<br />
                                       <span className={styles.legend}>
                                         <strong>Definição:</strong> Diferença entre a menor e a maior resposta.<br /><br />
                                         <strong>Interpretação:</strong>{" "}
-                                        {questionAverage?.range && questionAverage.range > 2
+                                        {questionAverage && questionAverage.range && questionAverage.range > 2
                                           ? "Uma amplitude grande mostra que as percepções são muito variadas."
                                           : "As respostas estão próximas, mostrando que o grupo pensa de forma semelhante."}
                                         <br /><br />
                                         <strong>Sugestão:</strong>{" "}
-                                        {questionAverage?.range && questionAverage.range > 2
+                                        {questionAverage && questionAverage.range && questionAverage.range > 2
                                           ? "Promova discussões para entender as diferentes percepções e buscar consenso."
                                           : "O grupo está alinhado; aproveite para fortalecer essa prática."}
                                       </span>
                                     </p>
                                     <p className={styles.statisticalData}>
-                                      <strong>Coeficiente de Variação:</strong> {questionAverage?.cv?.toFixed(2) || 'N/A'}%<br />
+                                      <strong>Coeficiente de Variação:</strong> {questionAverage?.cv?.toFixed(2) ?? "N/A"}%<br />
                                       <span className={styles.legend}>
                                         <strong>Definição:</strong> Indica a variação proporcional.<br /><br />
                                         <strong>Interpretação:</strong>{" "}
-                                        {questionAverage?.cv && questionAverage.cv > 20
+                                        {questionAverage && questionAverage.cv && questionAverage.cv > 20
                                           ? "Quanto maior o CV, mais diferentes são as respostas."
                                           : "Um valor baixo mostra que o grupo pensa parecido."}
                                         <br /><br />
                                         <strong>Sugestão:</strong>{" "}
-                                        {questionAverage?.cv && questionAverage.cv > 20
+                                        {questionAverage && questionAverage.cv && questionAverage.cv > 20
                                           ? "Identifique as causas da divergência e promova ações para alinhar as percepções."
                                           : "O grupo está alinhado; consolide essa prática."}
                                       </span>
@@ -515,7 +519,6 @@ export default function RoundPage() {
                                   </div>
                                 </div>
                               )}
-
                             </div>
                           );
                         })}
