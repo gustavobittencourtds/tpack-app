@@ -3,8 +3,6 @@
   background: #FFFFFF;
   border-radius: 12px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  max-width: 1200px;
-  margin: 0 auto;
 
   @media (min-width: 767px) {
     padding: 1rem;

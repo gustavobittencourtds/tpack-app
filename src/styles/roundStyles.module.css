@@ -3,8 +3,6 @@
   background: #FFFFFF;
   border-radius: 12px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  margin: 0 auto;
-  max-width: 1200px;
 }
 
 .roundHeader {
@@ -197,7 +195,6 @@
   font-size: 0.75rem;
   font-weight: 500;
   transition: all 0.3s ease;
-  margin-bottom: 1rem;
 
   @media (min-width: 768px) {
     padding: 0.75rem 1.5rem;

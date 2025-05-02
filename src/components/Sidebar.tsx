@@ -68,6 +68,9 @@ const Sidebar = () => {
           <li onClick={() => router.push('/professors')} className={`${styles.sidebarMenuItem} ${router.pathname === '/professors' || router.pathname === '/respostas' || router.pathname === '/questionnaires' ? styles.sidebarMenuItemActive : ''}`}>
             <FeatherIcon icon="users" /> Professores
           </li>
+          <li onClick={() => router.push('/tpack')} className={`${styles.sidebarMenuItem} ${router.pathname === '/tpack' ? styles.sidebarMenuItemActive : ''}`}>
+            <FeatherIcon icon="book-open" /> Guia TPACK
+          </li>
         </ul>
         <button className={styles.logoutButton} onClick={handleLogout}>
           <FeatherIcon icon="log-out" /> Logout

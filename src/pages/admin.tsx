@@ -3,7 +3,6 @@ import { useRouter } from 'next/router';
 import dynamic from 'next/dynamic';
 import ProtectedRoute from '../components/ProtectedRoute';
 import styles from '../styles/Admin.module.css';
-import { jwtDecode } from 'jwt-decode'; // Importe jwtDecode
 
 const FeatherIcon = dynamic(() => import('feather-icons-react'), { ssr: false });
 
