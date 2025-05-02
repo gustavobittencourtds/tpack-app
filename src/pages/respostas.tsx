@@ -1,7 +1,10 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
+import dynamic from "next/dynamic";
 import styles from '../styles/respostas.module.css';
 import Breadcrumbs from '../components/Breadcrumbs';
+import { exportSingleProfessorAnswersToCSV } from "../utils/csvExport";
+const FeatherIcon = dynamic(() => import("feather-icons-react"), { ssr: false });
 
 interface Answer {
   questionId: string;
@@ -22,6 +25,7 @@ export default function Respostas() {
   const [responseDate, setResponseDate] = useState<Date | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [showTooltip, setShowTooltip] = useState(false);
   const router = useRouter();
   const { questionnaireId, professorId, roundId } = router.query;
 
@@ -100,12 +104,47 @@ export default function Respostas() {
   if (loading) return <p>Carregando...</p>;
   if (error) return <p>{error}</p>;
 
+  const rows = answers.map((answer) => ({
+    email: professor?.email ?? "",
+    question: answer.questionText,
+    answer: Array.isArray(answer.answer) ? answer.answer.join(", ") : answer.answer,
+    responseDate: responseDate ? responseDate.toLocaleDateString("pt-BR") : ""
+  }));
+
   return (
     <div className={`${styles.respostasContainer} ${styles.fadeIn}`}>
       <Breadcrumbs title="Respostas" />
-      <button onClick={handleBack} className={styles.backButton}>
-        Voltar
-      </button>
+
+      <div className={styles.actionsWrapper}>
+        <button onClick={handleBack} className={styles.backButton}>
+          Voltar
+        </button>
+
+        {answers.length > 0 && (
+          <div
+            className={styles.downloadWrapper}
+            onMouseEnter={() => setShowTooltip(true)}
+            onMouseLeave={() => setShowTooltip(false)}
+          >
+            <button
+              className={styles.exportButton}
+              onClick={() =>
+                exportSingleProfessorAnswersToCSV(
+                  rows,
+                  `respostas_${questionnaireTitle.replace(/\s+/g, "_")}.csv`
+                )
+              }
+              aria-label="Baixar respostas em CSV"
+              type="button"
+            >
+              <FeatherIcon icon="download" size={20} />
+            </button>
+            <span className={`${styles.downloadTooltip} ${showTooltip ? styles["-visible"] : ""}`}>
+              Baixar respostas em CSV
+            </span>
+          </div>
+        )}
+      </div>
 
       <h1 className={styles.respostasHeader}>{questionnaireTitle}</h1>
 

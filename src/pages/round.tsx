@@ -8,6 +8,7 @@ import ProtectedRoute from "../components/ProtectedRoute";
 import Breadcrumbs from "../components/Breadcrumbs";
 import dynamic from "next/dynamic";
 import { saveAs } from "file-saver";
+import { exportRoundAnswersToCSV } from "../utils/csvExport";
 
 const FeatherIcon = dynamic(() => import("feather-icons-react"), { ssr: false });
 
@@ -61,45 +62,6 @@ const theme = createTheme({
     fontFamily: "Inter, sans-serif",
   },
 });
-
-// Função utilitária para converter dados em CSV
-function exportAnswersToCSV(
-  answers: Answer[],
-  questions: Question[],
-  professors: Professor[],
-  questionnaires: Questionnaire[],
-  roundId: string | string[] | undefined
-) {
-  const header = [
-    "E-mail",
-    "Questão",
-    "Resposta",
-    "Data de Resposta"
-  ];
-
-  const roundIdStr = Array.isArray(roundId) ? roundId[0] : roundId;
-
-  const rows = answers.map((answer) => {
-    const question = questions.find(q => q._id === answer.questionId);
-    // Busca o questionário pelo questionnaireId da resposta
-    const questionnaire = questionnaires.find(q => q._id === (answer as any).questionnaireId);
-    // Busca o professor pelo professorId da resposta
-    const professor = professors.find(p => p._id === (answer as any).professorId);
-
-    return [
-      professor?.email ?? "",
-      question?.text ?? "",
-      answer.answer,
-      questionnaire?.responseDate
-        ? new Date(questionnaire.responseDate).toLocaleString("pt-BR")
-        : ""
-    ].map(field => `"${String(field).replace(/"/g, '""')}"`).join(",");
-  });
-
-  const csvContent = [header.join(","), ...rows].join("\r\n");
-  const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
-  saveAs(blob, "respostas_rodada.csv");
-}
 
 export default function RoundPage() {
   const router = useRouter();
@@ -252,7 +214,22 @@ export default function RoundPage() {
               >
                 <button
                   className={styles.exportButton}
-                  onClick={() => exportAnswersToCSV(answers, questions, professors, questionnaires, roundId)}
+                  onClick={() => {
+                    const rows = answers.map((answer) => {
+                      const question = questions.find(q => q._id === answer.questionId);
+                      const questionnaire = questionnaires.find(q => q._id === (answer as any).questionnaireId);
+                      const professor = professors.find(p => p._id === (answer as any).professorId);
+                      return {
+                        email: professor?.email ?? "",
+                        question: question?.text ?? "",
+                        answer: answer.answer,
+                        responseDate: questionnaire?.responseDate
+                          ? new Date(questionnaire.responseDate).toLocaleDateString("pt-BR")
+                          : ""
+                      };
+                    });
+                    exportRoundAnswersToCSV(rows);
+                  }}
                   aria-label="Baixar dados da rodada"
                   type="button"
                 >
