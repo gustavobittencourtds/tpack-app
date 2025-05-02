@@ -7,6 +7,7 @@ import styles from "../styles/roundStyles.module.css";
 import ProtectedRoute from "../components/ProtectedRoute";
 import Breadcrumbs from "../components/Breadcrumbs";
 import dynamic from "next/dynamic";
+import { saveAs } from "file-saver";
 
 const FeatherIcon = dynamic(() => import("feather-icons-react"), { ssr: false });
 
@@ -61,6 +62,45 @@ const theme = createTheme({
   },
 });
 
+// Função utilitária para converter dados em CSV
+function exportAnswersToCSV(
+  answers: Answer[],
+  questions: Question[],
+  professors: Professor[],
+  questionnaires: Questionnaire[],
+  roundId: string | string[] | undefined
+) {
+  const header = [
+    "E-mail",
+    "Questão",
+    "Resposta",
+    "Data de Resposta"
+  ];
+
+  const roundIdStr = Array.isArray(roundId) ? roundId[0] : roundId;
+
+  const rows = answers.map((answer) => {
+    const question = questions.find(q => q._id === answer.questionId);
+    // Busca o questionário pelo questionnaireId da resposta
+    const questionnaire = questionnaires.find(q => q._id === (answer as any).questionnaireId);
+    // Busca o professor pelo professorId da resposta
+    const professor = professors.find(p => p._id === (answer as any).professorId);
+
+    return [
+      professor?.email ?? "",
+      question?.text ?? "",
+      answer.answer,
+      questionnaire?.responseDate
+        ? new Date(questionnaire.responseDate).toLocaleString("pt-BR")
+        : ""
+    ].map(field => `"${String(field).replace(/"/g, '""')}"`).join(",");
+  });
+
+  const csvContent = [header.join(","), ...rows].join("\r\n");
+  const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+  saveAs(blob, "respostas_rodada.csv");
+}
+
 export default function RoundPage() {
   const router = useRouter();
   const { roundId } = router.query;
@@ -76,7 +116,7 @@ export default function RoundPage() {
   const [visibleActions, setVisibleActions] = useState<string | null>(null);
   const [message, setMessage] = useState<string | null>(null);
   const [expandedQuestionId, setExpandedQuestionId] = useState<string | null>(null);
-
+  const [showTooltip, setShowTooltip] = useState(false);
 
   useEffect(() => {
     if (!roundId) return;
@@ -197,9 +237,35 @@ export default function RoundPage() {
 
           {loading && <p>Carregando...</p>}
 
-          <button className={styles.backButton} onClick={() => router.push("/admin")}>
-            Voltar
-          </button>
+          <div className={styles.actionsWrapper}>
+
+            <button className={styles.backButton} onClick={() => router.push("/admin")}>
+              Voltar
+            </button>
+
+            {/* Botão de exportação CSV */}
+            {answers.length > 0 && (
+              <div
+                className={styles.downloadWrapper}
+                onMouseEnter={() => setShowTooltip(true)}
+                onMouseLeave={() => setShowTooltip(false)}
+              >
+                <button
+                  className={styles.exportButton}
+                  onClick={() => exportAnswersToCSV(answers, questions, professors, questionnaires, roundId)}
+                  aria-label="Baixar dados da rodada"
+                  type="button"
+                >
+                  <FeatherIcon icon="download" size={20} />
+                </button>
+ 
+                <span className={`${styles.downloadTooltip} ${showTooltip ? styles["-visible"] : ""}`}>
+                  Baixar dados da rodada
+                </span>
+              </div>
+            )}
+  
+          </div>
 
           {round && (
             <>
