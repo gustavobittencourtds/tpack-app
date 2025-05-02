@@ -62,10 +62,10 @@ const Sidebar = () => {
       <div className={`${styles.sidebarContainer} ${isMobileMenuOpen ? styles.mobileMenuOpen : ''}`}>
         <Image src="/images/logo.svg" alt="TPACK App" width={65} height={65} style={{ borderRadius: '16px', marginBottom: '2rem' }} />
         <ul className={styles.sidebarMenu}>
-          <li onClick={() => router.push('/admin')} className={`${styles.sidebarMenuItem} ${router.pathname === '/admin' ? styles.sidebarMenuItemActive : ''}`}>
+          <li onClick={() => router.push('/admin')} className={`${styles.sidebarMenuItem} ${router.pathname === '/admin' || router.pathname === '/round' ? styles.sidebarMenuItemActive : ''}`}>
             <FeatherIcon icon="home" /> Rodadas de Avaliação
           </li>
-          <li onClick={() => router.push('/professors')} className={`${styles.sidebarMenuItem} ${router.pathname === '/professors' ? styles.sidebarMenuItemActive : ''}`}>
+          <li onClick={() => router.push('/professors')} className={`${styles.sidebarMenuItem} ${router.pathname === '/professors' || router.pathname === '/respostas' || router.pathname === '/questionnaires' ? styles.sidebarMenuItemActive : ''}`}>
             <FeatherIcon icon="users" /> Professores
           </li>
         </ul>
