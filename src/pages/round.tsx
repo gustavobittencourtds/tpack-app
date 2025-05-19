@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useRouter } from "next/router";
 import { PieChart } from "@mui/x-charts/PieChart";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
@@ -7,8 +7,8 @@ import styles from "../styles/roundStyles.module.css";
 import ProtectedRoute from "../components/ProtectedRoute";
 import Breadcrumbs from "../components/Breadcrumbs";
 import dynamic from "next/dynamic";
-import { saveAs } from "file-saver";
 import { exportRoundAnswersToCSV } from "../utils/csvExport";
+import { exportTpackReportToPdf } from "../utils/pdfExport";
 
 const FeatherIcon = dynamic(() => import("feather-icons-react"), { ssr: false });
 
@@ -78,7 +78,10 @@ export default function RoundPage() {
   const [visibleActions, setVisibleActions] = useState<string | null>(null);
   const [message, setMessage] = useState<string | null>(null);
   const [expandedQuestionId, setExpandedQuestionId] = useState<string | null>(null);
-  const [showTooltip, setShowTooltip] = useState(false);
+  const [showCsvTooltip, setShowCsvTooltip] = useState(false);
+  const [showPdfTooltip, setShowPdfTooltip] = useState(false);
+  const [showDownloadMenu, setShowDownloadMenu] = useState(false);
+  const downloadMenuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (!roundId) return;
@@ -132,6 +135,19 @@ export default function RoundPage() {
 
     fetchRoundData();
   }, [roundId]);
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (downloadMenuRef.current && !downloadMenuRef.current.contains(event.target as Node)) {
+        setShowDownloadMenu(false);
+      }
+    }
+    
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
 
   const handleToggleActions = (professorId: string) => {
     setVisibleActions(visibleActions === professorId ? null : professorId);
@@ -205,43 +221,99 @@ export default function RoundPage() {
               Voltar
             </button>
 
-            {/* Botão de exportação CSV */}
-            {answers.length > 0 && (
-              <div
-                className={styles.downloadWrapper}
-                onMouseEnter={() => setShowTooltip(true)}
-                onMouseLeave={() => setShowTooltip(false)}
-              >
+            {/* Menu flutuante de download */}
+            {(answers.length > 0 || (sessionAverages.length > 0 && sessions.length > 0)) && (
+              <div className={styles.downloadWrapper} ref={downloadMenuRef}>
                 <button
                   className={styles.exportButton}
-                  onClick={() => {
-                    const rows = answers.map((answer) => {
-                      const question = questions.find(q => q._id === answer.questionId);
-                      const questionnaire = questionnaires.find(q => q._id === (answer as any).questionnaireId);
-                      const professor = professors.find(p => p._id === (answer as any).professorId);
-                      return {
-                        email: professor?.email ?? "",
-                        question: question?.text ?? "",
-                        answer: answer.answer,
-                        responseDate: questionnaire?.responseDate
-                          ? new Date(questionnaire.responseDate).toLocaleDateString("pt-BR")
-                          : ""
-                      };
-                    });
-                    exportRoundAnswersToCSV(rows);
-                  }}
-                  aria-label="Baixar dados da rodada"
+                  onClick={() => setShowDownloadMenu(!showDownloadMenu)}
+                  aria-label="Opções de download"
                   type="button"
                 >
                   <FeatherIcon icon="download" size={20} />
                 </button>
- 
-                <span className={`${styles.downloadTooltip} ${showTooltip ? styles["-visible"] : ""}`}>
-                  Baixar dados da rodada
-                </span>
+                
+                {/* Menu de download */}
+                <div className={`${styles.downloadMenu} ${showDownloadMenu ? styles.visible : ""}`}>
+                  {answers.length > 0 && (
+                    <button
+                      className={styles.downloadMenuItem}
+                      onClick={() => {
+                        const rows = answers.map((answer) => {
+                          const question = questions.find(q => q._id === answer.questionId);
+                          const questionnaire = questionnaires.find(q => q._id === (answer as any).questionnaireId);
+                          const professor = professors.find(p => p._id === (answer as any).professorId);
+                          return {
+                            email: professor?.email ?? "",
+                            question: question?.text ?? "",
+                            answer: answer.answer,
+                            responseDate: questionnaire?.responseDate
+                              ? new Date(questionnaire.responseDate).toLocaleDateString("pt-BR")
+                              : ""
+                          };
+                        });
+                        exportRoundAnswersToCSV(rows);
+                        setShowDownloadMenu(false);
+                      }}
+                    >
+                      <FeatherIcon icon="file" size={18} />
+                      Baixar CSV
+                    </button>
+                  )}
+                  
+                  {sessionAverages.length > 0 && sessions.length > 0 && (
+                    <button
+                      className={styles.downloadMenuItem}
+                      onClick={() => {
+                        // Preparar dados para o relatório PDF
+                        const sessionsData = sessionAverages.map(({ sessionId, questionAverages }) => {
+                          const sessionTitle = sessions.find((s) => s._id === sessionId)?.title || "Sessão desconhecida";
+                          const questionsData = questionAverages.map((qa) => {
+                            const question = questions.find((q) => q._id === qa.questionId);
+                            return {
+                              questionId: qa.questionId,
+                              questionText: question?.text || "Questão desconhecida",
+                              average: qa.average,
+                              stdDeviation: qa.stdDeviation,
+                              median: qa.median,
+                              mode: qa.mode,
+                              range: qa.range,
+                              cv: qa.cv
+                            };
+                          });
+                          return {
+                            sessionTitle,
+                            questions: questionsData
+                          };
+                        });
+
+                        // Gerar PDF com os dados
+                        if (round) {
+                          exportTpackReportToPdf(
+                            round.roundNumber,
+                            new Date(round.sentDate),
+                            professors.length,
+                            sessionsData
+                          );
+                        }
+                        setShowDownloadMenu(false);
+                      }}
+                    >
+                      <FeatherIcon icon="file-text" size={18} />
+                      Baixar PDF
+                    </button>
+                  )}
+                </div>
+                
+                {/* Overlay para fechar o menu quando clicar fora */}
+                {showDownloadMenu && (
+                  <div 
+                    className={`${styles.downloadMenuOverlay} ${showDownloadMenu ? styles.visible : ""}`}
+                    onClick={() => setShowDownloadMenu(false)}
+                  />
+                )}
               </div>
             )}
-  
           </div>
 
           {round && (

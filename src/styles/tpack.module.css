@@ -1,0 +1,297 @@
+.pageContainer {
+  padding: 2rem;
+  background: #FFFFFF;
+  max-width: 1200px;
+  margin: 0 auto;
+  line-height: 1.6;
+  color: #333;
+}
+
+/* Hero Section */
+.hero {
+  background: linear-gradient(135deg, #6c5ce7, #8e7cf3);
+  color: white;
+  padding: 4rem 2rem;
+  border-radius: 16px;
+  margin-bottom: 3rem;
+  text-align: center;
+}
+
+.heroTitle {
+  font-size: 2.8rem;
+  font-weight: 700;
+  margin-bottom: 1.5rem;
+  line-height: 1.2;
+}
+
+.heroSubtitle {
+  font-size: 1.3rem;
+  opacity: 0.9;
+  margin-bottom: 2.5rem;
+  max-width: 800px;
+  margin-left: auto;
+  margin-right: auto;
+  line-height: 1.5;
+}
+
+.ctaButton {
+  background-color: white;
+  color: #6c5ce7;
+  padding: 1rem 2.5rem;
+  border-radius: 50px;
+  font-weight: 600;
+  text-decoration: none;
+  display: inline-block;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  font-size: 1.1rem;
+}
+
+.ctaButton:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Sections */
+.pageSection {
+  margin-bottom: 4rem;
+}
+
+.sectionTitle {
+  color: #1b263b;
+  font-size: 1.6rem;
+  font-weight: 700;
+  margin-bottom: 1.5rem;
+  position: relative;
+  padding-bottom: 0.5rem;
+}
+
+.sectionTitle::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 60px;
+  height: 4px;
+  background: linear-gradient(135deg, #6c5ce7, #8e7cf3);
+  border-radius: 2px;
+}
+
+.paragraph {
+  color: #4a5568;
+  margin-bottom: 1.5rem;
+  text-align: left;
+  font-size: 1.1rem;
+  line-height: 1.7;
+}
+
+/* TPACK Components Grid */
+.tpackGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2rem;
+  margin: 3rem 0;
+}
+
+.tpackCard {
+  background: white;
+  border-radius: 12px;
+  padding: 2rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease;
+  border-top: 4px solid #6c5ce7;
+  text-align: center;
+}
+
+.tpackCard:last-of-type {
+  grid-column: span 3;
+}
+
+.tpackCard:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+}
+
+.tpackCard h3 {
+  color: #1b263b;
+  margin-bottom: 0.8rem;
+  font-size: 1.2rem;
+  font-weight: 600;
+}
+
+.tpackCard p {
+  color: #718096;
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+/* Applications Grid */
+.applicationsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 2rem;
+  margin: 2rem 0;
+}
+
+.applicationCard {
+  background: white;
+  border-radius: 12px;
+  padding: 1.8rem;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease;
+  border-left: 4px solid #6c5ce7;
+  display: flex;
+  flex-direction: column;
+}
+
+.applicationCard:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+}
+
+.applicationIcon {
+  color: #6c5ce7;
+  margin-bottom: 1rem;
+  font-size: 1.5rem;
+}
+
+.applicationText {
+  color: #4a5568;
+  font-size: 1rem;
+  line-height: 1.6;
+  margin-top: auto;
+}
+
+/* Feature Cards */
+.featureCards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2.5rem;
+  margin: 4rem 0;
+}
+
+.featureCard {
+  background: white;
+  border-radius: 16px;
+  padding: 2.5rem 2rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  transition: all 0.3s ease;
+  text-align: center;
+  border: 1px solid rgba(0, 0, 0, 0.03);
+}
+
+.featureCard:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.12);
+}
+
+.featureIcon {
+  background: linear-gradient(135deg, #6c5ce7, #8e7cf3);
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 1.5rem;
+  color: white;
+}
+
+.featureTitle {
+  color: #1b263b;
+  font-size: 1.3rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+
+.featureDescription {
+  color: #4a5568;
+  font-size: 1rem;
+  line-height: 1.6;
+}
+
+/* Figure */
+.figureContainer {
+  margin: 3rem 0;
+  text-align: center;
+  background: white;
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+}
+
+.figureContainer img {
+  max-width: 100%;
+}
+
+.figureCaption {
+  font-size: 0.9rem;
+  color: #718096;
+  margin-top: 1rem;
+}
+
+/* References */
+.referenceList {
+  list-style: none;
+  padding: 0;
+  margin: 2rem 0;
+  font-size: 0.95rem;
+  background: #f8f9fa;
+  padding: 2rem;
+  border-radius: 12px;
+}
+
+.referenceList li {
+  margin-bottom: 1rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  line-height: 1.5;
+}
+
+.referenceList li:last-child {
+  margin-bottom: 0;
+  padding-bottom: 0;
+  border-bottom: none;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .pageContainer {
+    padding: 1.5rem;
+  }
+  
+  .hero {
+    padding: 3rem 1.5rem;
+  }
+
+  .ctaButton {
+    padding: 1rem;
+  }
+  
+  .heroTitle {
+    font-size: 2rem;
+  }
+  
+  .heroSubtitle {
+    font-size: 1rem;
+  }
+
+  .figureContainer {
+    padding: 0.5rem;
+  }
+  
+  .featureCards,
+  .tpackGrid,
+  .applicationsGrid {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+
+  .tpackCard:last-of-type {
+    grid-column: span 1;
+  }
+  
+  .sectionTitle {
+    font-size: 1.4rem;
+  }
+}

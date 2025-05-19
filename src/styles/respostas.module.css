@@ -217,19 +217,22 @@
 }
 
 .exportButton {
-  background: #2E96FF;
-  color: #fff;
-  border: none;
-  padding: 8px 16px;
-  border-radius: 4px;
-  cursor: pointer;
   display: flex;
   align-items: center;
+  justify-content: center;
+  border: none;
+  background-color: #2E96FF;
+  color: white;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  cursor: pointer;
   transition: all 0.3s ease;
 }
 
 .exportButton:hover {
-  background: #1769aa;
+  background-color: #1769aa;
+  transform: translateY(-2px);
 }
 
 .downloadTooltip {
@@ -253,4 +256,56 @@
 .downloadTooltip.-visible {
   opacity: 1;
   pointer-events: all;
+}
+
+/* Estilos do menu flutuante de download */
+.downloadMenu {
+  position: absolute;
+  top: calc(100% + 5px);
+  right: 0;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  overflow: hidden;
+  width: 180px;
+  z-index: 1000;
+  display: none;
+  animation: fadeIn 0.2s ease-out;
+}
+
+.downloadMenu.visible {
+  display: block;
+}
+
+.downloadMenuItem {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  width: 100%;
+  border: none;
+  background: none;
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.2s;
+  font-size: 0.9rem;
+  color: #333;
+}
+
+.downloadMenuItem:hover {
+  background: #f5f5f5;
+}
+
+.downloadMenuOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 999;
+  display: none;
+}
+
+.downloadMenuOverlay.visible {
+  display: block;
 }

@@ -29,6 +29,13 @@ const HomePage: NextPage = () => {
           Professores
         </button>
       </div>
+
+      <footer style={{ marginTop: '4rem', fontSize: '1.125rem' }}>
+        <p>Saiba mais sobre o sistema</p>
+        <button onClick={() => navigateTo('/tpack')} className={styles.navigationButton}>
+          Guia TPACK
+        </button>
+      </footer>
     </div>
   );
 };

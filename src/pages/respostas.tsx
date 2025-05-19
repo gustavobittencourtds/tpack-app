@@ -1,9 +1,10 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useRouter } from 'next/router';
 import dynamic from "next/dynamic";
 import styles from '../styles/respostas.module.css';
 import Breadcrumbs from '../components/Breadcrumbs';
 import { exportSingleProfessorAnswersToCSV } from "../utils/csvExport";
+import { exportSingleProfessorToPdf } from "../utils/pdfExport";
 const FeatherIcon = dynamic(() => import("feather-icons-react"), { ssr: false });
 
 interface Answer {
@@ -17,6 +18,12 @@ interface Professor {
   email: string;
 }
 
+interface Round {
+  _id: string;
+  roundNumber: number;
+  sentDate: string;
+}
+
 export default function Respostas() {
   const [answers, setAnswers] = useState<Answer[]>([]);
   const [questionnaireTitle, setQuestionnaireTitle] = useState('');
@@ -26,6 +33,9 @@ export default function Respostas() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [showTooltip, setShowTooltip] = useState(false);
+  const [showDownloadMenu, setShowDownloadMenu] = useState(false);
+  const [round, setRound] = useState<Round | null>(null);
+  const downloadMenuRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
   const { questionnaireId, professorId, roundId } = router.query;
 
@@ -77,6 +87,18 @@ export default function Respostas() {
         setQuestionnaireTitle(data.questionnaireTitle || 'Questionário');
         setSentDate(data.sentDate ? new Date(data.sentDate) : null);
         setResponseDate(data.responseDate ? new Date(data.responseDate) : null);
+        
+        // Buscar informações da rodada, se roundId estiver presente
+        if (roundId) {
+          const roundResponse = await fetch(`/api/rounds?id=${roundId}`, {
+            headers: { Authorization: `Bearer ${token}` },
+          });
+          const roundData = await roundResponse.json();
+          
+          if (roundResponse.ok && roundData.rounds && roundData.rounds.length > 0) {
+            setRound(roundData.rounds[0]);
+          }
+        }
       } catch (error) {
         console.error('Erro ao buscar respostas:', error);
         setError('Erro ao buscar respostas. Tente novamente mais tarde.');
@@ -86,7 +108,21 @@ export default function Respostas() {
     };
 
     fetchAnswers();
-  }, [questionnaireId, professorId]);
+  }, [questionnaireId, professorId, roundId]);
+
+  // Efeito para detectar clique fora do menu de download e fechá-lo
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (downloadMenuRef.current && !downloadMenuRef.current.contains(event.target as Node)) {
+        setShowDownloadMenu(false);
+      }
+    }
+    
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
 
   const handleBack = () => {
     if (roundId) {
@@ -121,33 +157,61 @@ export default function Respostas() {
         </button>
 
         {answers.length > 0 && (
-          <div
-            className={styles.downloadWrapper}
-            onMouseEnter={() => setShowTooltip(true)}
-            onMouseLeave={() => setShowTooltip(false)}
-          >
+          <div className={styles.downloadWrapper} ref={downloadMenuRef}>
             <button
               className={styles.exportButton}
-              onClick={() =>
-                exportSingleProfessorAnswersToCSV(
-                  rows,
-                  `respostas_${questionnaireTitle.replace(/\s+/g, "_")}.csv`
-                )
-              }
-              aria-label="Baixar respostas em CSV"
+              onClick={() => setShowDownloadMenu(!showDownloadMenu)}
+              aria-label="Opções de download"
               type="button"
             >
               <FeatherIcon icon="download" size={20} />
             </button>
-            <span className={`${styles.downloadTooltip} ${showTooltip ? styles["-visible"] : ""}`}>
-              Baixar respostas em CSV
-            </span>
+            
+            {/* Menu de download */}
+            <div className={`${styles.downloadMenu} ${showDownloadMenu ? styles.visible : ""}`}>
+              <button
+                className={styles.downloadMenuItem}
+                onClick={() => {
+                  exportSingleProfessorAnswersToCSV(
+                    rows,
+                    `respostas_${questionnaireTitle.replace(/\s+/g, "_")}.csv`
+                  );
+                  setShowDownloadMenu(false);
+                }}
+              >
+                <FeatherIcon icon="file" size={18} />
+                Baixar CSV
+              </button>
+              <button
+                className={styles.downloadMenuItem}
+                onClick={() => {
+                  exportSingleProfessorToPdf(
+                    rows,
+                    questionnaireTitle,
+                    round?.roundNumber
+                  );
+                  setShowDownloadMenu(false);
+                }}
+              >
+                <FeatherIcon icon="file-text" size={18} />
+                Baixar PDF
+              </button>
+            </div>
+            
+            {/* Overlay para fechar o menu quando clicar fora */}
+            {showDownloadMenu && (
+              <div 
+                className={`${styles.downloadMenuOverlay} ${showDownloadMenu ? styles.visible : ""}`}
+                onClick={() => setShowDownloadMenu(false)}
+              />
+            )}
           </div>
         )}
       </div>
 
       <h1 className={styles.respostasHeader}>{questionnaireTitle}</h1>
 
+      {round && <p className={styles.Paragraph}>Rodada: {round.roundNumber}</p>}
       {professor && <p className={styles.Paragraph}>Professor: {professor.email}</p>}
       {sentDate && <p className={styles.Paragraph}>Data de envio: {sentDate.toLocaleDateString('pt-BR')}</p>}
       {responseDate && <p className={styles.Paragraph}>Data de resposta: {responseDate.toLocaleDateString('pt-BR')}</p>}

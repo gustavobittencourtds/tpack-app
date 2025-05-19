@@ -1,195 +1,200 @@
-import sharedStyles from "../styles/shared.module.css";
+import tpackStyles from "../styles/tpack.module.css";
 import ProtectedRoute from "../components/ProtectedRoute";
 import Breadcrumbs from "../components/Breadcrumbs";
-import {
-  Book,
-  BarChart2,
-  Zap,
-  Send,
-  Clock,
-  Sun,
-  User,
-  Award,
-  DollarSign,
-  TrendingUp,
-  Layers,
-  Target,
-  BookOpen,
-  PieChart,
-  Mail,
-  Users,
-  Activity,
-  FileText,
-  CheckCircle
-} from "feather-icons-react";
+import dynamic from 'next/dynamic';
+
+const FeatherIcon = dynamic(() => import('feather-icons-react'), { ssr: false });
 
 export default function TpackGuide() {
   return (
     <ProtectedRoute>
-      <div className={sharedStyles.pageContainer}>
+      <div className={tpackStyles.pageContainer}>
         <Breadcrumbs title="Guia TPACK" />
 
-        <h1 className={sharedStyles.pageHeader}>Transforme a Educação com o Poder do TPACK</h1>
-        <p className={sharedStyles.pageSubheader}>
-          Nosso sistema integrado ajuda instituições de ensino a avaliar e desenvolver as competências tecnológicas, pedagógicas e de conteúdo de seus professores, seguindo o modelo TPACK - a abordagem mais reconhecida mundialmente para integração efetiva de tecnologia na educação.
-        </p>
-
-        {/* Seção sobre o modelo TPACK */}
-        <div className={sharedStyles.cardGradient}>
-          <h2 className={sharedStyles.sectionTitle}>O que é o Modelo TPACK?</h2>
-          <p className={sharedStyles.paragraph}>
-            Desenvolvido por Mishra e Koehler (2006), o <strong>TPACK (Technological Pedagogical Content Knowledge)</strong> é um modelo teórico que revolucionou a forma como entendemos a integração da tecnologia na educação. Ele vai além da simples presença de ferramentas tecnológicas em sala de aula, destacando a importância da articulação entre três domínios fundamentais:
+        <div className={tpackStyles.hero}>
+          <h1 className={tpackStyles.heroTitle}>TPACK App</h1>
+          <p className={tpackStyles.heroSubtitle}>
+            Avalie e desenvolva as competências docentes com um sistema simples, automatizado e visual.
+            Descubra como o TPACK e o questionário TPACK.xs podem impactar sua equipe pedagógica.
           </p>
-
-          <div className={sharedStyles.featureCards}>
-            <div className={sharedStyles.featureCard}>
-              <div className={sharedStyles.featureIcon}><Book size={28} /></div>
-              <h3 className={sharedStyles.featureTitle}>Conhecimento Pedagógico (PK)</h3>
-              <p className={sharedStyles.featureDescription}>Métodos e estratégias de ensino, compreensão de como os alunos aprendem e como avaliar esse aprendizado.</p>
-              <ul className={sharedStyles.contentList}>
-                <li><CheckCircle size={18} className={sharedStyles.listIcon} /> Planejamento de aulas</li>
-                <li><CheckCircle size={18} className={sharedStyles.listIcon} /> Estratégias de avaliação</li>
-                <li><CheckCircle size={18} className={sharedStyles.listIcon} /> Gestão de sala de aula</li>
-              </ul>
-            </div>
-
-            <div className={sharedStyles.featureCard}>
-              <div className={sharedStyles.featureIcon}><User size={28} /></div>
-              <h3 className={sharedStyles.featureTitle}>Conhecimento de Conteúdo (CK)</h3>
-              <p className={sharedStyles.featureDescription}>Domínio do assunto a ser ensinado, incluindo conceitos, teorias e estruturas da disciplina.</p>
-              <ul className={sharedStyles.contentList}>
-                <li><CheckCircle size={18} className={sharedStyles.listIcon} /> Conhecimento profundo</li>
-                <li><CheckCircle size={18} className={sharedStyles.listIcon} /> Atualização constante</li>
-                <li><CheckCircle size={18} className={sharedStyles.listIcon} /> Conexões interdisciplinares</li>
-              </ul>
-            </div>
-
-            <div className={sharedStyles.featureCard}>
-              <div className={sharedStyles.featureIcon}><Zap size={28} /></div>
-              <h3 className={sharedStyles.featureTitle}>Conhecimento Tecnológico (TK)</h3>
-              <p className={sharedStyles.featureDescription}>Habilidade de usar ferramentas tecnológicas de forma geral e específica para fins educacionais.</p>
-              <ul className={sharedStyles.contentList}>
-                <li><CheckCircle size={18} className={sharedStyles.listIcon} /> Ferramentas digitais</li>
-                <li><CheckCircle size={18} className={sharedStyles.listIcon} /> Plataformas educacionais</li>
-                <li><CheckCircle size={18} className={sharedStyles.listIcon} /> Recursos multimídia</li>
-              </ul>
-            </div>
-          </div>
+          <a href="/admin" className={tpackStyles.ctaButton}>
+            Aplicar o questionário agora
+          </a>
         </div>
 
-        {/* Seção de benefícios */}
-        <section className={sharedStyles.pageSection}>
-          <h2 className={sharedStyles.sectionTitle}>Vantagens do TPACK para sua instituição</h2>
-
-          <p className={sharedStyles.testimonial}>
-            "O modelo TPACK fornece uma estrutura valiosa para entender como os professores podem integrar efetivamente a tecnologia em seu ensino, não como um complemento, mas como parte integrante do processo educacional."
-            <div className={sharedStyles.testimonialAuthor}>- Schmid, Brianza & Petko (2020)</div>
+        <section className={tpackStyles.pageSection}>
+          <h2 className={tpackStyles.sectionTitle}>O que é TPACK?</h2>
+          <p className={tpackStyles.paragraph}>
+            TPACK é um modelo criado para ajudar professores a unirem três conhecimentos fundamentais em sala de aula: o que ensinar (Conteúdo), como ensinar (Pedagogia) e com quais ferramentas ensinar (Tecnologia). A grande força do TPACK está nas interações entre essas áreas, formando sete componentes que compõem o modelo:
           </p>
 
-          <div className={sharedStyles.featureCards}>
-            <div className={sharedStyles.featureCard}>
-              <div className={sharedStyles.featureIcon}><Award size={28} /></div>
-              <h3 className={sharedStyles.featureTitle}>Melhoria nos resultados</h3>
-              <p className={sharedStyles.featureDescription}>Professores com alto TPACK têm alunos com melhor desempenho acadêmico.</p>
+          <div className={tpackStyles.tpackGrid}>
+            <div className={tpackStyles.tpackCard}>
+              <h3>Conhecimento de Conteúdo (CK)</h3>
+              <p>Domínio do assunto a ser ensinado</p>
+            </div>
+            <div className={tpackStyles.tpackCard}>
+              <h3>Conhecimento Pedagógico (PK)</h3>
+              <p>Métodos e práticas de ensino</p>
+            </div>
+            <div className={tpackStyles.tpackCard}>
+              <h3>Conhecimento Tecnológico (TK)</h3>
+              <p>Domínio de ferramentas tecnológicas</p>
+            </div>
+            <div className={tpackStyles.tpackCard}>
+              <h3>Conhecimento Pedagógico do Conteúdo (PCK)</h3>
+              <p>Como ensinar um conteúdo específico</p>
+            </div>
+            <div className={tpackStyles.tpackCard}>
+              <h3>Conhecimento Tecnológico do Conteúdo (TCK)</h3>
+              <p>Tecnologias adequadas para o conteúdo</p>
+            </div>
+            <div className={tpackStyles.tpackCard}>
+              <h3>Conhecimento Tecnológico Pedagógico (TPK)</h3>
+              <p>Como usar tecnologia para ensinar</p>
+            </div>
+            <div className={tpackStyles.tpackCard}>
+              <h3>Conhecimento Tecnológico Pedagógico do Conteúdo (TPACK)</h3>
+              <p>Integração dos três conhecimentos e suas interações</p>
+            </div>
+          </div>
+
+          <div className={tpackStyles.figureContainer}>
+            <img src="https://tpack.org/wp-content/uploads/2024/07/TPACK.png" alt="Diagrama do Modelo TPACK" width="400" />
+            <p className={tpackStyles.figureCaption}>Fonte: http://tpack.org</p>
+          </div>
+
+          <section className={tpackStyles.pageSection}>
+            <p className={tpackStyles.paragraph}>Para saber mais sobre o modelo teórico TPACK, acesse <a href="https://tpack.org">TPACK.org</a></p>
+          </section>
+        </section>
+
+        <section className={tpackStyles.pageSection}>
+          <h2 className={tpackStyles.sectionTitle}>O que é TPACK.xs?</h2>
+
+          <p className={tpackStyles.paragraph}>
+            Para ajudar professores e gestores a avaliarem essas competências, foi criado o TPACK.xs – um questionário com 28 afirmações que o educador responde em uma escala de concordância. Exemplo de pergunta: <em>"Sei como usar tecnologias digitais para facilitar a aprendizagem dos alunos em minha disciplina"</em>. As respostas revelam o perfil profissional do docente nas sete áreas do TPACK.
+          </p>
+
+          <p className={tpackStyles.paragraph}>
+            Imagine que, após aplicar o questionário, você descobre que a maioria dos professores domina bem o conteúdo e a pedagogia, mas têm baixa confiança no uso de tecnologia. Isso permite agir de forma objetiva: investir em formações específicas, monitorar a evolução ao longo do tempo e tomar decisões baseadas em dados reais.
+          </p>
+        </section>
+
+        <section className={tpackStyles.pageSection}>
+          <h2 className={tpackStyles.sectionTitle}>Por que aplicar o TPACK?</h2>
+          <p className={tpackStyles.paragraph}>
+            Diversos estudos indicam que professores com domínio do TPACK utilizam tecnologias com maior intencionalidade pedagógica, criam aulas mais engajadoras e obtêm melhores resultados com seus alunos. O modelo TPACK também orienta o planejamento pedagógico, apoia a formação continuada e serve como referência para gestores no acompanhamento da equipe docente.
+          </p>
+          <p className={tpackStyles.paragraph}>
+            Sua aplicação em programas de formação tem gerado aumentos significativos nas competências dos docentes, especialmente na habilidade de integrar ferramentas digitais de forma alinhada aos objetivos de aprendizagem (Guzmán & Bravo, 2024; Ozden et al., 2024).
+          </p>
+        </section>
+
+        <section className={tpackStyles.pageSection}>
+          <h2 className={tpackStyles.sectionTitle}>Aplicações do TPACK</h2>
+          <p className={tpackStyles.paragraph}>
+            Pesquisas demonstram que o modelo TPACK pode ser aplicado para:
+          </p>
+
+          <div className={tpackStyles.applicationsGrid}>
+            <div className={tpackStyles.applicationCard}>
+              <div className={tpackStyles.applicationIcon}>
+                <FeatherIcon icon="clipboard" size={24} />
+              </div>
+              <p className={tpackStyles.applicationText}>
+                Avaliar as competências docentes para integração tecnológica
+              </p>
             </div>
 
-            <div className={sharedStyles.featureCard}>
-              <div className={sharedStyles.featureIcon}><TrendingUp size={28} /></div>
-              <h3 className={sharedStyles.featureTitle}>Preparação para o futuro</h3>
-              <p className={sharedStyles.featureDescription}>Adaptação a novos cenários educacionais digitais.</p>
+            <div className={tpackStyles.applicationCard}>
+              <div className={tpackStyles.applicationIcon}>
+                <FeatherIcon icon="users" size={24} />
+              </div>
+              <p className={tpackStyles.applicationText}>
+                Orientar programas de desenvolvimento profissional docente
+              </p>
             </div>
 
-            <div className={sharedStyles.featureCard}>
-              <div className={sharedStyles.featureIcon}><DollarSign size={28} /></div>
-              <h3 className={sharedStyles.featureTitle}>Otimização de recursos</h3>
-              <p className={sharedStyles.featureDescription}>Melhor aproveitamento dos investimentos em tecnologia.</p>
+            <div className={tpackStyles.applicationCard}>
+              <div className={tpackStyles.applicationIcon}>
+                <FeatherIcon icon="monitor" size={24} />
+              </div>
+              <p className={tpackStyles.applicationText}>
+                Analisar práticas pedagógicas em contextos de ensino remoto
+              </p>
+            </div>
+
+            <div className={tpackStyles.applicationCard}>
+              <div className={tpackStyles.applicationIcon}>
+                <FeatherIcon icon="book-open" size={24} />
+              </div>
+              <p className={tpackStyles.applicationText}>
+                Fundamentar políticas institucionais de formação continuada
+              </p>
+            </div>
+
+            <div className={tpackStyles.applicationCard}>
+              <div className={tpackStyles.applicationIcon}>
+                <FeatherIcon icon="calendar" size={24} />
+              </div>
+              <p className={tpackStyles.applicationText}>
+                Apoiar o planejamento pedagógico com base na integração entre conteúdo, tecnologia e métodos de ensino
+              </p>
+            </div>
+
+            <div className={tpackStyles.applicationCard}>
+              <div className={tpackStyles.applicationIcon}>
+                <FeatherIcon icon="bar-chart-2" size={24} />
+              </div>
+              <p className={tpackStyles.applicationText}>
+                Subsidiar gestores escolares na identificação de lacunas e potencialidades da equipe docente
+              </p>
             </div>
           </div>
         </section>
 
-        {/* Seção de funcionalidades do sistema */}
-        <section className={sharedStyles.pageSection}>
-          <h2 className={sharedStyles.sectionTitle}>Como nosso sistema transforma a avaliação TPACK</h2>
-          <p className={sharedStyles.paragraph}>
-            Enquanto muitas instituições ainda dependem de múltiplas ferramentas desconectadas, nosso sistema oferece uma solução completa e integrada para todo o processo de avaliação TPACK.
+        <section className={tpackStyles.pageSection}>
+          <h2 className={tpackStyles.sectionTitle}>Por que usar nosso sistema?</h2>
+          <p className={tpackStyles.paragraph}>
+            Aplicar o TPACK.xs em ferramentas como Google Forms pode até funcionar, mas exige esforço extra para analisar os dados, interpretar os resultados e tirar conclusões práticas. Nosso sistema foi criado para resolver isso: tudo acontece em um único ambiente, com design amigável e foco na tomada de decisão.
+          </p>
+          <p className={tpackStyles.paragraph}>
+            Você envia os questionários por e-mail, acompanha quem respondeu, visualiza relatórios estatísticos por dimensão do TPACK, recebe interpretações automáticas e pode comparar a evolução de cada docente ao longo do tempo. Isso economiza tempo e transforma dados em ações concretas.
           </p>
 
-          <div className={sharedStyles.featureCards}>
-            <div className={sharedStyles.featureCard}>
-              <div className={sharedStyles.featureIcon}><Send size={28} /></div>
-              <h3 className={sharedStyles.featureTitle}>Aplicação Simplificada</h3>
-              <p className={sharedStyles.featureDescription}>Envie questionários TPACK.xs por e-mail com um clique.</p>
-              <ul className={sharedStyles.contentList}>
-                <li><Mail size={18} className={sharedStyles.listIcon} /> Envio em massa</li>
-                <li><Clock size={18} className={sharedStyles.listIcon} /> Controle de prazos</li>
-                <li><Users size={18} className={sharedStyles.listIcon} /> Gerenciamento de respondentes</li>
-              </ul>
+          <div className={tpackStyles.featureCards}>
+            <div className={tpackStyles.featureCard}>
+              <div className={tpackStyles.featureIcon}><FeatherIcon icon="send" size={24} /></div>
+              <h3 className={tpackStyles.featureTitle}>Aplicação do Questionário</h3>
+              <p className={tpackStyles.featureDescription}>Envio automatizado e personalizado do TPACK.xs para cada professor, com links únicos e prazo de resposta configurável.</p>
             </div>
 
-            <div className={sharedStyles.featureCard}>
-              <div className={sharedStyles.featureIcon}><BarChart2 size={28} /></div>
-              <h3 className={sharedStyles.featureTitle}>Análise Automatizada</h3>
-              <p className={sharedStyles.featureDescription}>Relatórios instantâneos com todas as métricas estatísticas.</p>
-              <ul className={sharedStyles.contentList}>
-                <li><PieChart size={18} className={sharedStyles.listIcon} /> Gráficos interativos</li>
-                <li><Activity size={18} className={sharedStyles.listIcon} /> Comparativos entre turmas</li>
-                <li><FileText size={18} className={sharedStyles.listIcon} /> Exportação de relatórios</li>
-              </ul>
+            <div className={tpackStyles.featureCard}>
+              <div className={tpackStyles.featureIcon}><FeatherIcon icon="bar-chart-2" size={24} /></div>
+              <h3 className={tpackStyles.featureTitle}>Análise de Dados</h3>
+              <p className={tpackStyles.featureDescription}>Resultados em tempo real, com gráficos e indicadores para cada uma das sete dimensões do TPACK.</p>
             </div>
 
-            <div className={sharedStyles.featureCard}>
-              <div className={sharedStyles.featureIcon}><Sun size={28} /></div>
-              <h3 className={sharedStyles.featureTitle}>Sugestões Inteligentes</h3>
-              <p className={sharedStyles.featureDescription}>Recomendações personalizadas baseadas nos resultados.</p>
-              <ul className={sharedStyles.contentList}>
-                <li><BookOpen size={18} className={sharedStyles.listIcon} /> Materiais de apoio</li>
-                <li><TrendingUp size={18} className={sharedStyles.listIcon} /> Planos de desenvolvimento</li>
-                <li><Target size={18} className={sharedStyles.listIcon} /> Metas personalizadas</li>
-              </ul>
+            <div className={tpackStyles.featureCard}>
+              <div className={tpackStyles.featureIcon}><FeatherIcon icon="file-text" size={24} /></div>
+              <h3 className={tpackStyles.featureTitle}>Relatórios Acessíveis</h3>
+              <p className={tpackStyles.featureDescription}>Relatórios prontos para reuniões pedagógicas, formações ou envio institucional.</p>
             </div>
           </div>
         </section>
 
-        {/* Diferenciais competitivos */}
-        <section className={sharedStyles.pageSection}>
-          <h2 className={sharedStyles.sectionTitle}>O que nos torna únicos</h2>
-          <div className={sharedStyles.featureCards}>
-            <div className={sharedStyles.featureCard}>
-              <div className={sharedStyles.featureIcon}><Layers size={28} /></div>
-              <h3 className={sharedStyles.featureTitle}>Solução Completa</h3>
-              <p className={sharedStyles.featureDescription}>Único sistema que cobre desde a aplicação até a análise avançada em uma única plataforma.</p>
-            </div>
-
-            <div className={sharedStyles.featureCard}>
-              <div className={sharedStyles.featureIcon}><Activity size={28} /></div>
-              <h3 className={sharedStyles.featureTitle}>Precisão Decimal</h3>
-              <p className={sharedStyles.featureDescription}>Escala Likert de 0.1 em 0.1 para maior granularidade nos dados.</p>
-            </div>
-
-            <div className={sharedStyles.featureCard}>
-              <div className={sharedStyles.featureIcon}><BookOpen size={28} /></div>
-              <h3 className={sharedStyles.featureTitle}>Baseado em Evidências</h3>
-              <p className={sharedStyles.featureDescription}>Desenvolvido com base nas melhores práticas acadêmicas sobre avaliação TPACK.</p>
-            </div>
-          </div>
-        </section>
-
-        {/* CTA Section */}
-        <div className={sharedStyles.ctaSection}>
-          <h3 className={sharedStyles.ctaTitle}>Pronto para revolucionar a avaliação docente em sua instituição?</h3>
-          <p className={sharedStyles.ctaText}>
-            Descubra como nosso sistema pode ajudar você a entender e desenvolver as competências TPACK de seus professores.
-          </p>
-          <button className={sharedStyles.primaryButton}>Experimente Gratuitamente</button>
-        </div>
-
-        {/* Referências */}
-        <section className={sharedStyles.pageSection}>
-          <h2 className={sharedStyles.sectionTitle}>Referências</h2>
-          <ul className={sharedStyles.contentList} style={{ gridTemplateColumns: '1fr' }}>
+        <section className={tpackStyles.pageSection}>
+          <h2 className={tpackStyles.sectionTitle}>Referências Bibliográficas</h2>
+          <ul className={tpackStyles.referenceList}>
+            <li>GARCIA, R. V. B. et al. Ensino Remoto Emergencial: práticas educacionais e percepções docentes. Educacao & Realidade, v. 48, 2023.</li>
             <li>KOEHLER, M.; MISHRA, P. What is technological pedagogical content knowledge (TPACK)?. Contemporary issues in technology and teacher education, v. 9, n. 1, p. 60-70, 2009.</li>
-            <li>MISHRA, P.; KOEHLER, M. J. Technological pedagogical content knowledge: A framework for teacher knowledge. Teachers College Record, 2006.</li>
-            <li>SCHMID, M.; BRIANZA, E.; PETKO, D. Developing a short assessment instrument for Technological Pedagogical Content Knowledge (TPACK.xs) and comparing the factor structure of an integrative and a transformative model. Computers & Education, v. 157, p. 103967, 2020.</li>
+            <li>MISHRA, P.; KOEHLER, M. J. Technological pedagogical content knowledge: A framework for teacher knowledge. Teachers College Record, v. 108, n. 6, p. 1017-1054, 2006.</li>
+            <li>RIBEIRO, P. R. L.; PIEDADE, J. M. N. Formação de Professores para EAD: uma Análise Considerando os Domínios de Conhecimento do Modelo TPACK. EaD em Foco, v. 13, n. 1, e1935, 2023.</li>
+            <li>SCHMID, M.; BRIANZA, E.; PETKO, D. Developing a short assessment instrument for Technological Pedagogical Content Knowledge (TPACK.xs). Computers & Education, v. 157, 2020.</li>
+            <li>VOOGT, J. et al. Technological pedagogical content knowledge-a review of the literature. Journal of computer assisted learning, v. 29, n. 2, p. 109-121, 2013.</li>
+            <li>GUZMÁN, J. R.; BRAVO, G. J. V. TPACK in In-service Secondary Education Teachers: A Systematic Review. IJEMST, v. 12, n. 1, 2024.</li>
+            <li>OZDEN, S. Y. et al. Reflections from a teacher education course built on the TPACK framework. Social Sciences & Humanities Open, v. 9, 2024.</li>
           </ul>
         </section>
       </div>
