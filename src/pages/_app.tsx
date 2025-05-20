@@ -5,6 +5,7 @@ import Sidebar from '../components/Sidebar';
 import Head from 'next/head';
 import '../styles/global.css';
 import styles from '../styles/App.module.css';
+import { ToastProvider } from '../contexts/ToastContext';
 
 function MyApp({ Component, pageProps }: AppProps) {
   const router = useRouter();
@@ -12,7 +13,6 @@ function MyApp({ Component, pageProps }: AppProps) {
   // Rotas públicas (não requerem Sidebar ou autenticação)
   const publicRoutes = ['/login', '/register', '/survey'];
   const isPublicRoute = publicRoutes.includes(router.pathname);
-
   return (
     <>
       <Head>
@@ -20,12 +20,14 @@ function MyApp({ Component, pageProps }: AppProps) {
         <title>TPACK App</title>
       </Head>
 
-      <div className={styles.appContainer}>
-        {!isPublicRoute && <Sidebar />}
-        <div className={styles.contentContainer}>
-          <Component {...pageProps} />
+      <ToastProvider>
+        <div className={styles.appContainer}>
+          {!isPublicRoute && <Sidebar />}
+          <div className={styles.contentContainer}>
+            <Component {...pageProps} />
+          </div>
         </div>
-      </div>
+      </ToastProvider>
     </>
   );
 }

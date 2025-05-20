@@ -4,6 +4,7 @@ import dynamic from 'next/dynamic';
 import styles from '../styles/professorsStyles.module.css';
 import { useRouter } from 'next/router';
 import Breadcrumbs from '../components/Breadcrumbs';
+import { useToast } from '../contexts/ToastContext';
 
 const FeatherIcon = dynamic(() => import('feather-icons-react'), { ssr: false });
 
@@ -17,10 +18,10 @@ export default function ProfessorsPage() {
   const [newProfessorEmail, setNewProfessorEmail] = useState('');
   const [selectedProfessors, setSelectedProfessors] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
-  const [message, setMessage] = useState<string | null>(null);
   const [visibleActions, setVisibleActions] = useState<string | null>(null); // Controla ações visíveis
   const [isMenuOpen, setIsMenuOpen] = useState(false); // Controla o menu flutuante no mobile
   const router = useRouter();
+  const { showToast } = useToast();
 
   useEffect(() => {
     const fetchProfessors = async () => {
@@ -43,10 +44,12 @@ export default function ProfessorsPage() {
   const handleViewQuestionnaires = (professorId: string) => {
     router.push(`/questionnaires?professorId=${professorId}`);
   };
-
   const handleAddProfessor = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newProfessorEmail) return;
+    if (!newProfessorEmail) {
+      showToast('Por favor, informe o e-mail do professor.', 'error');
+      return;
+    }
 
     try {
       const token = localStorage.getItem('token');
@@ -59,12 +62,12 @@ export default function ProfessorsPage() {
       if (res.ok) {
         setProfessors((prev) => [...prev, data]);
         setNewProfessorEmail('');
-        setMessage('Professor adicionado com sucesso!');
+        showToast('Professor adicionado com sucesso!', 'success');
       } else {
-        setMessage(data.message || 'Erro ao adicionar professor');
+        showToast(data.message || 'Erro ao adicionar professor', 'error');
       }
     } catch (error) {
-      setMessage('Erro ao adicionar professor.');
+      showToast('Erro ao adicionar professor.', 'error');
     }
   };
 
@@ -81,12 +84,12 @@ export default function ProfessorsPage() {
       });
       if (res.ok) {
         setProfessors(professors.map((p) => (p._id === professor._id ? { ...p, email: newEmail } : p)));
-        setMessage('Professor editado com sucesso!');
+        showToast('Professor editado com sucesso!', 'success');
       } else {
-        setMessage('Erro ao editar professor.');
+        showToast('Erro ao editar professor.', 'error');
       }
     } catch (error) {
-      setMessage('Erro ao editar professor.');
+      showToast('Erro ao editar professor.', 'error');
     }
   };
 
@@ -101,12 +104,12 @@ export default function ProfessorsPage() {
       });
       if (res.ok) {
         setProfessors(professors.filter((p) => p._id !== professorId));
-        setMessage('Professor removido com sucesso!');
+        showToast('Professor removido com sucesso!', 'success');
       } else {
-        setMessage('Erro ao remover professor.');
+        showToast('Erro ao remover professor.', 'error');
       }
     } catch (error) {
-      setMessage('Erro ao remover professor.');
+      showToast('Erro ao remover professor.', 'error');
     }
   };
 
@@ -134,29 +137,17 @@ export default function ProfessorsPage() {
         body: JSON.stringify({ professorIds }),
       });
       if (res.ok) {
-        setMessage('Questionários enviados com sucesso!');
+        showToast('Questionários enviados com sucesso!', 'success');
       } else {
-        setMessage('Erro ao enviar questionários.');
+        showToast('Erro ao enviar questionários.', 'error');
       }
     } catch (error) {
-      setMessage('Erro ao enviar questionários.');
+      showToast('Erro ao enviar questionários.', 'error');
     }
   };
-
   const handleToggleActions = (professorId: string) => {
     setVisibleActions(visibleActions === professorId ? null : professorId);
   };
-
-  // Efeito para remover a mensagem após 3 segundos
-  useEffect(() => {
-    if (message) {
-      const timer = setTimeout(() => {
-        setMessage(null);
-      }, 3000);
-
-      return () => clearTimeout(timer);
-    }
-  }, [message]);
 
   const scrollToAddForm = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -184,11 +175,6 @@ export default function ProfessorsPage() {
             <FeatherIcon icon="plus" size={25} />
           </button>
         </form>
-        {message && (
-          <p style={{ color: message.includes('Erro') ? '#e74c3c' : '#00b894', textAlign: 'center', marginBottom: '1rem' }}>
-            {message}
-          </p>
-        )}
         <div className={styles.actionBar}>
           <button
             className={styles.selectAllButton}

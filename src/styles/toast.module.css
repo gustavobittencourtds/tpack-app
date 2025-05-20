@@ -1,0 +1,118 @@
+.toast {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  min-width: 300px;
+  max-width: 400px;
+  padding: 0;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  z-index: 1000;
+  transform: translateY(100px);
+  opacity: 0;
+  transition: transform 0.3s ease, opacity 0.3s ease;
+  overflow: hidden;
+}
+
+.visible {
+  transform: translateY(0);
+  opacity: 1;
+}
+
+.toastContent {
+  display: flex;
+  align-items: center;
+  padding: 12px 16px;
+}
+
+.success {
+  background-color: #effaf5;
+  border-left: 4px solid #00b894;
+}
+
+.error {
+  background-color: #fff5f5;
+  border-left: 4px solid #e74c3c;
+}
+
+.icon {
+  margin-right: 12px;
+  display: flex;
+  align-items: center;
+}
+
+.success .icon {
+  color: #00b894;
+}
+
+.error .icon {
+  color: #e74c3c;
+}
+
+.message {
+  flex: 1;
+  margin: 0;
+  color: #2d3436;
+  font-size: 0.9rem;
+}
+
+.closeButton {
+  background: none;
+  border: none;
+  color: #636e72;
+  cursor: pointer;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.2s ease;
+}
+
+.closeButton:hover {
+  color: #2d3436;
+}
+
+@media (max-width: 600px) {
+  .toast {
+    left: 16px;
+    right: 16px;
+    min-width: auto;
+    max-width: none;
+    width: calc(100% - 32px);
+  }
+}
+
+/* Barra de progresso */
+.progressBar {
+  height: 3px;
+  width: 100%;
+  background-color: rgba(0, 0, 0, 0.1);
+  position: relative;
+}
+
+.progressBar::before {
+  content: '';
+  position: absolute;
+  height: 100%;
+  width: 100%;
+  left: 0;
+  top: 0;
+  animation: progress 7s linear forwards;
+}
+
+.progressBar.success::before {
+  background-color: #00b894;
+}
+
+.progressBar.error::before {
+  background-color: #e74c3c;
+}
+
+@keyframes progress {
+  0% {
+    width: 100%;
+  }
+  100% {
+    width: 0%;
+  }
+}
