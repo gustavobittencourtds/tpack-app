@@ -66,13 +66,14 @@
 .respostasTableHeader {
   background-color: #6c5ce7;
   color: white;
-  padding: 0.75rem;
+  padding: 0.5rem;
   text-align: left;
   border-bottom: 2px solid #ddd;
   font-size: 0.875rem;
 
   @media (min-width: 768px) {
     font-size: 1rem;
+    padding: 0.75rem;
   }
 }
 
@@ -81,12 +82,14 @@
 }
 
 .respostasTableCell {
-  padding: 0.75rem;
+  padding: 0.5rem;
+  
   border-bottom: 1px solid #ddd;
   font-size: 0.875rem;
 
   @media (min-width: 768px) {
     font-size: 1rem;
+    padding: 0.75rem;
   }
 }
 
@@ -188,8 +191,8 @@
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  padding: 0.75rem 1.5rem;
-  font-size: 1rem;
+  padding: 0.75rem 0.5rem;
+  font-size: 0.875rem;
   background: linear-gradient(135deg, #00b894, #00cec9);
   color: white;
   border: none;
@@ -197,6 +200,11 @@
   cursor: pointer;
   transition: all 0.3s ease;
   margin-left: auto;
+
+  @media (min-width: 768px) {
+    padding: 0.75rem 1.5rem;
+    font-size: 1rem;
+  }
 }
 
 .viewAnswersButton:hover {

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import ProtectedRoute from '../components/ProtectedRoute';
 import dynamic from 'next/dynamic';
 import styles from '../styles/professorsStyles.module.css';
@@ -18,8 +18,11 @@ export default function ProfessorsPage() {
   const [newProfessorEmail, setNewProfessorEmail] = useState('');
   const [selectedProfessors, setSelectedProfessors] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
+  const [uploadLoading, setUploadLoading] = useState(false);
   const [visibleActions, setVisibleActions] = useState<string | null>(null); // Controla ações visíveis
   const [isMenuOpen, setIsMenuOpen] = useState(false); // Controla o menu flutuante no mobile
+  const [showUploadMenu, setShowUploadMenu] = useState(false); // Controla o menu de upload
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
   const { showToast } = useToast();
 
@@ -40,10 +43,10 @@ export default function ProfessorsPage() {
     };
     fetchProfessors();
   }, []);
-
   const handleViewQuestionnaires = (professorId: string) => {
     router.push(`/questionnaires?professorId=${professorId}`);
   };
+  
   const handleAddProfessor = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newProfessorEmail) {
@@ -68,6 +71,73 @@ export default function ProfessorsPage() {
       }
     } catch (error) {
       showToast('Erro ao adicionar professor.', 'error');
+    }
+  };
+  const handleUploadCSV = async () => {
+    if (!fileInputRef.current?.files?.length) {
+      showToast('Por favor, selecione um arquivo CSV para upload.', 'error');
+      return;
+    }
+
+    const file = fileInputRef.current.files[0];
+    if (file.type !== 'text/csv' && !file.name.endsWith('.csv')) {
+      showToast('Por favor, selecione um arquivo CSV válido.', 'error');
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append('file', file);
+
+    setUploadLoading(true);
+
+    try {
+      const token = localStorage.getItem('token');
+      const res = await fetch('/api/uploadProfessors', {
+        method: 'POST',
+        headers: { 
+          'Authorization': `Bearer ${token}` 
+        },
+        body: formData,
+      });
+      
+      const data = await res.json();
+      
+      if (res.ok) {
+        // Se houver professores adicionados com sucesso, recarregar a lista
+        if (data.success) {
+          showToast(data.message, 'success');
+            // Mostrar detalhes se houver erros
+          if (data.errors && data.errors.length > 0) {
+            console.log('Erros no processamento do CSV:', data.errors);
+            showToast(`Atenção: ${data.errors.length} linhas não foram processadas. Verifique o console para detalhes.`, 'error');
+          }
+          
+          // Recarregar a lista de professores
+          const response = await fetch('/api/professors', { 
+            headers: { Authorization: `Bearer ${token}` } 
+          });
+          const newData = await response.json();
+          setProfessors(newData.professors || []);
+          
+          // Limpar o campo de arquivo
+          if (fileInputRef.current) {
+            fileInputRef.current.value = '';
+          }
+          
+          // Fechar o menu de upload
+          setShowUploadMenu(false);
+        } else {
+          showToast('Nenhum professor foi adicionado. Verifique o console para erros.', 'error');
+          console.log('Erros no processamento do CSV:', data.errors);
+        }
+      } else {
+        showToast(data.message || 'Erro ao processar o arquivo CSV', 'error');
+      }
+    } catch (error) {
+      console.error('Erro ao fazer upload de CSV:', error);
+      showToast('Erro ao processar o arquivo CSV', 'error');
+    } finally {
+      setUploadLoading(false);
     }
   };
 
@@ -144,9 +214,12 @@ export default function ProfessorsPage() {
     } catch (error) {
       showToast('Erro ao enviar questionários.', 'error');
     }
-  };
-  const handleToggleActions = (professorId: string) => {
+  };  const handleToggleActions = (professorId: string) => {
     setVisibleActions(visibleActions === professorId ? null : professorId);
+  };
+
+  const toggleUploadMenu = () => {
+    setShowUploadMenu(!showUploadMenu);
   };
 
   const scrollToAddForm = () => {
@@ -158,23 +231,57 @@ export default function ProfessorsPage() {
     setIsMenuOpen(!isMenuOpen);
   };
 
+  const handleFileChange = () => {
+    if (fileInputRef.current?.files?.length) {
+      handleUploadCSV();
+    }
+  };
+
   return (
-    <ProtectedRoute>
-      <div className={styles.professorsContainer}>
+    <ProtectedRoute>      <div className={styles.professorsContainer}>
         <Breadcrumbs title="Professores" />
         <h1 className={styles.professorsHeader}>Professores</h1>
-        <form className={styles.addProfessorForm} onSubmit={handleAddProfessor}>
-          <input
-            type="email"
-            placeholder="Email do professor"
-            value={newProfessorEmail}
-            onChange={(e) => setNewProfessorEmail(e.target.value)}
-            className={styles.addProfessorInput}
-          />
-          <button type="submit" className={styles.addProfessorButton}>
-            <FeatherIcon icon="plus" size={25} />
-          </button>
-        </form>
+        <div className={styles.addProfessorContainer}>
+          <form className={styles.addProfessorForm} onSubmit={handleAddProfessor}>
+            <input
+              type="email"
+              placeholder="Email do professor"
+              value={newProfessorEmail}
+              onChange={(e) => setNewProfessorEmail(e.target.value)}
+              className={styles.addProfessorInput}
+            />
+            <button type="submit" className={styles.addProfessorButton} title="Adicionar professor">
+              <FeatherIcon icon="plus" size={25} />
+            </button>
+            <div className={styles.uploadButtonContainer}>
+              <button 
+                type="button" 
+                className={styles.uploadButton} 
+                onClick={toggleUploadMenu}
+                title="Upload de professores"
+              >
+                <FeatherIcon icon="upload" size={25} />
+              </button>
+              {showUploadMenu && (
+                <div className={styles.uploadMenu}>
+                  <div className={styles.uploadMenuItem}>
+                    <label htmlFor="csvFileInput" className={styles.uploadMenuItemLabel}>
+                      <FeatherIcon icon="file-text" size={20} /> Upload via CSV
+                    </label>
+                    <input
+                      type="file"
+                      id="csvFileInput"
+                      accept=".csv"
+                      ref={fileInputRef}
+                      className={styles.fileInput}
+                      onChange={handleFileChange}
+                    />
+                  </div>
+                </div>
+              )}
+            </div>
+          </form>
+        </div>
         <div className={styles.actionBar}>
           <button
             className={styles.selectAllButton}
@@ -191,10 +298,11 @@ export default function ProfessorsPage() {
             disabled={selectedProfessors.length === 0}
           >
             <FeatherIcon icon="send" size={20} /> Enviar para selecionados
-          </button>
-        </div>
-        {loading ? (
-          <p style={{ textAlign: 'center', color: '#636e72' }}>Carregando...</p>
+          </button>        </div>
+        {loading || uploadLoading ? (
+          <p style={{ textAlign: 'center', color: '#636e72' }}>
+            {uploadLoading ? 'Processando arquivo...' : 'Carregando...'}
+          </p>
         ) : professors.length === 0 ? (
           <div className={styles.emptyState}>
             <p>Nenhum professor cadastrado ainda.</p>
@@ -256,9 +364,15 @@ export default function ProfessorsPage() {
           disabled={selectedProfessors.length === 0}
         >
           <FeatherIcon icon="send" size={22} /> Enviar para selecionados
-        </button>
-        <button className={styles.addProfessorButton} onClick={scrollToAddForm}>
+        </button>        <button className={styles.addProfessorButton} onClick={scrollToAddForm}>
           <FeatherIcon icon="plus" size={22} /> Adicionar professor
+        </button>
+        <button className={styles.uploadButton} onClick={() => {
+          scrollToAddForm();
+          setTimeout(() => setShowUploadMenu(true), 300);
+          setIsMenuOpen(false);
+        }}>
+          <FeatherIcon icon="upload" size={22} /> Upload via CSV
         </button>
       </div>
     </ProtectedRoute>
