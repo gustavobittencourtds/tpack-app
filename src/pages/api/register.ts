@@ -35,7 +35,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     console.log('Usuário criado com sucesso:', user);
 
     // Gera o token de autenticação
-    const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET!, { expiresIn: '78h' });
+    const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET!, { expiresIn: '30d' });
 
     // Retorna sucesso com o token
     res.status(201).json({ message: 'Usuário registrado com sucesso', token });
