@@ -19,8 +19,8 @@ const transporter = nodemailer.createTransport({
 } as nodemailer.TransportOptions);
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-  console.log('Método da requisição:', req.method);
-  console.log('Corpo da requisição:', req.body);
+  // console.log('Método da requisição:', req.method);
+  // console.log('Corpo da requisição:', req.body);
 
   if (req.method !== 'POST') {
     console.log('Método não permitido:', req.method);
@@ -114,7 +114,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     `;
 
     await transporter.sendMail({
-      from: process.env.EMAIL_USER as string,
+      from: `"TPACK APP" <${process.env.EMAIL_USER}>`,
       to,
       subject: 'Confirmação de Recebimento - Questionário TPACK',
       text: 'Recebemos suas respostas para o questionário de avaliação TPACK. Agradecemos por sua participação!',

@@ -113,7 +113,7 @@ export async function sendEmail(to: string, link: string): Promise<void> {
     `;
 
     await transporter.sendMail({
-      from: process.env.EMAIL_USER as string,
+      from: `"TPACK APP" <${process.env.EMAIL_USER}>`,
       to,
       subject: 'Seu Questionário de Avaliação TPACK',
       text: 'Você foi convidado(a) para responder ao questionário de avaliação TPACK. Clique no link para acessar o questionário: ' + link,
