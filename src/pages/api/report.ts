@@ -44,7 +44,11 @@ function calculateStats(values: number[]): {
 
   // Mediana
   const sortedValues = [...values].sort((a, b) => a - b);
-  const median = sortedValues[Math.floor(n / 2)];
+  const midpoint = Math.floor(n / 2);
+  const median =
+    n % 2 === 0
+      ? (sortedValues[midpoint - 1] + sortedValues[midpoint]) / 2
+      : sortedValues[midpoint];
 
   // Moda (agora retorna um array)
   const mode = calculateMode(values);
